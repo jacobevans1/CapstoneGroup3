@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskAppWeb", "TaskAppWeb\TaskAppWeb.csproj", "{8AE675AC-C651-4100-9F53-48D5D1C59D6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketAppWeb", "TaskAppWeb\TicketAppWeb.csproj", "{8AE675AC-C651-4100-9F53-48D5D1C59D6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskAppDesktop", "TaskAppDesktop\TaskAppDesktop.csproj", "{A8025885-7DDC-4997-B284-420CCCEC0184}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketAppDesktop", "TaskAppDesktop\TicketAppDesktop.csproj", "{A8025885-7DDC-4997-B284-420CCCEC0184}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

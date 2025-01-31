@@ -14,9 +14,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TaskApp\\TaskAppDesktop\\TaskAppDesktop.csproj",
-      "projectName": "TaskAppDesktop",
-      "projectPath": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TaskApp\\TaskAppDesktop\\TaskAppDesktop.csproj",
+      "projectUniqueName": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TaskApp\\TaskAppDesktop\\TicketAppDesktop.csproj",
+      "projectName": "TicketAppDesktop",
+      "projectPath": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TaskApp\\TaskAppDesktop\\TicketAppDesktop.csproj",
       "packagesPath": "C:\\Users\\swamp\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TaskApp\\TaskAppDesktop\\obj\\",
       "projectStyle": "PackageReference",

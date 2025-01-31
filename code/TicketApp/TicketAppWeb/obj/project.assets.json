@@ -14,9 +14,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TaskApp\\TaskAppWeb\\TaskAppWeb.csproj",
-      "projectName": "TaskAppWeb",
-      "projectPath": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TaskApp\\TaskAppWeb\\TaskAppWeb.csproj",
+      "projectUniqueName": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TaskApp\\TaskAppWeb\\TicketAppWeb.csproj",
+      "projectName": "TicketAppWeb",
+      "projectPath": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TaskApp\\TaskAppWeb\\TicketAppWeb.csproj",
       "packagesPath": "C:\\Users\\swamp\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TaskApp\\TaskAppWeb\\obj\\",
       "projectStyle": "PackageReference",
