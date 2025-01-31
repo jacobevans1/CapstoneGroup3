@@ -1,7 +1,0 @@
-C:\Users\swamp\Desktop\TaskApp\TaskAppWeb\obj\Debug\net8.0\TaskAppWeb.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\swamp\Desktop\TaskApp\TaskAppWeb\obj\Debug\net8.0\TaskAppWeb.AssemblyInfoInputs.cache
-C:\Users\swamp\Desktop\TaskApp\TaskAppWeb\obj\Debug\net8.0\TaskAppWeb.AssemblyInfo.cs
-C:\Users\swamp\Desktop\TaskApp\TaskAppWeb\obj\Debug\net8.0\TaskAppWeb.csproj.CoreCompileInputs.cache
-C:\Users\swamp\Desktop\TaskApp\TaskAppWeb\obj\Debug\net8.0\TaskAppWeb.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\swamp\Desktop\TaskApp\TaskAppWeb\obj\Debug\net8.0\TaskAppWeb.RazorAssemblyInfo.cache
-C:\Users\swamp\Desktop\TaskApp\TaskAppWeb\obj\Debug\net8.0\TaskAppWeb.RazorAssemblyInfo.cs
