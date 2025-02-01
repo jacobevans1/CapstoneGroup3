@@ -14,3 +14,20 @@ C:\Users\swamp\Desktop\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\refin
 C:\Users\swamp\Desktop\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.pdb
 C:\Users\swamp\Desktop\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.genruntimeconfig.cache
 C:\Users\swamp\Desktop\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\ref\TicketAppDesktop.dll
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\bin\Debug\net8.0-windows\TicketAppDesktop.exe
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\bin\Debug\net8.0-windows\TicketAppDesktop.deps.json
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\bin\Debug\net8.0-windows\TicketAppDesktop.runtimeconfig.json
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\bin\Debug\net8.0-windows\TicketAppDesktop.dll
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\bin\Debug\net8.0-windows\TicketAppDesktop.pdb
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.CalculatorForm.resources
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.csproj.GenerateResource.cache
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.GeneratedMSBuildEditorConfig.editorconfig
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.AssemblyInfoInputs.cache
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.AssemblyInfo.cs
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.csproj.CoreCompileInputs.cache
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.sourcelink.json
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.dll
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\refint\TicketAppDesktop.dll
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.pdb
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\TicketAppDesktop.genruntimeconfig.cache
+D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppDesktop\obj\Debug\net8.0-windows\ref\TicketAppDesktop.dll
