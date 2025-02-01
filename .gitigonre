@@ -1,0 +1,41 @@
+# Visual Studio specific
+.vs/
+*.suo
+*.user
+*.cache
+*.pdb
+*.opendb
+
+# Build outputs
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+# Packages
+packages/
+*.nupkg
+*.snupkg
+project.lock.json
+project.assets.json
+
+# Logs and temporary files
+*.log
+*.tlog
+*.tmp
+
+# Debug and release configurations
+Debug/
+Release/
+
+# IDE and editor settings
+.idea/
+*.code-workspace
+
+# User-specific files
+*.userprefs
+*.rsuser
+
+# Dependency directories
+node_modules/
