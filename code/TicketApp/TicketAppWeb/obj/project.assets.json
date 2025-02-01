@@ -2809,23 +2809,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\swamp\\.nuget\\packages\\": {},
+    "C:\\Users\\jabes\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\swamp\\Desktop\\TicketApp\\TicketAppWeb\\TicketAppWeb.csproj",
+      "projectUniqueName": "D:\\Spring 2025 Files\\CS 4682 Computing Capstone\\CapstoneGroup3\\code\\TicketApp\\TicketAppWeb\\TicketAppWeb.csproj",
       "projectName": "TicketAppWeb",
-      "projectPath": "C:\\Users\\swamp\\Desktop\\TicketApp\\TicketAppWeb\\TicketAppWeb.csproj",
-      "packagesPath": "C:\\Users\\swamp\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\swamp\\Desktop\\TicketApp\\TicketAppWeb\\obj\\",
+      "projectPath": "D:\\Spring 2025 Files\\CS 4682 Computing Capstone\\CapstoneGroup3\\code\\TicketApp\\TicketAppWeb\\TicketAppWeb.csproj",
+      "packagesPath": "C:\\Users\\jabes\\.nuget\\packages\\",
+      "outputPath": "D:\\Spring 2025 Files\\CS 4682 Computing Capstone\\CapstoneGroup3\\code\\TicketApp\\TicketAppWeb\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\swamp\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\jabes\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2886,7 +2886,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.200/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
