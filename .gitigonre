@@ -5,6 +5,7 @@
 *.cache
 *.pdb
 *.opendb
+*.config
 
 # Build outputs
 bin/
