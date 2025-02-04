@@ -9,8 +9,8 @@
 bin/
 obj/
 out/
-debug/
-release/
+**/Debug/
+**/Release/
 
 # Ignore NuGet packages
 *.nupkg
@@ -57,3 +57,7 @@ Migrations/
 
 # Ignore environment settings
 .env
+
+# Ignore AssemblyInfo and cache files
+**/AssemblyInfo.cs
+**/AssemblyInfoInputs.cache
