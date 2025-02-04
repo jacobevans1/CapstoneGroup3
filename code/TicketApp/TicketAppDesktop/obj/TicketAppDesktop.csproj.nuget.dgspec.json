@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Spring 2025 Files\\CS 4682 Computing Capstone\\CapstoneGroup3\\code\\TicketApp\\TicketAppDesktop\\TicketAppDesktop.csproj": {}
+    "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TicketApp\\TicketAppDesktop\\TicketAppDesktop.csproj": {}
   },
   "projects": {
-    "D:\\Spring 2025 Files\\CS 4682 Computing Capstone\\CapstoneGroup3\\code\\TicketApp\\TicketAppDesktop\\TicketAppDesktop.csproj": {
+    "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TicketApp\\TicketAppDesktop\\TicketAppDesktop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Spring 2025 Files\\CS 4682 Computing Capstone\\CapstoneGroup3\\code\\TicketApp\\TicketAppDesktop\\TicketAppDesktop.csproj",
+        "projectUniqueName": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TicketApp\\TicketAppDesktop\\TicketAppDesktop.csproj",
         "projectName": "TicketAppDesktop",
-        "projectPath": "D:\\Spring 2025 Files\\CS 4682 Computing Capstone\\CapstoneGroup3\\code\\TicketApp\\TicketAppDesktop\\TicketAppDesktop.csproj",
-        "packagesPath": "C:\\Users\\jabes\\.nuget\\packages\\",
-        "outputPath": "D:\\Spring 2025 Files\\CS 4682 Computing Capstone\\CapstoneGroup3\\code\\TicketApp\\TicketAppDesktop\\obj\\",
+        "projectPath": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TicketApp\\TicketAppDesktop\\TicketAppDesktop.csproj",
+        "packagesPath": "C:\\Users\\swamp\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\swamp\\Desktop\\CapstoneGroup3\\code\\TicketApp\\TicketAppDesktop\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\jabes\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\swamp\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -68,7 +68,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

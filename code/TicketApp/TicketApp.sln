@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketAppDesktop", "TicketA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketAppWeb", "TicketAppWeb\TicketAppWeb.csproj", "{3E8E3317-CF3F-4FFC-9BFF-D8862B493537}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTicketAppDesktop", "TestTicketAppDesktop\TestTicketAppDesktop.csproj", "{A3B782F5-E116-4A6E-BE77-415D618CB0FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestTicketAppDesktop", "TestTicketAppDesktop\TestTicketAppDesktop.csproj", "{A3B782F5-E116-4A6E-BE77-415D618CB0FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
