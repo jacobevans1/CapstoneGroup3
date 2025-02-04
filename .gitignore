@@ -45,6 +45,7 @@ $RECYCLE.BIN/
 build/
 bin/
 obj/
+/code/TicketApp/TicketAppWeb/obj/Debug
 
 # UWP specific
 AppPackages/
