@@ -3,12 +3,17 @@ namespace TicketAppDesktop.Models
 {
 	public class Calculation
 	{
-		public string id { get; set; }
-		public double result { get; set; }
+		public int Id { get; set; }
+		public double Value { get; set; }
 
-		public Calculation(double result)
+		public Calculation(double value)
 		{
-			this.result = result;
+			this.Value = value;
+		}
+		public Calculation(int id, double value)
+		{
+			this.Id = id;
+			this.Value = value;
 		}
 	}
 }

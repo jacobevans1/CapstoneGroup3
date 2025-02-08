@@ -25,7 +25,7 @@ namespace TicketAppWeb.Controllers
 		[HttpPost]
 		public IActionResult Index(double value)
 		{
-			if (value == 0)
+			if (value < 0)
 			{
 				ViewBag.FV = 0;
 				ModelState.AddModelError("Value", "Please enter a valid number.");

@@ -1,4 +1,6 @@
 ﻿
+using TicketAppDesktop.Data;
+
 namespace TicketAppDesktop.Models
 {
     public class CalculatorModel
@@ -10,12 +12,7 @@ namespace TicketAppDesktop.Models
         {
             if (b == 0) throw new DivideByZeroException("Cannot divide by zero.");
 
-            var result = a / b;
-
-            var calculation = new Calculation(result);
-            //send to db
-
-			return result;
+            return a / b;
         }
     }
 }

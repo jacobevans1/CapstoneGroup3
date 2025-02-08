@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using TicketAppDesktop.Data;
 using TicketAppDesktop.Models;
 
 namespace TicketAppDesktop.ViewModels
@@ -38,7 +39,18 @@ namespace TicketAppDesktop.ViewModels
             catch (DivideByZeroException) { Result = double.NaN; }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public void SendNumber()
+		{
+			var calculation = new Calculation(Result);
+			CalculatorDAL.SendNumber(calculation);
+		}
+
+        public List<Calculation> GetNumbers()
+		{
+			return CalculatorDAL.RetrieveAllNumbers();
+		}
+
+		public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null!)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
