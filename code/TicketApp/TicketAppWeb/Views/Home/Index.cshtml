@@ -1,30 +1,39 @@
-﻿@model TicketAppWeb.Models.FutureValueModel
+﻿@model List<TicketAppWeb.Models.Number>
 @{
-	ViewBag.Title = "Future Value Calculator";
+	ViewBag.Title = "Number Sender";
 }
-<h1>Future Value Calculator</h1>
+<h1>Number Sender</h1>
+
 <form asp-action="Index" method="post">
-	<div asp-validation-summary="All"></div>
+	<div asp-validation-summary="All" class="text-danger"></div>
 	<div>
-		<label asp-for="MonthlyInvestment">
-			Monthly Investment:
-		</label>
-		<input asp-for="MonthlyInvestment"/>
+		<label for="value">Number to send:</label>
+		<input type="number" name="value" class="form-control"/>
+		<span class="text-danger">@Html.ValidationMessage("Value")</span>
 	</div>
 	<div>
-		<label asp-for="YearlyInterestRate">
-			Yearly Interest Rate:
-		</label>
-		<input asp-for="YearlyInterestRate"/>
+		<label>Last Number Sent:</label>
+		<span>@ViewBag.FV</span>
 	</div>
-	<div>
-		<label asp-for="Years">Number of Years:</label>
-		<input asp-for="Years"/>
-	</div>
-	<div>
-		<label>Future Value:</label>
-		<input value="@ViewBag.FV.ToString("C2")" readonly>
-	</div>
-	<button type="submit">Calculate</button>
+	<button type="submit">Send</button>
 	<a asp-action="Index">Clear</a>
 </form>
+
+<h2>Submitted Numbers</h2>
+<table class="table">
+	<thead>
+	<tr>
+		<th>ID</th>
+		<th>Number</th>
+	</tr>
+	</thead>
+	<tbody>
+	@foreach (var number in Model)
+	{
+		<tr>
+			<td>@number.Id</td>
+			<td>@number.Value</td>
+		</tr>
+	}
+	</tbody>
+</table>
