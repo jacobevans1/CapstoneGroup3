@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<coverage line-rate="0.9309999999999999" branch-rate="0.7306999999999999" version="1.9" timestamp="1739066561" lines-covered="27" lines-valid="29" branches-covered="19" branches-valid="26">
+  <sources>
+    <source>D:\Spring 2025 Files\CS 4682 Computing Capstone\CapstoneGroup3\code\TicketApp\TicketAppWeb\</source>
+  </sources>
+  <packages>
+    <package name="TicketAppWeb" line-rate="0.9309999999999999" branch-rate="0.7306999999999999" complexity="30">
+      <classes>
+        <class name="AspNetCoreGeneratedDocument.Views_Home_Index/&lt;ExecuteAsync&gt;d__14" filename="Views\Home\Index.cshtml" line-rate="0" branch-rate="0" complexity="4">
+          <methods>
+            <method name="MoveNext" signature="()" line-rate="0" branch-rate="0" complexity="4">
+              <lines>
+                <line number="3" hits="0" branch="True" condition-coverage="0% (0/4)">
+                  <conditions>
+                    <condition number="34" type="jump" coverage="0%" />
+                    <condition number="555" type="jump" coverage="0%" />
+                  </conditions>
+                </line>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="3" hits="0" branch="True" condition-coverage="0% (0/4)">
+              <conditions>
+                <condition number="34" type="jump" coverage="0%" />
+                <condition number="555" type="jump" coverage="0%" />
+              </conditions>
+            </line>
+          </lines>
+        </class>
+        <class name="AspNetCoreGeneratedDocument.Views__ViewStart/&lt;ExecuteAsync&gt;d__0" filename="Views\_ViewStart.cshtml" line-rate="0" branch-rate="1" complexity="1">
+          <methods>
+            <method name="MoveNext" signature="()" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="2" hits="0" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="2" hits="0" branch="False" />
+          </lines>
+        </class>
+        <class name="TicketAppWeb.Models.FutureValueModel" filename="Models\FutureValueModel.cs" line-rate="1" branch-rate="0.7857" complexity="17">
+          <methods>
+            <method name="get_MonthlyInvestment" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="9" hits="364" branch="False" />
+              </lines>
+            </method>
+            <method name="get_YearlyInterestRate" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="13" hits="8" branch="False" />
+              </lines>
+            </method>
+            <method name="get_Years" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="17" hits="8" branch="False" />
+              </lines>
+            </method>
+            <method name="CalculateFutureValue" signature="()" line-rate="1" branch-rate="0.7857" complexity="14">
+              <lines>
+                <line number="20" hits="4" branch="False" />
+                <line number="21" hits="4" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="15" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="22" hits="4" branch="True" condition-coverage="100% (4/4)">
+                  <conditions>
+                    <condition number="69" type="jump" coverage="100%" />
+                    <condition number="120" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="23" hits="4" branch="False" />
+                <line number="24" hits="728" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="372" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="25" hits="360" branch="False" />
+                <line number="26" hits="360" branch="True" condition-coverage="50% (3/6)">
+                  <conditions>
+                    <condition number="198" type="jump" coverage="50%" />
+                    <condition number="251" type="jump" coverage="50%" />
+                    <condition number="301" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="27" hits="360" branch="False" />
+                <line number="28" hits="4" branch="False" />
+                <line number="29" hits="4" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="9" hits="364" branch="False" />
+            <line number="13" hits="8" branch="False" />
+            <line number="17" hits="8" branch="False" />
+            <line number="20" hits="4" branch="False" />
+            <line number="21" hits="4" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="15" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="22" hits="4" branch="True" condition-coverage="100% (4/4)">
+              <conditions>
+                <condition number="69" type="jump" coverage="100%" />
+                <condition number="120" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="23" hits="4" branch="False" />
+            <line number="24" hits="728" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="372" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="25" hits="360" branch="False" />
+            <line number="26" hits="360" branch="True" condition-coverage="50% (3/6)">
+              <conditions>
+                <condition number="198" type="jump" coverage="50%" />
+                <condition number="251" type="jump" coverage="50%" />
+                <condition number="301" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="27" hits="360" branch="False" />
+            <line number="28" hits="4" branch="False" />
+            <line number="29" hits="4" branch="False" />
+          </lines>
+        </class>
+        <class name="TaskAppWeb.Controllers.HomeController" filename="Controllers\HomeController.cs" line-rate="1" branch-rate="1" complexity="8">
+          <methods>
+            <method name="Index" signature="()" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="10" hits="1" branch="False" />
+                <line number="11" hits="1" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="6" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="12" hits="1" branch="False" />
+                <line number="13" hits="1" branch="False" />
+              </lines>
+            </method>
+            <method name="Index" signature="(TicketAppWeb.Models.FutureValueModel)" line-rate="1" branch-rate="1" complexity="6">
+              <lines>
+                <line number="16" hits="2" branch="False" />
+                <line number="17" hits="2" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="14" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="18" hits="1" branch="False" />
+                <line number="19" hits="1" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="22" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="20" hits="1" branch="False" />
+                <line number="22" hits="1" branch="False" />
+                <line number="23" hits="1" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="125" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="24" hits="1" branch="False" />
+                <line number="25" hits="2" branch="False" />
+                <line number="26" hits="2" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="10" hits="1" branch="False" />
+            <line number="11" hits="1" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="6" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="12" hits="1" branch="False" />
+            <line number="13" hits="1" branch="False" />
+            <line number="16" hits="2" branch="False" />
+            <line number="17" hits="2" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="14" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="18" hits="1" branch="False" />
+            <line number="19" hits="1" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="22" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="20" hits="1" branch="False" />
+            <line number="22" hits="1" branch="False" />
+            <line number="23" hits="1" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="125" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="24" hits="1" branch="False" />
+            <line number="25" hits="2" branch="False" />
+            <line number="26" hits="2" branch="False" />
+          </lines>
+        </class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

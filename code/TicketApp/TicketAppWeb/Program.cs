@@ -1,6 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace TicketAppWeb
 {
-	public class Program
+    [ExcludeFromCodeCoverage]
+    public class Program
 	{
 		public static void Main(string[] args)
 		{
