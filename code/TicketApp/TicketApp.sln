@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketAppWeb", "TicketAppWe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestTicketAppDesktop", "TestTicketAppDesktop\TestTicketAppDesktop.csproj", "{A3B782F5-E116-4A6E-BE77-415D618CB0FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTicketAppWeb", "TestTicketAppWeb\TestTicketAppWeb.csproj", "{E10D557D-D24E-4E44-B52E-AB5DBC454FAB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{61208096-0815-40C0-A6B3-C238C817DD93}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{A6B28DB5-4572-420B-A772-EF73B6D9532A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{400324AD-B8FA-4163-A82E-F87D51D22A53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +40,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A3B782F5-E116-4A6E-BE77-415D618CB0FC} = {400324AD-B8FA-4163-A82E-F87D51D22A53}
+		{A6B28DB5-4572-420B-A772-EF73B6D9532A} = {61208096-0815-40C0-A6B3-C238C817DD93}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2FB9CE61-2555-4266-B873-6F962EF87D38}
