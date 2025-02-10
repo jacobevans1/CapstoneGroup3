@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace TicketAppDesktop
 {
+	[ExcludeFromCodeCoverage]
 	internal static class Program
 	{
 		/// <summary>
