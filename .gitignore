@@ -19,8 +19,6 @@ project.lock.json
 project.assets.json
 
 # Ignore ASP.NET specific files
-appsettings.*.json
-appsettings.json
 node_modules/
 wwwroot/lib/
 wwwroot/css/
