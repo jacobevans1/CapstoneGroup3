@@ -18,26 +18,12 @@ packages/
 project.lock.json
 project.assets.json
 
-# Ignore ASP.NET specific files
-node_modules/
-wwwroot/lib/
-wwwroot/css/
-wwwroot/js/
-dist/
-publish/
-*.db
-
 # Ignore WinForms specific files
 *.exe
 *.dll
 *.pdb
 *.cache
 *.log
-
-# Ignore Entity Framework migrations
-Migrations/
-*.mdf
-*.ldf
 
 # Ignore Resharper and Rider
 *.DotSettings.user
