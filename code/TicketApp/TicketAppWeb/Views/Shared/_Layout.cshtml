@@ -1,13 +1,35 @@
-﻿<!DOCTYPE html>
+﻿
 
+<!DOCTYPE html>
 <html>
 <head>
 	<meta name="viewport" content="width=device-width" />
 	<title>@ViewBag.Title</title>
 	<link rel="stylesheet" href="~/css/site.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-<div>
-	@RenderBody()
-</div>
+	<nav>
+		<ul>
+			<li>
+				<a herf="#"></a>
+				<i class="fa-solid fa-user"></i>
+				<span class="nav-item">User Management</span>
+			</li>
+			<li>
+				<a herf="#"></a>
+				<i class="fa-solid fa-user-group"></i>
+				<span class="nav-item">Group Management</span>
+			</li>
+			<li>
+				<a herf="#"></a>
+				<i class="fa-solid fa-diagram-project"></i>
+				<span class="nav-item">Project Management</span>
+			</li>
+		</ul>
+	</nav>
+	<div>
+		@RenderBody()
+	</div>
 </body>
+</html>
