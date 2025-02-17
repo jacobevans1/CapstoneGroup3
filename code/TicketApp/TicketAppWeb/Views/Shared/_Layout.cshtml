@@ -1,35 +1,59 @@
-﻿
+﻿@using TicketAppWeb.Models;
+@{
+    var current = ViewContext.RouteData.Values["area"]?.ToString() ??
+                  ViewContext.RouteData.Values["controller"]!.ToString() ?? "";
+}
 
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="viewport" content="width=device-width" />
-	<title>@ViewBag.Title</title>
-	<link rel="stylesheet" href="~/css/site.css" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ticket App | @ViewBag.Title</title>
+    <link rel="stylesheet" type="text/css" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+          crossorigin="anonymous">
+    <link href="~/css/site.css" rel="stylesheet" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    @RenderSection("scripts", false)
 </head>
 <body>
-	<nav>
-		<ul>
-			<li>
-				<a herf="#"></a>
-				<i class="fa-solid fa-user"></i>
-				<span class="nav-item">User Management</span>
-			</li>
-			<li>
-				<a herf="#"></a>
-				<i class="fa-solid fa-user-group"></i>
-				<span class="nav-item">Group Management</span>
-			</li>
-			<li>
-				<a herf="#"></a>
-				<i class="fa-solid fa-diagram-project"></i>
-				<span class="nav-item">Project Management</span>
-			</li>
-		</ul>
-	</nav>
-	<div>
-		@RenderBody()
-	</div>
+    <nav>
+        <ul>
+            <li class="hamburger">
+                <a class="nav-link"
+                    asp-action="Index" asp-controller="Home" asp-area="">
+                    <i class="fas fa-bars"></i>
+                    <span class="nav-item">Ticket App</span>
+                </a>
+            </li>
+            <li>
+                <a class="nav-link @Nav.Active("Home", current)"
+                    asp-action="Index" asp-controller="Home" asp-area="">
+                    <i class="fas fa-user"></i>
+                    <span class="nav-item">User Management</span>
+                </a>
+            </li>
+            <li>
+                <a class="nav-link @Nav.Active("Group Management", current)"
+                    asp-action="" asp-controller="Home" asp-area="">
+                    <i class="fas fa-users"></i>
+                    <span class="nav-item">Group Management</span>
+                </a>
+            </li>
+            <li>
+                <a class="nav-link @Nav.Active("ProjectManagement", current)"
+                    asp-action="" asp-controller="Home" asp-area="">
+                    <i class="fas fa-project-diagram"></i>
+                    <span class="nav-item">Project Management</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <main>
+        @RenderBody();
+    </main>
 </body>
 </html>
