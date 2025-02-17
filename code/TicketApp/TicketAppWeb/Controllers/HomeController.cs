@@ -50,5 +50,17 @@ namespace TicketAppWeb.Controllers
 
             return View(numbersList);
         }
+
+        [HttpGet]
+        public IActionResult GroupManagement()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ProjectManagement()
+        {
+            return View();
+        }
     }
 }
