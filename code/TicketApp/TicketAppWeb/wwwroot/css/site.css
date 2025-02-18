@@ -1,22 +1,105 @@
-html {
-  font-size: 14px;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    outline: none;
+    border: none;
+    text-decoration: none;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+/* Color Variables */
+:root {
+    --navy-blue: #05445e;
+    --blue-grotto: #189ab4;
+    --blue-green: #75e6da;
+    --baby-blue: #d4f1f4;
 }
 
 body {
-  margin-bottom: 60px;
+    background: var(--baby-blue);
+    color: var(--navy-blue);
+    line-height: 1.5;
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100px;
+    background: var(--navy-blue);
+    overflow: hidden;
+    transition: width 0.5s ease;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+}
+
+.hamburger span {
+    font-weight: bold;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: var(--baby-blue);
+}
+
+a {
+    position: relative;
+    color: var(--blue-green);
+    font-size: 14px;
+    display: table;
+    width: 300px;
+    padding: 10px;
+}
+
+.fas {
+    position: relative;
+    width: 70px;
+    height: 40px;
+    top: 14px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.nav-item {
+    position: relative;
+    top: 12px;
+    margin-left: 10px;
+}
+
+a:hover {
+    background: var(--blue-grotto);
+    color: var(--navy-blue);
+}
+
+.nav-active {
+    background: var(--blue-green); /* Highlight color for active link */
+    color: var(--navy-blue);
+}
+
+nav:hover {
+    width: 280px;
+    transition: all 0.5s ease;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+main {
+    flex-grow: 1; /* Allow the main content to grow */
+    margin-left: 100px; /* Ensure initial margin aligns with nav width */
+    padding: 50px;
+    background: var(--baby-blue);
+    transition: margin-left 0.5s ease;
+}
+
+nav:hover ~ main {
+    margin-left: 280px; /* Adjust main margin when nav expands */
 }
