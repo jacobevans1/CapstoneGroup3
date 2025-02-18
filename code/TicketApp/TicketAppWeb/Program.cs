@@ -10,7 +10,7 @@ builder.Services.AddIdentity<TicketAppUser, IdentityRole>()
 	.AddEntityFrameworkStores<TicketAppContext>()
 	.AddDefaultTokenProviders();
 
-
+builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<TicketAppContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
