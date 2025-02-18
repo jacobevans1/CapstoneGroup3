@@ -1,38 +1,6 @@
-﻿@model List<TicketAppWeb.Models.Number>
-@{
-    ViewBag.Title = "Number Sender";
+﻿@{
+	ViewBag.Title = "User Management";
 }
-<h1>Number Sender</h1>
+<h1>User Management</h1>
 
-<form asp-action="UserManagement" method="post">
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <div>
-        <label for="value">Number to send:</label>
-        <input type="number" name="value" class="form-control" />
-    </div>
-    <div>
-        <label>Last Number Sent:</label>
-        <span>@ViewBag.FV</span>
-    </div>
-    <button type="submit">Send</button>
-    <a asp-action="UserManagement" class="btn btn-secondary">Clear</a>
-</form>
-
-<h2>Submitted Numbers</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Number</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var number in Model)
-        {
-            <tr>
-                <td>@number.Id</td>
-                <td>@number.Value</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<!-- Content for User Management -->
