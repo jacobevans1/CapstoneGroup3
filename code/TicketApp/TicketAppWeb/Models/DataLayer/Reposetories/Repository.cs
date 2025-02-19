@@ -6,8 +6,6 @@ namespace TicketAppWeb.Models.DataLayer.Reposetories;
 /// Jabesi Abwe
 /// 02/019/2025
 /// </summary>
-/// <typeparam name="T"></typeparam>
-/// <seealso cref="AbweVacationPlanner.Models.DataLayer.Repositories.IRepository&lt;T&gt;" />
 public class Repository<T> : IRepository<T> where T : class
 {
     protected TicketAppContext context { get; set; }

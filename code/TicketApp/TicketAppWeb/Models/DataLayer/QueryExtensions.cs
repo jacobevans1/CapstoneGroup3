@@ -7,14 +7,7 @@
 /// </summary>
 public static class QueryExtensions
 {
-    /// <summary>
-    /// The PageBy method pages a queryable collection.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items">The items.</param>
-    /// <param name="pagenumber">The pagenumber.</param>
-    /// <param name="pagesize">The pagesize.</param>
-    /// <returns></returns>
+    // The PageBy method pages a queryable collection.
     public static IQueryable<T> PageBy<T>(this IQueryable<T> items,
         int pagenumber, int pagesize)
     {

@@ -5,7 +5,6 @@
 /// Jabesi Abwe
 /// 02/019/2025
 /// </summary>
-/// <typeparam name="T"></typeparam>
 public interface IRepository<T> where T : class
 {
     IEnumerable<T> List(QueryOptions<T> options);

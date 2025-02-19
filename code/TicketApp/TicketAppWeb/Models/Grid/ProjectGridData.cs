@@ -5,7 +5,7 @@ using TicketAppWeb.Models.ExtensionMethods;
 namespace TicketAppWeb.Models.Grid;
 
 /// <summary>
-/// The VacationGridData class represents the data for the vacation grid.
+/// The ProjectGridData class represents the data for the project grid.
 /// Jabesi Abwe
 /// 02/19/2025
 /// </summary>

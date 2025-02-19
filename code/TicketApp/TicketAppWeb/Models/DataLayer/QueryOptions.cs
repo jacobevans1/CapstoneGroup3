@@ -7,7 +7,6 @@ namespace TicketAppWeb.Models.DataLayer;
 /// Jabesi Abwe
 /// 02/019/2025
 /// </summary>
-/// <typeparam name="T"></typeparam>
 public class QueryOptions<T>
 {
     // public properties for sorting, filtering, and paging
@@ -17,7 +16,7 @@ public class QueryOptions<T>
     public int PageNumber { get; set; }
     public int PageSize { get; set; }
 
-    /* Code for working with Include strings */
+    // Code for working with Include strings
     private string[] includes = Array.Empty<string>();
 
     // public write-only property for Include strings – accepts a string, converts it to
