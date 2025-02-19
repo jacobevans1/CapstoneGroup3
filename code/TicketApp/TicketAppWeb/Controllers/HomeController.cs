@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using TicketAppWeb.Models;
+using TicketAppWeb.Models.DataLayer;
 
 namespace TicketAppWeb.Controllers
 {
-	public class HomeController : Controller
+    public class HomeController : Controller
 	{
 		private readonly TicketAppContext _context;
 
@@ -14,24 +14,6 @@ namespace TicketAppWeb.Controllers
 
 		[HttpGet]
 		public IActionResult Index()
-		{
-			return View();
-		}
-
-		[HttpGet]
-		public IActionResult UserManagement()
-		{
-			return View();
-		}
-
-		[HttpGet]
-		public IActionResult GroupManagement()
-		{
-			return View();
-		}
-
-		[HttpGet]
-		public IActionResult ProjectManagement()
 		{
 			return View();
 		}

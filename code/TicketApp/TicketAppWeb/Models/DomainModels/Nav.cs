@@ -1,4 +1,4 @@
-﻿namespace TicketAppWeb.Models;
+﻿namespace TicketAppWeb.Models.DomainModels;
 
 public static class Nav
 {
