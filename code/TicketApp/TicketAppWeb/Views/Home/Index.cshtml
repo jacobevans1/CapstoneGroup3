@@ -1,5 +1,102 @@
 ﻿@{
-	ViewBag.Title = "";
+    ViewBag.Title = "Login";
 }
 
-<h2>Hello Guys!</h2>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+
+<style>
+    .login-container {
+        width: 600px;
+        padding: 30px;
+        background: white;
+        border: 2px solid #B39EB5;
+        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .ticket-app-title {
+        font-family: "Bubblegum Sans", cursive;
+        font-size: 72px;
+        color: #B39EB5;
+        text-align: center;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .title-divider {
+        width: 85%; 
+        height: 3px;
+        background-color: #B39EB5; 
+        margin: 0 auto 20px auto; 
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #B39EB5;
+    }
+
+    .form-control {
+        border: 2px solid #B39EB5;
+        color: #B39EB5;
+    }
+
+        .form-control::placeholder {
+            color: #B39EB5;
+        }
+
+        .form-control:focus {
+            border-color: #B39EB5;
+            box-shadow: none; 
+        }
+
+    .forgot-link {
+        font-size: 14px;
+        text-decoration: none;
+        color: #B39EB5;
+    }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+            background: none !important;
+            color: #B39EB5;
+        }
+
+    .btn-custom {
+        background-color: #B39EB5;
+        border: 2px solid #B39EB5;
+        padding: 10px;
+        font-size: 16px;
+        color: white;
+    }
+
+        .btn-custom:hover {
+            background-color: #9F86A6;
+            border-color: #9F86A6;
+            color: white;
+        }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="login-container">
+        <h3 class="ticket-app-title">Ticket App</h3>
+        <div class="title-divider"></div> 
+
+        <form asp-action="Login" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="Username" placeholder="Enter username" required>
+                <a href="#" class="forgot-link d-block mt-1">Forgot Username?</a>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="Password" placeholder="Enter password" required>
+                <a href="#" class="forgot-link d-block mt-1">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-custom w-100">Sign In</button>
+        </form>
+    </div>
+</div>
