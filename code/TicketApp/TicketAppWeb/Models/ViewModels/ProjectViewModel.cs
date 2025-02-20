@@ -12,16 +12,21 @@ public class ProjectViewModel
     // Gets or sets the project.
     public Project Project { get; set; } = new();
 
-    /// Gets or sets the groups.
-    public IEnumerable<Group> Groups { get; set; } = new List<Group>();
+    // Gets or sets the list of assigned groups for the project.
+    public IEnumerable<Group> AssignedGroups { get; set; } = new List<Group>();
 
-    // Gets or sets the selected activities.
-    public int[] SelectedGroups { get; set; } = Array.Empty<int>();
+    // Gets or sets the selected group IDs for project assignment.
+    public string?[] SelectedGroupIds { get; set; } = Array.Empty<string>();
 
-    // Gets or sets the the groups leads.
-    public IEnumerable<TicketAppUser> GroupLeads { get; set; } = new List<TicketAppUser>();
+    // Gets or sets the list of available groups.
+    public IEnumerable<Group> AvailableGroups { get; set; } = new List<Group>();
 
+    // Gets or sets the list of available group leads.
+    public IEnumerable<TicketAppUser> AvailableGroupLeads { get; set; } = new List<TicketAppUser>();
 
-    // Gets or sets the name of the project lead.
+    // Gets or sets the project lead's ID.
+    public string? ProjectLeadId { get; set; }
+
+    // Gets or sets the project lead's name.
     public string? ProjectLeadName { get; set; }
 }

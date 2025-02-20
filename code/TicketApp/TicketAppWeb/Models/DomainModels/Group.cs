@@ -7,25 +7,27 @@ public class Group
 {
     public Group()
     {
-        members = new HashSet<TicketAppUser>();
+        Members = new HashSet<TicketAppUser>();
+        Projects = new HashSet<Project>();
     }
 
-    public string? GroupId { get; set; }
+    public string? Id { get; set; }
 
-    [Required(ErrorMessage = "Please enter a gorup name")]
+    [Required(ErrorMessage = "Please enter a group name")]
     public string? GroupName { get; set; }
 
-    [Required(ErrorMessage = "Please enter a gorup description")]
-    public string? GroupDescription { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Please enter a group description")]
+    public string? Description { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Please select a gorup lead")]
-    public string? GroupLeadId { get; set; }
+    [Required(ErrorMessage = "Please select a group lead")]
+    public string? ManagerId { get; set; }
 
     [ValidateNever]
-    public TicketAppUser? GroupLead { get; set; }
+    public TicketAppUser? Manager { get; set; }
 
-    public DateTime CreatedOnDate { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-    public ICollection<TicketAppUser> members { get; set; }
+    public ICollection<TicketAppUser> Members { get; set; } 
+
+    public ICollection<Project> Projects { get; set; }
 }
-
