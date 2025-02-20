@@ -9,5 +9,12 @@ namespace TicketAppWeb.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public IActionResult CreateAccount()
+        {
+            return View(); 
+        }
+   
     }
 }
