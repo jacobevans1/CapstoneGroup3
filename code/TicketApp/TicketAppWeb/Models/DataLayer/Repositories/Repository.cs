@@ -39,10 +39,6 @@ public class Repository<T> : IRepository<T> where T : class
     private IQueryable<T> BuildQuery(QueryOptions<T> options)
     {
         IQueryable<T> query = dbset;
-        foreach (string include in options.GetIncludes())
-        {
-            query = query.Include(include);
-        }
         if (options.HasWhere)
         {
             query = query.Where(options.Where);

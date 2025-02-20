@@ -10,30 +10,40 @@ namespace TicketAppWeb.Models.DomainModels;
 /// </summary>
 public class Project
 {
+    // Constructor
     public Project()
     {
         Groups = new HashSet<Group>();
     }
 
+    // Project Id
     public string? Id { get; set; }
 
+    // Project name
     [Required(ErrorMessage = "Please enter a project name")]
     public string? ProjectName { get; set; }
 
+    // Project description
     [Required(ErrorMessage = "Please enter a project description")]
     public string? Description { get; set; } = string.Empty;
 
+    // Project Lead Id
     public string? LeadId { get; set; }
 
+    // Project lead
     [ValidateNever]
     public TicketAppUser? Lead { get; set; }
 
+    // The Id of the user who created the project
     public string? CreatedById { get; set; }
 
+    // The user who created the project
     [ValidateNever]
     public TicketAppUser? CreatedBy { get; set; } 
 
+    // Date the project was created
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+    // List of project groups
     public ICollection<Group> Groups { get; set; }
 }

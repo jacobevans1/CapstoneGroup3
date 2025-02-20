@@ -18,12 +18,4 @@ public class ProjectGridData : GridData
     [JsonIgnore]
     public bool IsSortByProjectLead =>
         SortField.EqualsNoCase(nameof(TicketAppUser));
-    [JsonIgnore]
-    public bool IsSortByCreatedBy =>
-        SortField.EqualsNoCase(nameof(TicketAppUser));
-
-    [JsonIgnore]
-    public bool IsSortByDateCreated =>
-        SortField.EqualsNoCase(nameof(Project.CreatedAt));
-
 }

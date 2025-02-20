@@ -1,0 +1,49 @@
+﻿/* ================= Project Management Styles ================= */
+
+h2 {
+    font-family: "Bubblegum Sans", cursive;
+    font-size: 50px;
+    color: #B39EB5;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+h5 {
+    font-family: "Bubblegum Sans", cursive;
+    font-size: 30px;
+    color: #B39EB5;
+}
+
+.title-divider {
+    width: 85%;
+    height: 3px;
+    background-color: #B39EB5;
+    margin: 0 auto 20px auto;
+}
+
+.modal-title {
+    text-align: center;
+    width: 100%;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #B39EB5;
+}
+
+.form-control {
+    border: 2px solid #B39EB5;
+    color: #B39EB5;
+}
+
+.form-control::placeholder {
+    color: #B39EB5;
+}
+
+.form-control:focus {
+    border-color: #B39EB5;
+    box-shadow: none;
+}
+
+.modal-content {
+    padding: 20px;
+}

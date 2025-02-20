@@ -1,54 +1,36 @@
-﻿using TicketAppWeb.Models.ExtensionMethods;
-using TicketAppWeb.Models.Grid;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using TicketAppWeb.Models.ExtensionMethods;
+using TicketAppWeb.Models.Grid;
 
 namespace TicketAppWeb.TagHelpers;
 
 /// <summary>
 /// The SortingLinkTagHelper class creates a link for sorting the grid.
 /// Jabesi Abwe
-/// 07/04/2024
+/// 02/20/2025
 /// </summary>
 [HtmlTargetElement("my-sorting-link")]
 public class SortingLinkTagHelper : TagHelper
 {
     private LinkGenerator linkBuilder;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SortingLinkTagHelper"/> class.
-    /// </summary>
-    /// <param name="lg">The lg.</param>
+    // Initializes a new instance of the SortingLinkTagHelper class.
     public SortingLinkTagHelper(LinkGenerator lg) => linkBuilder = lg;
 
-    /// <summary>
-    /// Gets or sets the view CTX.
-    /// </summary>
-    /// <value>
-    /// The view CTX.
-    /// </value>
+    // Gets or sets the view CTX.
     [ViewContext]
     [HtmlAttributeNotBound]
     public ViewContext ViewCtx { get; set; } = null!;
 
-    /// <summary>
-    /// Gets or sets the current.
-    /// </summary>
-    /// <value>
-    /// The current.
-    /// </value>
+    // Gets or sets the current.
     public GridData Current { get; set; } = null!;
 
-    /// <summary>
-    /// Gets or sets the sort field.
-    /// </summary>
-    /// <value>
-    /// The sort field.
-    /// </value>
-    public string SortField { get; set; } = string.Empty;
+    // Gets or sets the sort field.
+     public string SortField { get; set; } = string.Empty;
 
-    // Synchronously executes the Microsoft AspNetCore Razor TagHelpers with the given param
+    // Synchronously executes the Microsoft AspNetCore Razor TagHelpers TagHelper with the given param
     public override void Process(TagHelperContext context,
         TagHelperOutput output)
     {
