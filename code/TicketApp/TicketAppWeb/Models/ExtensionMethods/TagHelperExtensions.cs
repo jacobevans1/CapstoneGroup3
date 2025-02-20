@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace AbweVacationPlanner.Models.ExtensionMethods;
+namespace TicketAppWeb.Models.ExtensionMethods;
 
 /// <summary>
 /// The TagHelperExtensions class provides extension methods for TagHelper classes.
