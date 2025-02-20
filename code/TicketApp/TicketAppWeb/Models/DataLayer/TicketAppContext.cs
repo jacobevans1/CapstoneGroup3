@@ -51,4 +51,12 @@ namespace TicketAppWeb.Models.DataLayer
 			});
 		}
 	}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<Group> Groups { get; set; }
+    }
 }

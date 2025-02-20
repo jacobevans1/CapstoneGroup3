@@ -10,5 +10,5 @@ namespace TicketAppWeb.Models.DataLayer.Reposetories;
 public interface IProjectRepository : IRepository<Project>
 {
     // Adds the new project groups.
-    void AddNewProjectGroups(Project? project, int[] groupIds, IRepository<Group> groupData);
+    void AddNewProjectGroups(Project? project, string[] groupIds, IRepository<Group> groupData);
 }

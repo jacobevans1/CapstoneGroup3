@@ -6,12 +6,23 @@ using TicketAppWeb.Models.ViewModels;
 
 namespace TicketAppWeb.Controllers
 {
-    public class ProjectController(
-        IProjectRepository projectRepository,
-        IRepository<TicketAppUser> usersRepository,
-        IRepository<Group> groupsRepository)
-        : Controller
+    public class ProjectController : Controller
     {
+        private readonly IProjectRepository _projectRepository;
+        private readonly IRepository<TicketAppUser> _usersRepository;
+        private readonly IRepository<Group> _groupsRepository;
+
+        // Dedicated Constructor
+        public ProjectController(
+            IProjectRepository projectRepository,
+            IRepository<TicketAppUser> usersRepository,
+            IRepository<Group> groupsRepository)
+        {
+            _projectRepository = projectRepository;
+            _usersRepository = usersRepository;
+            _groupsRepository = groupsRepository;
+        }
+
         // GET: Project/Index
         public IActionResult Index()
         {
@@ -34,8 +45,10 @@ namespace TicketAppWeb.Controllers
         // GET: Project/SelectGroups
         public IActionResult SelectGroups()
         {
-            var viewModel = new ProjectViewModel();
-            viewModel.ProjectLeadId = TempData["LeadId"]?.ToString();
+            var viewModel = new ProjectViewModel
+            {
+                ProjectLeadId = TempData["LeadId"]?.ToString()
+            };
             LoadGroupsViewData(viewModel);
             return View(viewModel);
         }
@@ -53,23 +66,23 @@ namespace TicketAppWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                projectRepository.Insert(vm.Project);
-                projectRepository.Save();
+                _projectRepository.Insert(vm.Project);
+                _projectRepository.Save();
             }
 
             TempData["message"] = $"Project {vm.Project.ProjectName} added successfully.";
 
-            return Task.FromResult<IActionResult>(RedirectToAction("Index", "Home"));
+            return Task.FromResult<IActionResult>(RedirectToAction("Index", "Project"));
         }
 
         private void LoadIndexViewData(ProjectViewModel vm)
         {
-            vm.AvailableGroups = groupsRepository.List(new QueryOptions<Group>
+            vm.AvailableGroups = _groupsRepository.List(new QueryOptions<Group>
             {
                 OrderBy = g => g.GroupName ?? string.Empty
             });
 
-            vm.AvailableGroupLeads = usersRepository.List(new QueryOptions<TicketAppUser>
+            vm.AvailableGroupLeads = _usersRepository.List(new QueryOptions<TicketAppUser>
             {
                 OrderBy = u => u.LastName ?? string.Empty
             });
@@ -80,7 +93,7 @@ namespace TicketAppWeb.Controllers
             vm.SelectedGroupIds = vm.Project.Groups?.Select(
                 g => g.Id).ToArray() ?? Array.Empty<string>();
 
-            vm.AvailableGroups = groupsRepository.List(new QueryOptions<Group>
+            vm.AvailableGroups = _groupsRepository.List(new QueryOptions<Group>
             {
                 OrderBy = g => g.GroupName ?? string.Empty
             });

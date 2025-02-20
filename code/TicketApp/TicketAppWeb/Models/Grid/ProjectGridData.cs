@@ -12,7 +12,7 @@ namespace TicketAppWeb.Models.Grid;
 public class ProjectGridData : GridData
 {
     // set initial sort field in constructor
-    public ProjectGridData() => SortField = nameof(DomainModels.Project.ProjectName);
+    public ProjectGridData() => SortField = nameof(Project.ProjectName);
 
     // sort flags
     [JsonIgnore]
@@ -24,6 +24,6 @@ public class ProjectGridData : GridData
 
     [JsonIgnore]
     public bool IsSortByDateCreated =>
-        SortField.EqualsNoCase(nameof(DomainModels.Project.CreatedOnDate));
+        SortField.EqualsNoCase(nameof(Project.CreatedAt));
 
 }
