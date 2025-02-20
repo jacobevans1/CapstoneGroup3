@@ -1,0 +1,81 @@
+﻿/* ================= Login Page Styles ================= */
+
+.login-container {
+    width: 600px;
+    padding: 30px;
+    background: white;
+    border: 2px solid #B39EB5;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.ticket-app-title {
+    font-family: "Bubblegum Sans", cursive;
+    font-size: 72px;
+    color: #B39EB5;
+    text-align: center;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.title-divider {
+    width: 85%;
+    height: 3px;
+    background-color: #B39EB5;
+    margin: 0 auto 20px auto;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #B39EB5;
+}
+
+.form-control {
+    border: 2px solid #B39EB5;
+    color: #B39EB5;
+}
+
+    .form-control::placeholder {
+        color: #B39EB5;
+    }
+
+    .form-control:focus {
+        border-color: #B39EB5;
+        box-shadow: none;
+    }
+
+.forgot-link {
+    font-size: 14px;
+    text-decoration: none;
+    color: #B39EB5;
+}
+
+    .forgot-link:hover {
+        text-decoration: underline;
+        background: none !important;
+        color: #B39EB5;
+    }
+
+/* Sign In Button */
+.btn-custom {
+    background-color: #B39EB5;
+    border: 2px solid #B39EB5;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+}
+
+    .btn-custom:hover {
+        background-color: #9F86A6;
+        border-color: #9F86A6;
+        color: white;
+    }
+
+* {
+    margin: 0;
+    padding: 0;
+    outline: none;
+    border: none;
+    text-decoration: none;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}

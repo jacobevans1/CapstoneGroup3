@@ -20,8 +20,11 @@
     @RenderSection("scripts", false)
 </head>
 <body>
-    <nav>
-        <ul>
+    @* Hide Navbar on the Login Page *@
+    @if (currentController != "Home" || currentAction != "Index")
+    {
+        <nav>
+            <ul>
             <li class="hamburger">
                 <a class="nav-link"
                    asp-action="Index" asp-controller="Home" asp-area="">
@@ -52,6 +55,7 @@
             </li>
         </ul>
     </nav>
+    }
     <main>
         @RenderBody()
     </main>
