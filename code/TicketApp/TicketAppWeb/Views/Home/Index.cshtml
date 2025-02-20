@@ -1,41 +1,7 @@
 ﻿@{
-    ViewBag.Title = "Login";
+	ViewBag.Title = "Home";
 }
+<h1>Hello!</h1>
 
-<!-- Google Font for Bubblegum Sans -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+<!-- Content for Home -->
 
-<!-- Link to site.css -->
-<link href="~/css/index.css" rel="stylesheet" />
-
-@if (!string.IsNullOrEmpty(ViewBag.Error))
-{
-    <div class="alert alert-danger text-center">
-        @ViewBag.Error
-    </div>
-}
-
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="login-container">
-        <h3 class="ticket-app-title">Ticket App</h3>
-        <div class="title-divider"></div>
-
-        <form asp-action="Index" method="post">
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="Username" placeholder="Enter username" required>
-                <a href="#" class="forgot-link d-block mt-1">Forgot Username?</a>
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="Password" placeholder="Enter password" required>
-                <a href="#" class="forgot-link d-block mt-1">Forgot Password?</a>
-            </div>
-
-            <button type="submit" class="btn btn-custom w-100">Sign In</button>
-        </form>
-    </div>
-</div>
