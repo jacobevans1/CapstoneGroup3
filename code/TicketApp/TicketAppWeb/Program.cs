@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using TicketAppWeb.Models.Configuration;
 using TicketAppWeb.Models.DataLayer;
 using TicketAppWeb.Models.DomainModels;
 
@@ -14,7 +15,6 @@ builder.Services.AddDbContext<TicketAppContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-// Register Identity Services
 builder.Services.AddIdentity<TicketAppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
 	.AddEntityFrameworkStores<TicketAppContext>()
 	.AddDefaultTokenProviders();
@@ -37,7 +37,8 @@ builder.Services.Configure<IdentityOptions>(options =>
 	// User settings.
 	options.User.AllowedUserNameCharacters =
 		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-	options.User.RequireUniqueEmail = false;
+	options.User.RequireUniqueEmail = true;
+	options.SignIn.RequireConfirmedEmail = false;
 });
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -52,6 +53,14 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 var app = builder.Build();
+
+// Seed the Admin user
+var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+var userManager = services.GetRequiredService<UserManager<TicketAppUser>>();
+var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+SeedData.Initialize(services, userManager, roleManager).Wait();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
