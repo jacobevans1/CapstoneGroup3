@@ -49,11 +49,15 @@ namespace TicketAppWeb.Models.DataLayer
 				UserId = adminUser.Id,
 				RoleId = adminRole.Id,
 			});
-		}
-	}
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+
+			modelBuilder.Entity<Project>()
+			.HasMany(p => p.Groups)
+			.WithMany(g => g.Projects)
+			.UsingEntity<Dictionary<string, object>>(
+				"ProjectGroups",
+				j => j.HasOne<Group>().WithMany().HasForeignKey("GroupId"),
+				j => j.HasOne<Project>().WithMany().HasForeignKey("ProjectId")
+			);
         }
 
         public DbSet<Project> Projects { get; set; }
