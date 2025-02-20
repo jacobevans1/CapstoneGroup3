@@ -8,14 +8,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
 
 <!-- Link to site.css -->
-<link href="~/css/index.css" rel="stylesheet"/>
+<link href="~/css/index.css" rel="stylesheet" />
+
+@if (!string.IsNullOrEmpty(ViewBag.Error))
+{
+    <div class="alert alert-danger text-center">
+        @ViewBag.Error
+    </div>
+}
 
 <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="login-container">
         <h3 class="ticket-app-title">Ticket App</h3>
         <div class="title-divider"></div>
 
-        <form asp-action="Login" method="post">
+        <form asp-action="Index" method="post">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="Username" placeholder="Enter username" required>
