@@ -51,9 +51,21 @@ namespace TicketAppWeb.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1b1c2d3e-4f5g-678h-91ij-23456789ab5d",
+                            Id = "59c7b080-48e6-4019-bf80-a499b1a68383",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "ec624d57-7eff-494f-b1b0-f37e7b588bab",
+                            Name = "Manager",
+                            NormalizedName = "MANAGER"
+                        },
+                        new
+                        {
+                            Id = "b3da69e2-4abf-43f0-853f-172b5d303f2a",
+                            Name = "User",
+                            NormalizedName = "USER"
                         });
                 });
 
@@ -110,10 +122,12 @@ namespace TicketAppWeb.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -142,13 +156,6 @@ namespace TicketAppWeb.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "b74ddd14-6340-4840-95c2-db12554843e5",
-                            RoleId = "1b1c2d3e-4f5g-678h-91ij-23456789ab5d"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -157,10 +164,12 @@ namespace TicketAppWeb.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -319,26 +328,6 @@ namespace TicketAppWeb.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "b74ddd14-6340-4840-95c2-db12554843e5",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "93ba2f22-16e5-4753-99cc-6cab07467e79",
-                            Email = "admin@example.com",
-                            EmailConfirmed = true,
-                            FirstName = "System",
-                            LastName = "Administrator",
-                            LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@EXAMPLE.COM",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAECxosoODgz+v/No4ynkryfzVjdi9+zi6EzYlKJ91Vgn1SuRJYnpgNdZAcgZnXcEQMw==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "A1B2C3D4E5F6G7H8I9J0",
-                            TwoFactorEnabled = false,
-                            UserName = "admin"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
