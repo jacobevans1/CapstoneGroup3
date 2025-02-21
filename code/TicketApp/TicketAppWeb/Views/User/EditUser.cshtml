@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Create Account";
+    ViewBag.Title = "Edit User";
 }
 <!-- Google Font for Bubblegum Sans -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,9 +22,9 @@
         <h3 class="create-account-title">Ticket App</h3>
         <div class="create-account-divider"></div>
 
-        <h4 class="text-center">Sign Up</h4>
+        <h4 class="text-center">Edit User</h4>
 
-        <form asp-action="CreateAccount" asp-controller="User" method="post">
+        <form asp-action="EditUser" asp-controller="User" method="post">
             <!-- Name -->
             <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
@@ -56,7 +56,8 @@
             </div>
 
             <!-- Create Account Button -->
-            <button type="submit" class="btn btn-create-account w-100">Create Account</button>
+            <button type="submit" class="btn btn-create-account w-100">Save Changes</button>
         </form>
     </div>
 </div>
+

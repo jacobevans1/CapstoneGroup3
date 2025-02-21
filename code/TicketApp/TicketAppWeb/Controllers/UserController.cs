@@ -2,19 +2,30 @@
 
 namespace TicketAppWeb.Controllers
 {
-    public class UserController : Controller
-    {
-        [HttpGet]
-        public IActionResult UserManagement()
-        {
-            return View();
-        }
+	public class UserController : Controller
+	{
+		[HttpGet]
+		public IActionResult UserManagement()
+		{
+			return View();
+		}
 
-        [HttpGet]
-        public IActionResult CreateAccount()
-        {
-            return View(); 
-        }
-   
-    }
+		[HttpGet]
+		public IActionResult CreateUser()
+		{
+			return View();
+		}
+
+		[HttpGet]
+		public IActionResult EditUser(int id)
+		{
+			return View();
+		}
+
+		[HttpGet]
+		public IActionResult DeleteUser(int id)
+		{
+			return View();
+		}
+	}
 }
