@@ -1,4 +1,4 @@
-﻿namespace TicketAppWeb.Models.DomainModels;
+﻿namespace TicketAppWeb.Models.ViewModels;
 
 public static class Nav
 {
@@ -7,7 +7,6 @@ public static class Nav
     {
         return value == current ? "active" : "";
     }
-
 
     public static string Active(string value, string current)
     {

@@ -1,4 +1,4 @@
-﻿@using TicketAppWeb.Models.DomainModels;
+﻿@using TicketAppWeb.Models.ViewModels;
 @{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
@@ -48,7 +48,7 @@
             </li>
             <li>
                 <a class="nav-link @Nav.Active("ProjectManagement", currentAction)"
-                   asp-action="ProjectManagement" asp-controller="Project" asp-area="">
+                   asp-action="Index" asp-controller="Project" asp-area="">
                     <i class="fas fa-project-diagram"></i>
                     <span class="nav-item">Project Management</span>
                 </a>

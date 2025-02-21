@@ -11,6 +11,8 @@ namespace TicketAppWeb.Models.DataLayer
 
 		public DbSet<TicketAppUser> Users { get; set; }
 		public DbSet<IdentityRole> Roles { get; set; }
+		public DbSet<Project> Projects { get; set; }
+		public DbSet<Group> Groups { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

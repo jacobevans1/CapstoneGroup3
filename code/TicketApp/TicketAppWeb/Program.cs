@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.Configuration;
 using TicketAppWeb.Models.DataLayer;
+using TicketAppWeb.Models.DataLayer.Reposetories;
 using TicketAppWeb.Models.DomainModels;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,6 +53,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.SlidingExpiration = true;
 });
 
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>(); // Register the Project Repository
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
 var app = builder.Build();
 
 // Seed the Admin user
@@ -81,7 +85,10 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.MapControllerRoute(
+	name: "page_sort",
+	pattern: "{controller}/{action}/page/{pagenumber}/size/{pagesize}/sort/{sortfield}/{sortdirection}");
+app.MapControllerRoute(
 	name: "default",
-	pattern: "{controller=Login}/{action=Login}/{id?}");
+	pattern: "{controller=Home}/{action=Index}/{id?}/{slug?}");
 
 app.Run();
