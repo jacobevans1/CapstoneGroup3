@@ -1,17 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
-using TicketAppWeb.Models.DataLayer;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace TicketAppWeb.Controllers
 {
-    public class HomeController : Controller
+	public class HomeController : Controller
 	{
-		private readonly TicketAppContext _context;
-
-		public HomeController(TicketAppContext context)
-		{
-			_context = context;
-		}
-
 		[HttpGet]
 		public IActionResult Index()
 		{
