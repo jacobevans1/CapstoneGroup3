@@ -46,3 +46,10 @@ project.assets.json
 **/AssemblyInfo.cs
 **/AssemblyInfoInputs.cache
 code/TicketApp/tools/.store/dotnet-reportgenerator-globaltool/5.4.3/dotnet-reportgenerator-globaltool/5.4.3/tools/net8.0/any/appsettings.json
+
+# Ignore SQL Server log files
+*.ldf
+*.mdf.lock
+
+# User Secrets files
+UserSecrets/
