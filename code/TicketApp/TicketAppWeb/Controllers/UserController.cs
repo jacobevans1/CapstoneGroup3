@@ -5,7 +5,7 @@ namespace TicketAppWeb.Controllers
 	public class UserController : Controller
 	{
 		[HttpGet]
-		public IActionResult UserManagement()
+		public IActionResult Index()
 		{
 			return View();
 		}

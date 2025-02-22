@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketAppWeb.Models.DataLayer;
-using TicketAppWeb.Models.DataLayer.Reposetories;
+using TicketAppWeb.Models.DataLayer.Repositories;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
 using TicketAppWeb.Models.ViewModels;
@@ -22,7 +22,7 @@ public class ProjectController : Controller
 	public ProjectController(
 		IProjectRepository projectRepository,
 		IRepository<TicketAppUser> usersRepository,
-		IRepository<Group> groupsRepository)
+		IGroupRepository groupsRepository)
 	{
 		_projectRepository = projectRepository;
 		_usersRepository = usersRepository;
