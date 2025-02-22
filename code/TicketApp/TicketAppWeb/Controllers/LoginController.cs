@@ -40,7 +40,7 @@ namespace TicketAppWeb.Controllers
 			var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: false);
 			if (result.Succeeded)
 			{
-				return RedirectToAction("ProjectManagement", "Project");
+				return RedirectToAction("Index", "Home");
 			}
 			else
 			{
