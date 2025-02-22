@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketAppWeb.Models.DataLayer;
-using TicketAppWeb.Models.DataLayer.Repositories;
+using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
 using TicketAppWeb.Models.ViewModels;

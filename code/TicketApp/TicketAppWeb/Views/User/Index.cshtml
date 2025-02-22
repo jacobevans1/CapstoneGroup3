@@ -20,32 +20,3 @@
 }
 
 <a asp-action="CreateUser" class="btn btn-primary mb-3">Add User</a>
-
-<table class="table table-bordered">
-	<thead class="table-dark">
-	<tr>
-		<th>ID</th>
-		<th>Username</th>
-		<th>Email</th>
-		<th>Full Name</th>
-		<th>Role</th>
-		<th>Status</th>
-		<th>Actions</th>
-	</tr>
-	</thead>
-	<tbody>
-	@foreach (var user in @Model.Users)
-	{
-		<tr>
-			<td>@user.Id</td>
-			<td>@user.UserName</td>
-			<td>@user.Email</td>
-			<td>@user.FirstName @user.LastName</td>
-			<td>
-				<a asp-action="EditUser" asp-route-id="@user.Id" class="btn btn-warning btn-sm">Edit</a>
-				<a asp-action="DeleteUser" asp-route-id="@user.Id" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</a>
-			</td>
-		</tr>
-	}
-	</tbody>
-</table>

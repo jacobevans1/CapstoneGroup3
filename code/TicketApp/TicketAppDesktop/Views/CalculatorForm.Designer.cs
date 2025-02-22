@@ -1,4 +1,4 @@
-﻿namespace TicketAppDesktop
+﻿namespace TicketAppDesktop.Views
 {
 	partial class CalculatorForm
 	{

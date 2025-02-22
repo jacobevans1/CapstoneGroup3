@@ -2,12 +2,12 @@
 
 namespace TicketAppWeb.Controllers
 {
-    public class GroupController : Controller
-    {
-        [HttpGet]
-        public IActionResult GroupManagement() 
-        { 
-            return View(); 
-        }
-    }
+	public class GroupController : Controller
+	{
+		[HttpGet]
+		public IActionResult Index()
+		{
+			return View();
+		}
+	}
 }

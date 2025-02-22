@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.Configuration;
 using TicketAppWeb.Models.DataLayer;
-using TicketAppWeb.Models.DataLayer.Reposetories;
+using TicketAppWeb.Models.DataLayer.Repositories;
+using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,7 +54,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.SlidingExpiration = true;
 });
 
-builder.Services.AddScoped<IProjectRepository, ProjectRepository>(); // Register the Project Repository
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 var app = builder.Build();
@@ -89,6 +91,6 @@ app.MapControllerRoute(
 	pattern: "{controller}/{action}/page/{pagenumber}/size/{pagesize}/sort/{sortfield}/{sortdirection}");
 app.MapControllerRoute(
 	name: "default",
-	pattern: "{controller=Login}/{action=Login}/{id?}/{slug?}");
+	pattern: "{controller=Login}/{action=Index}/{id?}/{slug?}");
 
 app.Run();
