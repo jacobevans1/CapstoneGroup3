@@ -18,5 +18,11 @@ namespace TicketAppWeb.Models.DataLayer
 		{
 			base.OnModelCreating(modelBuilder);
 		}
+
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		{
+			optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=TicketAppDB;Trusted_Connection=True;MultipleActiveResultSets=true");
+		}
+
 	}
 }
