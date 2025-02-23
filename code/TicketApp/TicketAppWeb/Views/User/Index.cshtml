@@ -19,4 +19,72 @@
 	</div>
 }
 
-<a asp-action="CreateUser" class="btn btn-primary mb-3">Add User</a>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center">User Management</h2>
+            <div class="title-divider"></div>
+            <br />
+            <br />
+            <br />
+
+            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">Add User</button>
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+	                <th scope="col">
+		                <my-sorting-link sort-field="@nameof(TicketAppUser.FirstName)"
+		                                 current="@Model.CurrentRoute">First Name</my-sorting-link>
+	                </th>
+	                <th scope="col">
+		                <my-sorting-link sort-field="@nameof(TicketAppUser.LastName)"
+		                                 current="@Model.CurrentRoute">Last Name</my-sorting-link>
+	                </th>
+                </tr>
+                </thead>
+                <tbody>
+                    @foreach (TicketAppUser user in Model.Users)
+                    {
+                        <tr>
+                            <td>@user.FirstName</td>
+                            <td>@user.LastName</td>
+                            <td>
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editProjectModal">Edit</button>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProjectModal">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            @{
+                for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <my-paging-link number="@i" current="@Model.CurrentRoute" />
+                }
+            }
+        </div>
+        <div class="col-8">
+            <form asp-action="PageSizes" method="post" class="mb-2 mt-2">
+                <div class="row">
+                    <label asp-for="CurrentRoute.PageSize" class="col-auto">Page sizes</label>
+                    <div class="col-auto">
+                        <select asp-for="CurrentRoute.PageSize" class="form-select"
+                                asp-items="@(new SelectList(Model.PageSizes))">
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Apply</button>
+                    </div>
+                    <asp type="hidden" asp-for="CurrentRoute.PageNumber" />
+                    <asp type="hidden" asp-for="CurrentRoute.SortField" />
+                    <asp type="hidden" asp-for="CurrentRoute.SortDirection" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
