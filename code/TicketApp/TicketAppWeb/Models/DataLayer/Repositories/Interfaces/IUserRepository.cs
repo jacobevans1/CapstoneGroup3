@@ -1,4 +1,5 @@
-﻿using TicketAppWeb.Models.DomainModels;
+﻿using Microsoft.AspNetCore.Identity;
+using TicketAppWeb.Models.DomainModels;
 
 namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 {
@@ -9,6 +10,8 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 	/// </summary>
 	public interface IUserRepository : IRepository<TicketAppUser>
 	{
-		Task<Dictionary<TicketAppUser, string>> GetUsersAndRoleAsync();
+		new Task CreateUser(TicketAppUser user, IdentityRole role);
+		Task<IEnumerable<IdentityRole>> GetRolesAsync();
+		Task<Dictionary<TicketAppUser, string>> GetUserRolesAsync();
 	}
 }

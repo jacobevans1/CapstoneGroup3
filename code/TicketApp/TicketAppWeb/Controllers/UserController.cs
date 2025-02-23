@@ -27,17 +27,44 @@ namespace TicketAppWeb.Controllers
 		[HttpGet]
 		public IActionResult CreateUser()
 		{
+			var viewModel = new UserViewModel();
 			return View();
 		}
 
+		[HttpPost]
+		public async Task<IActionResult> CreateUser(UserViewModel vm)
+		{
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					await _usersRepository.CreateUser(vm.User, vm.SelectedRole);
+					_usersRepository.Save();
+				}
+				catch (Exception e)
+				{
+					TempData["ErrorMessage"] = $"Sorry, {e.Message}";
+					return RedirectToAction("Index", "User");
+				}
+
+				TempData["SuccessMessage"] = $"{vm.User.FullName}'s account added successfully.";
+			}
+			else
+			{
+				TempData["ErrorMessage"] = $"Sorry, user creation failed.";
+			}
+
+			return RedirectToAction("Index", "User");
+		}
+
 		[HttpGet]
-		public IActionResult EditUser(int id)
+		public IActionResult EditUser(string id)
 		{
 			return View();
 		}
 
 		[HttpGet]
-		public IActionResult DeleteUser(int id)
+		public IActionResult DeleteUser(string id)
 		{
 			return View();
 		}
@@ -55,7 +82,8 @@ namespace TicketAppWeb.Controllers
 				OrderBy = u => u.LastName ?? string.Empty
 			});
 
-			vm.UserRoles = _usersRepository.GetUsersAndRoleAsync().Result;
+			vm.Roles = _usersRepository.GetRolesAsync().Result;
+			vm.UserRoles = _usersRepository.GetUserRolesAsync().Result;
 		}
 	}
 }

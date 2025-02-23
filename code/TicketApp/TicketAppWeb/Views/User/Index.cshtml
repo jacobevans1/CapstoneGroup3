@@ -12,13 +12,28 @@
 <!-- Link to site.css -->
 <link href="~/css/projectmanagement.css" rel="stylesheet" />
 
-<!-- Display error messages if any -->
-@if (!string.IsNullOrEmpty(ViewBag.Error))
+<!-- TempData variables -->
+@{
+	var successMessage = TempData["SuccessMessage"] as string;
+	var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+<!-- Display success messages if any -->
+@if (!string.IsNullOrEmpty(successMessage))
 {
-	<div class="alert alert-danger text-center">
-		@ViewBag.Error
+	<div class="alert alert-success">
+		@successMessage
 	</div>
 }
+
+<!-- Display error messages if any -->
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+	<div class="alert alert-danger">
+		@errorMessage
+	</div>
+}
+
 
 <div class="container">
     <div class="row">
@@ -93,4 +108,48 @@
             </form>
         </div>
     </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addUserModalLabel">Create User</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form asp-action="CreateUser" asp-controller="User" method="post">
+				<div class="modal-body">
+					<!-- First Name -->
+					<div class="mb-3">
+						<label for="firstName" class="form-label">First Name</label>
+						<input type="text" class="form-control" id="firstName" asp-for="@Model.User.FirstName" placeholder="Enter first name" required>
+					</div>
+                    
+					<!-- Last Name -->
+					<div class="mb-3">
+						<label for="lastName" class="form-label">Last Name</label>
+						<input type="text" class="form-control" id="lastName" asp-for="@Model.User.LastName" placeholder="Enter last name" required>
+					</div>
+                    
+					<!-- Role -->
+					<div class="mb-3">
+						<label for="role" class="form-label">Role</label>
+						<select id="role" asp-for="@Model.SelectedRole.Name" class="form-select">
+							<option value="">Select a role</option>
+							@foreach (var role in Model.Roles)
+							{
+								<option value="@role.Id">@role.Name</option>
+							}
+						</select>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary">Create Account</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
 </div>
