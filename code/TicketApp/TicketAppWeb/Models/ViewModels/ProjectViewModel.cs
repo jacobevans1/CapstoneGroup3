@@ -19,7 +19,7 @@ public class ProjectViewModel
     // Gets or sets the selected group IDs for project assignment.
     public string?[] SelectedGroupIds { get; set; } = Array.Empty<string>();
 
-    // Gets or sets the list of available groups.
+    // Gets or sets the list of available groupss
     public IEnumerable<Group> AvailableGroups { get; set; } = new List<Group>();
 
     // Gets or sets the list of available group leads.
