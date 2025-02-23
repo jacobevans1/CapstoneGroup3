@@ -38,6 +38,34 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			}
 		}
 
+		public async Task UpdateUser(TicketAppUser user, IdentityRole role)
+		{
+			if (checkIfUserExists(user))
+			{
+				var trackedUser = context.Entry(user);
+				if (trackedUser.State == EntityState.Detached)
+				{
+					context.Attach(user);
+				}
+				else
+				{
+					trackedUser.State = EntityState.Detached;
+				}
+
+				await _userManager.UpdateAsync(user);
+
+				var roles = await _userManager.GetRolesAsync(user);
+
+				if (roles.Count > 0)
+				{
+					await _userManager.RemoveFromRolesAsync(user, roles);
+				}
+
+				await _userManager.AddToRoleAsync(user, role.Name);
+			}
+		}
+
+
 		public async Task<IEnumerable<IdentityRole>> GetRolesAsync()
 		{
 			return await context.Roles.ToListAsync();

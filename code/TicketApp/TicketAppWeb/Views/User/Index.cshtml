@@ -71,7 +71,7 @@
 	                        <td>@user.Email</td>
 							<td>@Model.UserRoles[user]</td>
                             <td>
-	                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
+	                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="@user.Id">Edit</button>
 	                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</button>
                             </td>
                         </tr>
@@ -135,8 +135,7 @@
 					<!-- Role -->
 					<div class="mb-3">
 						<label for="createRole" class="form-label">Role</label>
-						<select id="createRole" asp-for="@Model.SelectedRole.Name" class="form-select">
-							<option value="">Select a role</option>
+						<select id="createRole" asp-for="@Model.SelectedRole.Name" class="form-select" required>
 							@foreach (var role in Model.Roles)
 							{
 								<option value="@role.Id">@role.Name</option>
@@ -159,16 +158,15 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="editUserModallLabel">Edit User</h5>
+				<h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<form asp-action="EditUser" asp-controller="User" method="post">
 				<div class="modal-body">
-
 					<!-- First Name -->
 					<div class="mb-3">
-						<label for="editfirstName" class="form-label">First Name</label>
-						<input type="text" class="form-control" id="editfirstName" asp-for="@Model.User.FirstName" required>
+						<label for="editFirstName" class="form-label">First Name</label>
+						<input type="text" class="form-control" id="editFirstName" asp-for="@Model.User.FirstName" required>
 					</div>
 
 					<!-- Last Name -->
@@ -192,8 +190,7 @@
 					<!-- Role -->
 					<div class="mb-3">
 						<label for="editRole" class="form-label">Role</label>
-						<select id="editRole" asp-for="@Model.SelectedRole.Name" class="form-select">
-							<option value="">Select a role</option>
+						<select id="editRole" asp-for="@Model.SelectedRole.Name" class="form-select" required>
 							@foreach (var role in Model.Roles)
 							{
 								<option value="@role.Id">@role.Name</option>
@@ -210,3 +207,29 @@
 		</div>
 	</div>
 </div>
+
+
+<script>
+	$('#editUserModal').on('show.bs.modal', function (event) {
+		var button = $(event.relatedTarget);
+		var userId = button.data('user-id');
+
+		$.ajax({
+			url: '@Url.Action("GetUserData", "User")',
+			method: 'GET',
+			data: { id: userId },
+			success: function (data) {
+				
+				$('#editFirstName').val(data.firstName);
+				$('#editLastName').val(data.lastName);
+				$('#editEmail').val(data.email);
+				$('#editPhone').val(data.phoneNumber);
+				$('#editRole').val(data.roleId);
+			},
+			error: function (err) {
+				console.error('Error fetching user data:', err);
+			}
+		});
+	});
+</script>
+

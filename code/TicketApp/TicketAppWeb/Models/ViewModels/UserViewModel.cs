@@ -9,9 +9,6 @@ namespace TicketAppWeb.Models.ViewModels
 		// Gets or sets the user.
 		public TicketAppUser User { get; set; } = new();
 
-		// Gets or sets the selected user for editing.
-		public TicketAppUser? SelectedUser { get; set; }
-
 		// Gets or sets the selected role.
 		public IdentityRole? SelectedRole { get; set; }
 

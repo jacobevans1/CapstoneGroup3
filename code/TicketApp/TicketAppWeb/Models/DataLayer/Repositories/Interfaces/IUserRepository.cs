@@ -11,6 +11,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 	public interface IUserRepository : IRepository<TicketAppUser>
 	{
 		new Task CreateUser(TicketAppUser user, IdentityRole role);
+		new Task UpdateUser(TicketAppUser user, IdentityRole role);
 		Task<IEnumerable<IdentityRole>> GetRolesAsync();
 		Task<Dictionary<TicketAppUser, string>> GetUserRolesAsync();
 	}
