@@ -50,7 +50,7 @@ code/TicketApp/tools/.store/dotnet-reportgenerator-globaltool/5.4.3/dotnet-repor
 # Ignore SQL Server log files
 *.ldf
 *.mdf.lock
+code/Database/TicketAppDB.mdf
 
 # User Secrets files
 UserSecrets/
-code/Database/TicketAppDB.mdf
