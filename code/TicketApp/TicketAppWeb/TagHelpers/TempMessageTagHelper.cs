@@ -18,11 +18,12 @@ public class TempMessageTagHelper : TagHelper
     [HtmlAttributeNotBound]
     public ViewContext ViewCtx { get; set; } = null!;
 
-    // Synchronously executes the Microsoft AspNetCore Razor TagHelpers with the given param
-    public override void Process(TagHelperContext context,
-        TagHelperOutput output)
+    public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var td = ViewCtx.TempData;
+
+        output.TagName = "h4";
+
         if (td.ContainsKey("message"))
         {
             output.BuildTag("h4", "bg-info text-center text-white p-2");
@@ -35,6 +36,7 @@ public class TempMessageTagHelper : TagHelper
         }
         else
         {
+            output.Content.SetContent(string.Empty);
             output.SuppressOutput();
         }
     }

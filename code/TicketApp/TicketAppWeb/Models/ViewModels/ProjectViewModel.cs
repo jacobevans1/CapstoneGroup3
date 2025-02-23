@@ -28,9 +28,6 @@ public class ProjectViewModel
     // Gets or sets the project lead's ID.
     public string? ProjectLeadId { get; set; }
 
-    // Gets or sets the project lead's name.
-    public string? ProjectLeadName { get; set; }
-
     // Gets or sets the projects.
     public IEnumerable<Project> Projects { get; set; } = new List<Project>();
 
@@ -45,7 +42,4 @@ public class ProjectViewModel
 
     // Gets or sets the selected page size.
     public int SelectedPageSize { get; set; } = 10;
-
-    // Gets or sets the search query (if filtering is applied).
-    public string? SearchTerm { get; set; }
 }
