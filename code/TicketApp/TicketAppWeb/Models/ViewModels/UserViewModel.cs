@@ -1,4 +1,5 @@
-﻿using TicketAppWeb.Models.DomainModels;
+﻿using Microsoft.AspNetCore.Identity;
+using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
 
 namespace TicketAppWeb.Models.ViewModels
@@ -8,11 +9,17 @@ namespace TicketAppWeb.Models.ViewModels
 		// Gets or sets the user.
 		public TicketAppUser User { get; set; } = new();
 
-		// Gets or sets the selected user ID.
-		public string? SelectedUserId { get; set; }
+		// Gets or sets the selected role.
+		public IdentityRole? SelectedRole { get; set; }
 
 		// Gets or sets the users.
 		public IEnumerable<TicketAppUser> Users { get; set; } = new List<TicketAppUser>();
+
+		// Stores the roles of the users.
+		public Dictionary<TicketAppUser, string> UserRoles { get; set; } = new Dictionary<TicketAppUser, string>();
+
+		// Gets or sets the roles.
+		public IEnumerable<IdentityRole> Roles { get; set; } = new List<IdentityRole>();
 
 		// Gets or sets the current route (contains filtering/sorting information).
 		public UserGridData CurrentRoute { get; set; } = new UserGridData();

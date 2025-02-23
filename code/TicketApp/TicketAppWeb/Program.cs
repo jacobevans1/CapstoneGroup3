@@ -8,8 +8,6 @@ using TicketAppWeb.Models.DomainModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddUserSecrets<Program>();
-
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -56,6 +54,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.SlidingExpiration = true;
 });
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -69,7 +68,7 @@ var userManager = services.GetRequiredService<UserManager<TicketAppUser>>();
 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
 SeedData.Initialize(services, userManager, roleManager).Wait();
-//SeedData.AddUsers(services, userManager, roleManager).Wait();
+SeedData.AddUsers(services, userManager, roleManager).Wait();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -40,7 +40,6 @@ namespace TicketAppWeb.Models.Configuration
 
 		public static async Task AddUsers(IServiceProvider serviceProvider, UserManager<TicketAppUser> userManager, RoleManager<IdentityRole> roleManager)
 		{
-			// Add other users here
 		}
 	}
 }

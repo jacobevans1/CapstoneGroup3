@@ -9,16 +9,13 @@ namespace TicketAppWeb.Controllers
 {
 	public class UserController : Controller
 	{
+		private readonly IUserRepository _usersRepository;
+		private static string selectedUserId;
+		private static string selectedUsername;
 
-		private readonly IRepository<TicketAppUser> _usersRepository;
-		private readonly IRepository<Group> _groupsRepository;
-
-		public UserController(
-			IRepository<TicketAppUser> usersRepository,
-			IGroupRepository groupsRepository)
+		public UserController(IUserRepository usersRepository)
 		{
 			_usersRepository = usersRepository;
-			_groupsRepository = groupsRepository;
 		}
 
 		[HttpGet]
@@ -35,14 +32,89 @@ namespace TicketAppWeb.Controllers
 			return View();
 		}
 
-		[HttpGet]
-		public IActionResult EditUser(int id)
+		[HttpPost]
+		public async Task<IActionResult> CreateUser(UserViewModel vm)
 		{
-			return View();
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					await _usersRepository.CreateUser(vm.User, vm.SelectedRole);
+					_usersRepository.Save();
+				}
+				catch (Exception e)
+				{
+					TempData["ErrorMessage"] = $"Sorry, {e.Message}";
+					return RedirectToAction("Index", "User");
+				}
+
+				TempData["SuccessMessage"] = $"{vm.User.FullName}'s account added successfully.";
+			}
+			else
+			{
+				TempData["ErrorMessage"] = $"Sorry, user creation failed.";
+			}
+
+			return RedirectToAction("Index", "User");
 		}
 
 		[HttpGet]
-		public IActionResult DeleteUser(int id)
+		public IActionResult GetUserData(string id)
+		{
+			var user = _usersRepository.Get(id);
+
+			if (user == null)
+			{
+				TempData["ErrorMessage"] = "Sorry, user not found.";
+				return RedirectToAction("Index", "User");
+			}
+
+			selectedUserId = id;
+			selectedUsername = user.FirstName + user.LastName;
+
+			var userData = new
+			{
+				firstName = user.FirstName,
+				lastName = user.LastName,
+				email = user.Email,
+				phoneNumber = user.PhoneNumber,
+				roleId = _usersRepository.GetUserRolesAsync().Result[user]
+			};
+
+			return Json(userData);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> EditUser(UserViewModel vm)
+		{
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					vm.User.Id = selectedUserId;
+					vm.User.UserName = selectedUsername;
+					await _usersRepository.UpdateUser(vm.User, vm.SelectedRole);
+					_usersRepository.Save();
+				}
+				catch (Exception e)
+				{
+					TempData["ErrorMessage"] = $"Sorry, {e.Message}";
+					return RedirectToAction("Index", "User");
+				}
+
+				TempData["SuccessMessage"] = $"{vm.User.FullName}'s account updated successfully.";
+			}
+			else
+			{
+				TempData["ErrorMessage"] = $"Sorry, user update failed.";
+			}
+
+			return RedirectToAction("Index", "User");
+		}
+
+
+		[HttpGet]
+		public IActionResult DeleteUser(string id)
 		{
 			return View();
 		}
@@ -59,6 +131,9 @@ namespace TicketAppWeb.Controllers
 			{
 				OrderBy = u => u.LastName ?? string.Empty
 			});
+
+			vm.Roles = _usersRepository.GetRolesAsync().Result;
+			vm.UserRoles = _usersRepository.GetUserRolesAsync().Result;
 		}
 	}
 }
