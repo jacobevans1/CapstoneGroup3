@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using System.Diagnostics.CodeAnalysis;
 using TicketAppWeb.Models.ExtensionMethods;
 using TicketAppWeb.Models.Grid;
 
@@ -11,6 +12,7 @@ namespace TicketAppWeb.TagHelpers;
 /// Jabesi Abwe
 /// 02/20/2025
 /// </summary>
+[ExcludeFromCodeCoverage]
 [HtmlTargetElement("my-sorting-link")]
 public class SortingLinkTagHelper : TagHelper
 {
