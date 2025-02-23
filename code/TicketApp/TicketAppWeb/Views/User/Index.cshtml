@@ -1,4 +1,5 @@
-﻿@model UserViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@model UserViewModel
 @{
 	ViewBag.Title = "User Management";
 }
@@ -34,12 +35,16 @@
                 <thead>
                 <tr>
 	                <th scope="col">
-		                <my-sorting-link sort-field="@nameof(TicketAppUser.FirstName)"
-		                                 current="@Model.CurrentRoute">First Name</my-sorting-link>
+		                <my-sorting-link sort-field="@nameof(TicketAppUser.FullName)"
+		                                 current="@Model.CurrentRoute">Name</my-sorting-link>
 	                </th>
 	                <th scope="col">
-		                <my-sorting-link sort-field="@nameof(TicketAppUser.LastName)"
-		                                 current="@Model.CurrentRoute">Last Name</my-sorting-link>
+		                <my-sorting-link sort-field="@nameof(TicketAppUser.Email)"
+		                                 current="@Model.CurrentRoute">Email</my-sorting-link>
+	                </th>
+	                <th scope="col">
+		                <my-sorting-link sort-field="@nameof(IdentityRole.Name)"
+		                                 current="@Model.CurrentRoute">Role</my-sorting-link>
 	                </th>
                 </tr>
                 </thead>
@@ -47,8 +52,9 @@
                     @foreach (TicketAppUser user in Model.Users)
                     {
                         <tr>
-                            <td>@user.FirstName</td>
-                            <td>@user.LastName</td>
+                            <td>@user.FullName</td>
+	                        <td>@user.Email</td>
+							<td>@Model.UserRoles[user]</td>
                             <td>
                                 <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editProjectModal">Edit</button>
                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProjectModal">Delete</button>

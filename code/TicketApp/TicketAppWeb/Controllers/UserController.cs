@@ -9,16 +9,11 @@ namespace TicketAppWeb.Controllers
 {
 	public class UserController : Controller
 	{
+		private readonly IUserRepository _usersRepository;
 
-		private readonly IRepository<TicketAppUser> _usersRepository;
-		private readonly IRepository<Group> _groupsRepository;
-
-		public UserController(
-			IRepository<TicketAppUser> usersRepository,
-			IGroupRepository groupsRepository)
+		public UserController(IUserRepository usersRepository)
 		{
 			_usersRepository = usersRepository;
-			_groupsRepository = groupsRepository;
 		}
 
 		[HttpGet]
@@ -59,6 +54,8 @@ namespace TicketAppWeb.Controllers
 			{
 				OrderBy = u => u.LastName ?? string.Empty
 			});
+
+			vm.UserRoles = _usersRepository.GetUsersAndRoleAsync().Result;
 		}
 	}
 }
