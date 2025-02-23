@@ -6,7 +6,7 @@ using Moq;
 using System.Security.Claims;
 using TicketAppWeb.Controllers;
 using TicketAppWeb.Models.DataLayer;
-using TicketAppWeb.Models.DataLayer.Reposetories;
+using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
 using TicketAppWeb.Models.ViewModels;

@@ -3,6 +3,7 @@ using Moq;
 using TicketAppWeb.Models.DataLayer.Reposetories;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.DataLayer;
+using TicketAppWeb.Models.DataLayer.Repositories;
 
 /// <summary>
 /// Tests the reposetory class

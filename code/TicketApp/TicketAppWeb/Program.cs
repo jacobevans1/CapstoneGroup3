@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.Configuration;
 using TicketAppWeb.Models.DataLayer;
+using TicketAppWeb.Models.DataLayer.Reposetories;
 using TicketAppWeb.Models.DataLayer.Repositories;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
