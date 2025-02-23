@@ -27,7 +27,6 @@ namespace TicketAppWeb.Controllers
 		[HttpGet]
 		public IActionResult CreateUser()
 		{
-			var viewModel = new UserViewModel();
 			return View();
 		}
 
@@ -60,7 +59,22 @@ namespace TicketAppWeb.Controllers
 		[HttpGet]
 		public IActionResult EditUser(string id)
 		{
-			return View();
+			var user = _usersRepository.Get(id);
+
+			if (user == null)
+			{
+				TempData["ErrorMessage"] = "Sorry, user not found}";
+				return RedirectToAction("Index", "User");
+			}
+
+			var viewModel = new UserViewModel
+			{
+				User = user
+			};
+
+			LoadIndexViewData(viewModel);
+
+			return View(viewModel);
 		}
 
 		[HttpGet]

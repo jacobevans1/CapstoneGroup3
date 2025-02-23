@@ -71,8 +71,8 @@
 	                        <td>@user.Email</td>
 							<td>@Model.UserRoles[user]</td>
                             <td>
-                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editProjectModal">Edit</button>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProjectModal">Delete</button>
+	                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
+	                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</button>
                             </td>
                         </tr>
                     }
@@ -122,20 +122,20 @@
 				<div class="modal-body">
 					<!-- First Name -->
 					<div class="mb-3">
-						<label for="firstName" class="form-label">First Name</label>
-						<input type="text" class="form-control" id="firstName" asp-for="@Model.User.FirstName" placeholder="Enter first name" required>
+						<label for="createFirstName" class="form-label">First Name</label>
+						<input type="text" class="form-control" id="createFirstName" asp-for="@Model.User.FirstName" placeholder="Enter first name" required>
 					</div>
                     
 					<!-- Last Name -->
 					<div class="mb-3">
-						<label for="lastName" class="form-label">Last Name</label>
-						<input type="text" class="form-control" id="lastName" asp-for="@Model.User.LastName" placeholder="Enter last name" required>
+						<label for="createLastName" class="form-label">Last Name</label>
+						<input type="text" class="form-control" id="createLastName" asp-for="@Model.User.LastName" placeholder="Enter last name" required>
 					</div>
                     
 					<!-- Role -->
 					<div class="mb-3">
-						<label for="role" class="form-label">Role</label>
-						<select id="role" asp-for="@Model.SelectedRole.Name" class="form-select">
+						<label for="createRole" class="form-label">Role</label>
+						<select id="createRole" asp-for="@Model.SelectedRole.Name" class="form-select">
 							<option value="">Select a role</option>
 							@foreach (var role in Model.Roles)
 							{
@@ -147,6 +147,63 @@
 				</div>
 				<div class="modal-footer">
 					<button type="submit" class="btn btn-primary">Create Account</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="editUserModallLabel">Edit User</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form asp-action="EditUser" asp-controller="User" method="post">
+				<div class="modal-body">
+
+					<!-- First Name -->
+					<div class="mb-3">
+						<label for="editfirstName" class="form-label">First Name</label>
+						<input type="text" class="form-control" id="editfirstName" asp-for="@Model.User.FirstName" required>
+					</div>
+
+					<!-- Last Name -->
+					<div class="mb-3">
+						<label for="editLastName" class="form-label">Last Name</label>
+						<input type="text" class="form-control" id="editLastName" asp-for="@Model.User.LastName" required>
+					</div>
+
+					<!-- Email -->
+					<div class="mb-3">
+						<label for="editEmail" class="form-label">Email</label>
+						<input type="email" class="form-control" id="editEmail" asp-for="@Model.User.Email" required>
+					</div>
+
+					<!-- Phone Number -->
+					<div class="mb-3">
+						<label for="editPhone" class="form-label">Phone Number</label>
+						<input type="tel" class="form-control" id="editPhone" asp-for="@Model.User.PhoneNumber">
+					</div>
+
+					<!-- Role -->
+					<div class="mb-3">
+						<label for="editRole" class="form-label">Role</label>
+						<select id="editRole" asp-for="@Model.SelectedRole.Name" class="form-select">
+							<option value="">Select a role</option>
+							@foreach (var role in Model.Roles)
+							{
+								<option value="@role.Id">@role.Name</option>
+							}
+						</select>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary">Save Changes</button>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 				</div>
 			</form>
