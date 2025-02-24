@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketAppWeb.Models.DataLayer;
+using TicketAppWeb.Models.DataLayer.Repositories;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
@@ -112,12 +113,61 @@ namespace TicketAppWeb.Controllers
 			return RedirectToAction("Index", "User");
 		}
 
-
 		[HttpGet]
 		public IActionResult DeleteUser(string id)
 		{
-			return View();
+			if (string.IsNullOrEmpty(id))
+			{
+				return BadRequest("User ID is required.");
+			}
+
+			var user = _usersRepository.Get(id);
+
+			if (user == null)
+			{
+				return NotFound(new { message = "User not found." });
+			}
+
+			var userData = new
+			{
+				fullName = user.FullName
+			};
+
+			return Json(userData);
 		}
+
+		[HttpPost]
+		public IActionResult DeleteConfirmed(string id)
+		{
+			if (string.IsNullOrEmpty(id))
+			{
+				TempData["ErrorMessage"] = "Invalid user ID.";
+				return RedirectToAction("Index", "User");
+			}
+
+			var user = _usersRepository.Get(id);
+
+			if (user == null)
+			{
+				TempData["ErrorMessage"] = "User not found.";
+			}
+			else
+			{
+				try
+				{
+					_usersRepository.Delete(user);
+					_usersRepository.Save();
+					TempData["SuccessMessage"] = "User deleted successfully.";
+				}
+				catch (Exception e)
+				{
+					TempData["ErrorMessage"] = $"Error deleting user: {e.Message}";
+				}
+			}
+
+			return RedirectToAction("Index", "User");
+		}
+
 
 		[HttpPost]
 		public IActionResult PageSizes(UserGridData currentRoute)
