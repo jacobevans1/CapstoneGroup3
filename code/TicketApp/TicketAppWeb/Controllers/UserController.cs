@@ -39,7 +39,7 @@ namespace TicketAppWeb.Controllers
 			{
 				try
 				{
-					await _usersRepository.CreateUser(vm.User, vm.SelectedRole);
+					await _usersRepository.CreateUser(vm.User, vm.SelectedRoleName);
 					_usersRepository.Save();
 				}
 				catch (Exception e)
@@ -93,8 +93,8 @@ namespace TicketAppWeb.Controllers
 				{
 					vm.User.Id = selectedUserId;
 					vm.User.UserName = selectedUsername;
-					await _usersRepository.UpdateUser(vm.User, vm.SelectedRole);
-					_usersRepository.Save();
+					await _usersRepository.UpdateUser(vm.User, vm.SelectedRoleName);
+				
 				}
 				catch (Exception e)
 				{
