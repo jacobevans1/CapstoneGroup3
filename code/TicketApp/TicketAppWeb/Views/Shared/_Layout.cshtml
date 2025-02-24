@@ -21,7 +21,7 @@
 </head>
 <body>
     @* Hide Navbar on the Login Page *@
-    @if (currentController != "Login" || currentAction != "Login")
+    @if (currentController != "Login" || currentAction != "Index")
     {
         <nav>
             <ul>
@@ -34,14 +34,14 @@
             </li>
             <li>
                 <a class="nav-link @Nav.Active("UserManagement", currentAction)"
-                   asp-action="UserManagement" asp-controller="User" asp-area="">
+                   asp-action="Index" asp-controller="User" asp-area="">
                     <i class="fas fa-user"></i>
                     <span class="nav-item">User Management</span>
                 </a>
             </li>
             <li>
                 <a class="nav-link @Nav.Active("GroupManagement", currentAction)"
-                   asp-action="GroupManagement" asp-controller="Group" asp-area="">
+                   asp-action="Index" asp-controller="Group" asp-area="">
                     <i class="fas fa-users"></i>
                     <span class="nav-item">Group Management</span>
                 </a>

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TicketAppWeb.Models.DataLayer.Reposetories;
 using TicketAppWeb.Models.DataLayer;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
 using TicketAppWeb.Models.Grid;
+using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 
 namespace TicketAppWeb.Controllers;
 
@@ -41,38 +41,27 @@ public class ProjectController : Controller
     [HttpPost]
     public IActionResult Index(ProjectViewModel viewModel)
     {
-        TempData["LeadId"] = viewModel.Project.LeadId;
-        TempData["ProjectName"] = viewModel.Project.ProjectName;
-        TempData["Description"] = viewModel.Project.Description;
-
-        return RedirectToAction("SelectGroups");
+        viewModel.SelectedGroupIds = viewModel.SelectedGroupIds ?? Array.Empty<string>();
+        return RedirectToAction("SelectGroups", new { selectedGroups = viewModel.SelectedGroupIds });
     }
 
     // GET: Project/SelectGroups
-    public IActionResult SelectGroups()
+    public IActionResult SelectGroups(string[] selectedGroups)
     {
-        var viewModel = new ProjectViewModel
-        {
-            ProjectLeadId = TempData["LeadId"]?.ToString()
-        };
-
-        // Load groups for assignment
+        var viewModel = new ProjectViewModel();
         LoadGroupsViewData(viewModel);
 
-        // Get selected groups
-        var selectedGroups = viewModel.SelectedGroupIds
-                                        .Select(groupId => _groupsRepository.Get(groupId!))
-                                        .ToList();
+        var selectedGroupsList = selectedGroups
+            .Select(groupId => _groupsRepository.Get(groupId!))
+            .ToList();
 
-        // Filter available leads: only users who are group leads within selected groups
-        var availableLeads = selectedGroups
+        var availableLeads = selectedGroupsList
             .Where(group => group!.ManagerId != null)
             .Select(group => group!.Members.FirstOrDefault(user => user.Id == group.ManagerId))
-            .Where(lead => lead != null) 
+            .Where(lead => lead != null)
             .Distinct()
             .ToList();
 
-        // Set the available leads in the view model
         viewModel.AvailableGroupLeads = availableLeads!;
 
         return View(viewModel);
@@ -81,24 +70,25 @@ public class ProjectController : Controller
 
     // POST: Project/Add{vm}
     [HttpPost]
-    public async Task<IActionResult> Add(ProjectViewModel vm)
+    public Task<IActionResult> Add(ProjectViewModel vm)
     {
-        var createdById = (string)TempData["CreatedById"]!;
-        var dateCreated = (DateTime)TempData["CreatedOnDate"]!;
-
         vm.Project.LeadId = vm.ProjectLeadId;
-        vm.Project.CreatedById = createdById;
-        vm.Project.CreatedAt = dateCreated;
 
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            _projectRepository.Insert(vm.Project);
-            _projectRepository.Save();
+            return Task.FromResult<IActionResult>(View("Add", vm));
         }
+
+
+        vm.Project.CreatedById = User?.Identity?.Name;
+        vm.Project.CreatedAt = DateTime.Now;
+
+        _projectRepository.Insert(vm.Project);
+        _projectRepository.Save();
 
         TempData["message"] = $"Project {vm.Project.ProjectName} added successfully.";
 
-        return RedirectToAction("Index", "Project");
+        return Task.FromResult<IActionResult>(RedirectToAction("Index", "Project"));
     }
 
     // GET: Project/Edit/{id}
@@ -134,7 +124,7 @@ public class ProjectController : Controller
         }
 
         LoadIndexViewData(vm);
-        return View(vm);
+        return View("Edit", vm);
     }
 
     // GET: Project/Delete/{id}
@@ -190,7 +180,7 @@ public class ProjectController : Controller
             SelectedPageSize = values.PageSize
         };
 
-        return RedirectToAction("Index", viewModel);
+        return View(viewModel); 
     }
 
     // Project/ PageSizes{currentRoute}
@@ -215,11 +205,11 @@ public class ProjectController : Controller
 
     private void LoadGroupsViewData(ProjectViewModel vm)
     {
-        vm.SelectedGroupIds = vm.Project.Groups?.Select(g => g.Id).ToArray() ?? Array.Empty<string>();
+        vm.SelectedGroupIds = vm.Project.Groups.Select(g => g.Id).ToArray();
 
         vm.AvailableGroups = _groupsRepository.List(new QueryOptions<Group>
         {
-            OrderBy = g => g.GroupName ?? string.Empty
+            OrderBy = g => g.GroupName!
         });
     }
 }

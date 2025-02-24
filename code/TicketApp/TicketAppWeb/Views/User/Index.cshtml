@@ -1,0 +1,235 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model UserViewModel
+@{
+	ViewBag.Title = "User Management";
+}
+
+<!-- Google Font for Bubblegum Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+
+<!-- Link to site.css -->
+<link href="~/css/projectmanagement.css" rel="stylesheet" />
+
+<!-- TempData variables -->
+@{
+	var successMessage = TempData["SuccessMessage"] as string;
+	var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+<!-- Display success messages if any -->
+@if (!string.IsNullOrEmpty(successMessage))
+{
+	<div class="alert alert-success">
+		@successMessage
+	</div>
+}
+
+<!-- Display error messages if any -->
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+	<div class="alert alert-danger">
+		@errorMessage
+	</div>
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center">User Management</h2>
+            <div class="title-divider"></div>
+            <br />
+            <br />
+            <br />
+
+            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">Add User</button>
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+	                <th scope="col">
+		                <my-sorting-link sort-field="@nameof(TicketAppUser.FullName)"
+		                                 current="@Model.CurrentRoute">Name</my-sorting-link>
+	                </th>
+	                <th scope="col">
+		                <my-sorting-link sort-field="@nameof(TicketAppUser.Email)"
+		                                 current="@Model.CurrentRoute">Email</my-sorting-link>
+	                </th>
+	                <th scope="col">
+		                <my-sorting-link sort-field="@nameof(IdentityRole.Name)"
+		                                 current="@Model.CurrentRoute">Role</my-sorting-link>
+	                </th>
+                </tr>
+                </thead>
+                <tbody>
+                    @foreach (TicketAppUser user in Model.Users)
+                    {
+                        <tr>
+                            <td>@user.FullName</td>
+	                        <td>@user.Email</td>
+							<td>@Model.UserRoles[user]</td>
+                            <td>
+	                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="@user.Id">Edit</button>
+	                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            @{
+                for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <my-paging-link number="@i" current="@Model.CurrentRoute" />
+                }
+            }
+        </div>
+        <div class="col-8">
+            <form asp-action="PageSizes" method="post" class="mb-2 mt-2">
+                <div class="row">
+                    <label asp-for="CurrentRoute.PageSize" class="col-auto">Page sizes</label>
+                    <div class="col-auto">
+                        <select asp-for="CurrentRoute.PageSize" class="form-select"
+                                asp-items="@(new SelectList(Model.PageSizes))">
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Apply</button>
+                    </div>
+                    <asp type="hidden" asp-for="CurrentRoute.PageNumber" />
+                    <asp type="hidden" asp-for="CurrentRoute.SortField" />
+                    <asp type="hidden" asp-for="CurrentRoute.SortDirection" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addUserModalLabel">Create User</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form asp-action="CreateUser" asp-controller="User" method="post">
+				<div class="modal-body">
+					<!-- First Name -->
+					<div class="mb-3">
+						<label for="createFirstName" class="form-label">First Name</label>
+						<input type="text" class="form-control" id="createFirstName" asp-for="@Model.User.FirstName" placeholder="Enter first name" required>
+					</div>
+                    
+					<!-- Last Name -->
+					<div class="mb-3">
+						<label for="createLastName" class="form-label">Last Name</label>
+						<input type="text" class="form-control" id="createLastName" asp-for="@Model.User.LastName" placeholder="Enter last name" required>
+					</div>
+                    
+					<!-- Role -->
+					<div class="mb-3">
+						<label for="createRole" class="form-label">Role</label>
+						<select id="createRole" asp-for="@Model.SelectedRole.Name" class="form-select" required>
+							@foreach (var role in Model.Roles)
+							{
+								<option value="@role.Id">@role.Name</option>
+							}
+						</select>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary">Create Account</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form asp-action="EditUser" asp-controller="User" method="post">
+				<div class="modal-body">
+					<!-- First Name -->
+					<div class="mb-3">
+						<label for="editFirstName" class="form-label">First Name</label>
+						<input type="text" class="form-control" id="editFirstName" asp-for="@Model.User.FirstName" required>
+					</div>
+
+					<!-- Last Name -->
+					<div class="mb-3">
+						<label for="editLastName" class="form-label">Last Name</label>
+						<input type="text" class="form-control" id="editLastName" asp-for="@Model.User.LastName" required>
+					</div>
+
+					<!-- Email -->
+					<div class="mb-3">
+						<label for="editEmail" class="form-label">Email</label>
+						<input type="email" class="form-control" id="editEmail" asp-for="@Model.User.Email" required>
+					</div>
+
+					<!-- Phone Number -->
+					<div class="mb-3">
+						<label for="editPhone" class="form-label">Phone Number</label>
+						<input type="tel" class="form-control" id="editPhone" asp-for="@Model.User.PhoneNumber">
+					</div>
+
+					<!-- Role -->
+					<div class="mb-3">
+						<label for="editRole" class="form-label">Role</label>
+						<select id="editRole" asp-for="@Model.SelectedRole.Name" class="form-select" required>
+							@foreach (var role in Model.Roles)
+							{
+								<option value="@role.Id">@role.Name</option>
+							}
+						</select>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary">Save Changes</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	$('#editUserModal').on('show.bs.modal', function (event) {
+		var button = $(event.relatedTarget);
+		var userId = button.data('user-id');
+
+		$.ajax({
+			url: '@Url.Action("GetUserData", "User")',
+			method: 'GET',
+			data: { id: userId },
+			success: function (data) {
+				
+				$('#editFirstName').val(data.firstName);
+				$('#editLastName').val(data.lastName);
+				$('#editEmail').val(data.email);
+				$('#editPhone').val(data.phoneNumber);
+				$('#editRole').val(data.roleId);
+			},
+			error: function (err) {
+				console.error('Error fetching user data:', err);
+			}
+		});
+	});
+</script>
+

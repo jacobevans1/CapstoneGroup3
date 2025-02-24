@@ -56,7 +56,7 @@ $coverageFilesArg = $coverageFilePaths -join ";"
 Write-Host "Generating coverage report..." -ForegroundColor Green
 reportgenerator -reports:$coverageFilesArg -targetdir:$reportDir -reporttypes:Html `
     -assemblyfilters:"-System.Windows.Forms.*;-Microsoft.*" `
-    -classfilters:"-*.GeneratedCode.*;-*.Designer.*"
+    -classfilters:"-AspNetCoreGeneratedDocument.*;-*.GeneratedCode.*;-*.Designer.*;-TicketAppWeb.Migrations.*"
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Merged coverage report generated at: $reportDir/index.html" -ForegroundColor Green

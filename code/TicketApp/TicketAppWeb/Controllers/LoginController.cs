@@ -16,13 +16,13 @@ namespace TicketAppWeb.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult Login()
+		public IActionResult Index()
 		{
 			return View();
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Login(string username, string password)
+		public async Task<IActionResult> Index(string username, string password)
 		{
 			if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
 			{

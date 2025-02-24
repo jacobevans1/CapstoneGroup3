@@ -1,0 +1,137 @@
+﻿@model GroupViewModel
+@{
+    ViewData["Title"] = "Group Management";
+}
+
+<!-- Google Font for Bubblegum Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+
+<!-- Link to CSS -->
+<link href="~/css/projectmanagement.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center">Group Management</h2>
+            <div class="title-divider"></div>
+            <br />
+            <br />
+
+            <!-- Button to Open Add Group Modal -->
+            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addGroupModal">
+                Add Group
+            </button>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            <my-sorting-link sort-field="@nameof(Group.GroupName)"
+                                             current="@Model.CurrentRoute">Group Name</my-sorting-link>
+                        </th>
+                        <th>Members</th>
+                        <th scope="col">
+                            <my-sorting-link sort-field="@nameof(Group.Manager)"
+                                             current="@Model.CurrentRoute">Group Lead</my-sorting-link>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Group group in Model.Groups)
+                    {
+                        <tr>
+                            <td>@group.GroupName</td>
+                            <td>
+                                @foreach (var member in group.Members)
+                                {
+                                    <span class="badge bg-info text-dark">@member.FirstName @member.LastName</span>
+                                }
+                            </td>
+                            <td>
+                                @if (group.Manager != null)
+                                {
+                                    <a href="@Url.Action("Details", "User", new { id = group.Manager.Id })">@group.Manager.FirstName @group.Manager.LastName</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-4">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <my-paging-link number="@i" current="@Model.CurrentRoute" />
+            }
+        </div>
+        <div class="col-8">
+            <form asp-action="PageSizes" method="post" class="mb-2 mt-2">
+                <div class="row">
+                    <label asp-for="CurrentRoute.PageSize" class="col-auto">Page sizes</label>
+                    <div class="col-auto">
+                        <select asp-for="CurrentRoute.PageSize" class="form-select"
+                                asp-items="@(new SelectList(Model.PageSizes))">
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Apply</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Group Modal -->
+<div class="modal fade" id="addGroupModal" tabindex="-1" aria-labelledby="addGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addGroupModalLabel">Add New Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Add" asp-controller="Group" method="post">
+                <div class="modal-body">
+                    <!-- Group Name -->
+                    <div class="mb-3">
+                        <label class="form-label">Group Name</label>
+                        <input asp-for="Group.GroupName" class="form-control" required />
+                    </div>
+
+                    <!-- Members Selection -->
+                    <div class="mb-3">
+                        <label class="form-label">Select Members</label>
+                        <div class="border p-2" style="max-height: 200px; overflow-y: auto;">
+                            @foreach (var user in Model.AvailableUsers)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="SelectedUserIds" value="@user.Id" id="user-@user.Id">
+                                    <label class="form-check-label" for="user-@user.Id">@user.FirstName @user.LastName</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Assigned Group Lead -->
+                    <div class="mb-3">
+                        <label class="form-label">Assign Group Lead</label>
+                        <select asp-for="GroupManagerId" class="form-select"
+                                asp-items='@new SelectList(Model.AvailableGroupManagers, "Id", "FullName")'>
+                            <option value="">Select a Lead</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,6 @@
-﻿using TicketAppWeb.Models.DomainModels;
+﻿using TicketAppWeb.Models.DataLayer.Repositories;
+using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
+using TicketAppWeb.Models.DomainModels;
 namespace TicketAppWeb.Models.DataLayer.Reposetories;
 
 /// <summary>
@@ -11,18 +13,15 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
 {
     public void AddNewProjectGroups(Project? project, string[] groupIds, IRepository<Group> groupData)
     {
-        // first remove any current groups
-        foreach (Group group in project.Groups)
-        {
-            project.Groups.Remove(group);
-        }
+
+        project?.Groups.Clear();
 
         // then add new groups
         foreach (string id in groupIds)
         {
             Group? group = groupData.Get(id);
             if (group != null)
-                project.Groups.Add(group);
+                project?.Groups.Add(group);
         }
     }
 }

@@ -20,6 +20,12 @@ public static class StringExtensionMethods
     }
 
     // Capitalize the specified string
-    public static string Capitalize(this string str) =>
-        str?.Substring(0, 1)?.ToUpper() + str?.Substring(1);
+    public static string Capitalize(this string str)
+    {
+        if (string.IsNullOrEmpty(str))
+        {
+            return str;
+        }
+        return str.Substring(0, 1).ToUpper() + str.Substring(1);
+    }
 }

@@ -3,6 +3,7 @@ using TicketAppWeb.Models.Grid;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TicketAppWeb.TagHelpers;
 
@@ -11,6 +12,7 @@ namespace TicketAppWeb.TagHelpers;
 /// Jabesi Abwe
 /// 02/19/2025
 /// </summary>
+[ExcludeFromCodeCoverage]
 [HtmlTargetElement("my-paging-link")]
 public class PagingLinkTagHelper : TagHelper
 {
