@@ -88,7 +88,6 @@
     </div>
 </div>
 
-<!-- Add Group Modal -->
 <div class="modal fade" id="addGroupModal" tabindex="-1" aria-labelledby="addGroupModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -104,6 +103,12 @@
                         <input asp-for="Group.GroupName" class="form-control" required />
                     </div>
 
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea asp-for="Group.Description" class="form-control"></textarea>
+                    </div>
+
                     <!-- Members Selection -->
                     <div class="mb-3">
                         <label class="form-label">Select Members</label>
@@ -112,17 +117,19 @@
                             {
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="SelectedUserIds" value="@user.Id" id="user-@user.Id">
-                                    <label class="form-check-label" for="user-@user.Id">@user.FirstName @user.LastName</label>
+                                    <label class="form-check-label" for="user-@user.Id">
+                                        @user.FirstName @user.LastName (@user.Email)
+                                    </label>
                                 </div>
                             }
                         </div>
                     </div>
 
-                    <!-- Assigned Group Lead -->
+                    <!-- Assign Group Lead -->
                     <div class="mb-3">
                         <label class="form-label">Assign Group Lead</label>
                         <select asp-for="GroupManagerId" class="form-select"
-                                asp-items='@new SelectList(Model.AvailableGroupManagers, "Id", "FullName")'>
+                                asp-items='@new SelectList(Model.AvailableGroupManagers, "Id", "FirstName")'>
                             <option value="">Select a Lead</option>
                         </select>
                     </div>
