@@ -10,7 +10,7 @@ namespace TicketAppWeb.Models.ViewModels
 		public TicketAppUser User { get; set; } = new();
 
 		// Gets or sets the selected role.
-		public IdentityRole? SelectedRole { get; set; }
+		public string? SelectedRoleName { get; set; }
 
 		// Gets or sets the users.
 		public IEnumerable<TicketAppUser> Users { get; set; } = new List<TicketAppUser>();

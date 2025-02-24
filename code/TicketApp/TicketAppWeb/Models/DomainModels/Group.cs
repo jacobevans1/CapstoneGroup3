@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TicketAppWeb.Models.DomainModels;
 
@@ -8,35 +9,41 @@ public class Group
     // Constructor
     public Group()
     {
+        Id = Guid.NewGuid().ToString(); // Auto-generate ID if not provided
         Members = new HashSet<TicketAppUser>();
         Projects = new HashSet<Project>();
+        CreatedAt = DateTime.UtcNow; // Set creation time on object initialization
     }
 
     // Group Id
-    public string? Id { get; set; }
+    [Key]
+    public string Id { get; set; }
 
     // Group name
     [Required(ErrorMessage = "Please enter a group name")]
-    public string? GroupName { get; set; }
+    [StringLength(100, ErrorMessage = "Group name cannot exceed 100 characters")]
+    public string GroupName { get; set; } = string.Empty;
 
     // Group description
-    [Required(ErrorMessage = "Please enter a group description")]
-    public string? Description { get; set; } = string.Empty;
+    //[Required(ErrorMessage = "Please enter a group description")]
+    //[StringLength(255, ErrorMessage = "Description cannot exceed 255 characters")]
+    public string Description { get; set; } = string.Empty;
 
-    // Group lead Id
-    [Required(ErrorMessage = "Please select a group lead")]
-    public string? ManagerId { get; set; }
+    // Group manager ID
+    [Required(ErrorMessage = "Please select a group manager")]
+    public string ManagerId { get; set; }
 
-    // Group lead
+    // Navigation property for the manager (linked to `AspNetUsers`)
+    [ForeignKey("ManagerId")]
     [ValidateNever]
-    public TicketAppUser? Manager { get; set; }
+    public virtual TicketAppUser? Manager { get; set; }
 
     // Date when the group was created
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; private set; }
 
     // Members of the group
-    public ICollection<TicketAppUser> Members { get; set; } 
+    public virtual ICollection<TicketAppUser> Members { get; set; }
 
-    // Projects of the goup
-    public ICollection<Project> Projects { get; set; }
+    // Projects linked to the group
+    public virtual ICollection<Project> Projects { get; set; }
 }

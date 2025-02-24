@@ -72,7 +72,7 @@
 							<td>@Model.UserRoles[user]</td>
                             <td>
 	                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="@user.Id">Edit</button>
-	                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Delete</button>
+	                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal" data-user-id="@user.Id">Delete</button>
                             </td>
                         </tr>
                     }
@@ -135,10 +135,10 @@
 					<!-- Role -->
 					<div class="mb-3">
 						<label for="createRole" class="form-label">Role</label>
-						<select id="createRole" asp-for="@Model.SelectedRole.Name" class="form-select" required>
+						<select id="createRole" asp-for="@Model.SelectedRoleName" class="form-select" required>
 							@foreach (var role in Model.Roles)
 							{
-								<option value="@role.Id">@role.Name</option>
+								<option value="@role.Name">@role.Name</option>
 							}
 						</select>
 					</div>
@@ -190,10 +190,10 @@
 					<!-- Role -->
 					<div class="mb-3">
 						<label for="editRole" class="form-label">Role</label>
-						<select id="editRole" asp-for="@Model.SelectedRole.Name" class="form-select" required>
+						<select id="editRole" asp-for="@Model.SelectedRoleName" class="form-select" required>
 							@foreach (var role in Model.Roles)
 							{
-								<option value="@role.Id">@role.Name</option>
+								<option value="@role.Name">@role.Name</option>
 							}
 						</select>
 					</div>
@@ -208,6 +208,27 @@
 	</div>
 </div>
 
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="deleteUserModalLabel">Confirm Delete</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p>Are you sure you want to delete <strong id="deleteUserFullName">@Model.User.FullName</strong>?</p>
+			</div>
+			<div class="modal-footer">
+				<form id="deleteUserForm" asp-action="DeleteConfirmed" asp-controller="User" method="post">
+					<input type="hidden" id="deleteUserId" name="id" />
+					<button type="submit" class="btn btn-danger">Delete</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 
 <script>
 	$('#editUserModal').on('show.bs.modal', function (event) {
@@ -225,6 +246,26 @@
 				$('#editEmail').val(data.email);
 				$('#editPhone').val(data.phoneNumber);
 				$('#editRole').val(data.roleId);
+			},
+			error: function (err) {
+				console.error('Error fetching user data:', err);
+			}
+		});
+	});
+</script>
+
+<script>
+	$('#deleteUserModal').on('show.bs.modal', function (event) {
+		var button = $(event.relatedTarget);
+		var userId = button.data('user-id');
+
+		$.ajax({
+			url: '@Url.Action("DeleteUser", "User")',
+			method: 'GET',
+			data: { id: userId },
+			success: function (data) {
+				$('#deleteUserFullName').text(data.fullName);
+				$('#deleteUserId').val(userId);
 			},
 			error: function (err) {
 				console.error('Error fetching user data:', err);

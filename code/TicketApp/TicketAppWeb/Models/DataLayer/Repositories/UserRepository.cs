@@ -14,7 +14,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			_userManager = userManager;
 		}
 
-		public async Task CreateUser(TicketAppUser user, IdentityRole role)
+		public async Task CreateUser(TicketAppUser user, string roleName)
 		{
 			if (checkIfUserExists(user))
 			{
@@ -28,7 +28,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 
 			if (result.Succeeded)
 			{
-				await _userManager.AddToRoleAsync(user, role.Name);
+				await _userManager.AddToRoleAsync(user, roleName);
 			}
 			else
 			{
@@ -38,30 +38,26 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			}
 		}
 
-		public async Task UpdateUser(TicketAppUser user, IdentityRole role)
+		public async Task UpdateUser(TicketAppUser user, string roleName)
 		{
 			if (checkIfUserExists(user))
 			{
-				var trackedUser = context.Entry(user);
-				if (trackedUser.State == EntityState.Detached)
-				{
-					context.Attach(user);
-				}
-				else
-				{
-					trackedUser.State = EntityState.Detached;
-				}
+				var existingUser = await _userManager.FindByIdAsync(user.Id);
 
-				await _userManager.UpdateAsync(user);
+				existingUser.FirstName = user.FirstName;
+				existingUser.LastName = user.LastName;
+				existingUser.Email = user.Email;
+				existingUser.PhoneNumber = user.Email;
 
-				var roles = await _userManager.GetRolesAsync(user);
+				await _userManager.UpdateAsync(existingUser);
 
+				var roles = await _userManager.GetRolesAsync(existingUser);
 				if (roles.Count > 0)
 				{
-					await _userManager.RemoveFromRolesAsync(user, roles);
+					await _userManager.RemoveFromRolesAsync(existingUser, roles);
 				}
 
-				await _userManager.AddToRoleAsync(user, role.Name);
+				await _userManager.AddToRoleAsync(existingUser, roleName);
 			}
 		}
 
