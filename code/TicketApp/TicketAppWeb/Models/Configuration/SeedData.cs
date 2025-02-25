@@ -1,8 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using TicketAppWeb.Models.DomainModels;
 
+// Capstone Group 3
+// Spring 2025
 namespace TicketAppWeb.Models.Configuration
 {
+	/// <summary>
+	/// The SeedData class initializes the database with default data.
+	/// </summary>
 	public class SeedData
 	{
 		public static async Task Initialize(IServiceProvider serviceProvider, UserManager<TicketAppUser> userManager, RoleManager<IdentityRole> roleManager)
@@ -38,6 +43,13 @@ namespace TicketAppWeb.Models.Configuration
 			}
 		}
 
+		/// <summary>
+		///	Adds users to the database.
+		/// </summary>
+		/// <param name="serviceProvider"></param>
+		/// <param name="userManager"></param>
+		/// <param name="roleManager"></param>
+		/// <returns></returns>
 		public static async Task AddUsers(IServiceProvider serviceProvider, UserManager<TicketAppUser> userManager, RoleManager<IdentityRole> roleManager)
 		{
 		}

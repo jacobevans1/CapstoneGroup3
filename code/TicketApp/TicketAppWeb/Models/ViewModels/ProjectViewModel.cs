@@ -1,6 +1,8 @@
 ﻿using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
 
+// Capstone Group 3
+// Spring 2025
 namespace TicketAppWeb.Models.ViewModels;
 
 /// <summary>
@@ -10,36 +12,58 @@ namespace TicketAppWeb.Models.ViewModels;
 /// </summary>
 public class ProjectViewModel
 {
-    // Gets or sets the project.
-    public Project Project { get; set; } = new();
+	/// <summary>
+	/// The project object to store the project details.
+	/// </summary>
+	public Project Project { get; set; } = new();
 
-    // Gets or sets the list of assigned groups for the project.
-    public IEnumerable<Group> AssignedGroups { get; set; } = new List<Group>();
+	/// <summary>
+	/// The names of the groups assigned to the project.
+	/// </summary>
+	public IEnumerable<Group> AssignedGroups { get; set; } = new List<Group>();
 
-    // Gets or sets the selected group IDs for project assignment.
-    public string?[] SelectedGroupIds { get; set; } = Array.Empty<string>();
+	/// <summary>
+	/// The selected group IDs.
+	/// </summary>
+	public string?[] SelectedGroupIds { get; set; } = Array.Empty<string>();
 
-    // Gets or sets the list of available groupss
-    public IEnumerable<Group> AvailableGroups { get; set; } = new List<Group>();
+	/// <summary>
+	/// The available groups based on the selected projects.
+	/// </summary>
+	public IEnumerable<Group> AvailableGroups { get; set; } = new List<Group>();
 
-    // Gets or sets the list of available group leads.
-    public IEnumerable<TicketAppUser> AvailableGroupLeads { get; set; } = new List<TicketAppUser>();
+	/// <summary>
+	/// Stores the available group leads based on the selected projects.
+	/// </summary>
+	public IEnumerable<TicketAppUser> AvailableGroupLeads { get; set; } = new List<TicketAppUser>();
 
-    // Gets or sets the project lead's ID.
-    public string? ProjectLeadId { get; set; }
+	/// <summary>
+	/// Stores the selected group lead ID.
+	/// </summary>
+	public string? ProjectLeadId { get; set; }
 
-    // Gets or sets the projects.
-    public IEnumerable<Project> Projects { get; set; } = new List<Project>();
+	/// <summary>
+	/// The list of projects from the database.
+	/// </summary>
+	public IEnumerable<Project> Projects { get; set; } = new List<Project>();
 
-    // Gets or sets the current route (contains filtering/sorting information).
-    public ProjectGridData CurrentRoute { get; set; } = new ProjectGridData();
+	/// <summary>
+	/// The current route for the user grid.
+	/// </summary>
+	public UserGridData CurrentRoute { get; set; } = new UserGridData();
 
-    // Gets or sets the total pages.
-    public int TotalPages { get; set; }
+	/// <summary>
+	/// The total number of pages in the user grid.
+	/// </summary>
+	public int TotalPages { get; set; }
 
-    // Gets or sets the available page sizes.
-    public readonly int[] PageSizes = { 5, 10, 20, 50 };
+	/// <summary>
+	/// The list of page sizes for the user grid.
+	/// </summary>
+	public readonly int[] PageSizes = { 5, 10, 20, 50 };
 
-    // Gets or sets the selected page size.
-    public int SelectedPageSize { get; set; } = 10;
+	/// <summary>
+	/// The selected page size for the user grid.
+	/// </summary>
+	public int SelectedPageSize { get; set; } = 10;
 }
