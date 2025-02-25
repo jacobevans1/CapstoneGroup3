@@ -48,9 +48,9 @@ public class ProjectViewModel
 	public IEnumerable<Project> Projects { get; set; } = new List<Project>();
 
 	/// <summary>
-	/// The current route for the user grid.
+	/// The current route for the project grid.
 	/// </summary>
-	public UserGridData CurrentRoute { get; set; } = new UserGridData();
+	public ProjectGridData CurrentRoute { get; set; } = new ProjectGridData();
 
 	/// <summary>
 	/// The total number of pages in the user grid.
