@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.Configuration;
 using TicketAppWeb.Models.DataLayer;
@@ -10,7 +12,14 @@ using TicketAppWeb.Models.DomainModels;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    options.Filters.Add(new AuthorizeFilter(policy)); // This applies authorization to ALL controllers
+});
+
 builder.Services.AddRazorPages();
 
 // Configure the database context
@@ -50,9 +59,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.Cookie.HttpOnly = true;
 	options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
 
-	options.LoginPath = "/Identity/Account/Login";
-	options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-	options.SlidingExpiration = true;
+    options.LoginPath = "/Login/Index";
+    options.LogoutPath = "/Login/Logout";  
+    options.AccessDeniedPath = "/Login/AccessDenied";
+    options.SlidingExpiration = true;
+
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
