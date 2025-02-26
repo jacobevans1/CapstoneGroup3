@@ -79,38 +79,31 @@ public class ProjectController : Controller
     }
 
     // Edit project action
-
     [HttpGet]
-
     public IActionResult Edit(string id)
-
     {
-        // Fetch the project based on the provided ID
-        var project = _context.Projects.Include(p => p.Groups).FirstOrDefault(p => p.Id == id);
+        var project = _context.Projects
+            .Include(p => p.Groups)
+            .FirstOrDefault(p => p.Id == id);
 
         if (project == null)
-
         {
             return NotFound();
         }
 
-        var viewModel = new ProjectViewModel
-
+        var viewModel = new
         {
-
-            Project = project,
-
-            AvailableGroups = _context.Groups.ToList(),
-
-            AvailableGroupLeads = _context.Groups.Select(g => g.Manager).Distinct().ToList()!,
-
-            SelectedGroupIds = project.Groups.Select(g => g.Id).ToList(),
-
-            ProjectLeadId = project.LeadId
-
+            project = new
+            {
+                id = project.Id,
+                projectName = project.ProjectName,
+                leadId = project.LeadId
+            },
+            availableGroups = _context.Groups.Select(g => new { id = g.Id, groupName = g.GroupName }).ToList(),
+            selectedGroupIds = project.Groups.Select(g => g.Id).ToList()
         };
 
-        return View(viewModel);
+        return Json(viewModel);
     }
 
     // Edit project POST action

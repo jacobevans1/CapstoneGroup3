@@ -21,8 +21,8 @@
 </head>
 <body>
     @* Hide Navbar on the Login Page *@
-    @if (currentController != "Login" || currentAction != "Index")
-    {
+    @*@if (currentController != "Login" || currentAction != "Index")
+    {*@
         <nav>
             <ul>
             <li class="hamburger">
@@ -55,7 +55,7 @@
             </li>
         </ul>
     </nav>
-    }
+    @*}*@
     <main>
         @RenderBody()
     </main>
