@@ -10,26 +10,28 @@ namespace TicketAppWeb.Models.ViewModels;
 /// </summary>
 public class ProjectViewModel
 {
-    public Project Project { get; set; } = new();
+	public Project Project { get; set; } = new();
 
-    public IEnumerable<Group> AssignedGroups { get; set; } = new List<Group>();
+	public IEnumerable<Group> AssignedGroups { get; set; } = new List<Group>();
 
-    public List<string> SelectedGroupIds { get; set; } = new List<string>();
+	public List<string> SelectedGroupIds { get; set; } = new List<string>();
 
-    public IEnumerable<Group> AvailableGroups { get; set; } = new List<Group>();
+	public IEnumerable<Group> AvailableGroups { get; set; } = new List<Group>();
 
-    // Now dynamically updating group leads based on selected groups
-    public IEnumerable<TicketAppUser> AvailableGroupLeads { get; set; } = new List<TicketAppUser>();
+	// Now dynamically updating group leads based on selected groups
+	public IEnumerable<TicketAppUser> AvailableGroupLeads { get; set; } = new List<TicketAppUser>();
 
-    public string? ProjectLeadId { get; set; }
+	public string? ProjectLeadId { get; set; }
 
-    public IEnumerable<Project> Projects { get; set; } = new List<Project>();
+	public IEnumerable<Project> Projects { get; set; } = new List<Project>();
 
-    public ProjectGridData CurrentRoute { get; set; } = new ProjectGridData();
+	public Dictionary<Project, List<Group>> ProjectGroups { get; set; } = new Dictionary<Project, List<Group>>();
 
-    public int TotalPages { get; set; }
+	public ProjectGridData CurrentRoute { get; set; } = new ProjectGridData();
 
-    public readonly int[] PageSizes = { 5, 10, 20, 50 };
+	public int TotalPages { get; set; }
 
-    public int SelectedPageSize { get; set; } = 10;
+	public readonly int[] PageSizes = { 5, 10, 20, 50 };
+
+	public int SelectedPageSize { get; set; } = 10;
 }

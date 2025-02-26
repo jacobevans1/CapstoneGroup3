@@ -53,7 +53,7 @@
                         <tr>
                             <td>@project.ProjectName</td>
                             <td>
-                                @foreach (var group in project.Groups)
+                                @foreach (var group in Model.ProjectGroups[project])
                                 {
                                     <a href="@Url.Action("Details", "Group", new { id = group.Id })" class="badge bg-info text-dark">@group.GroupName</a>
                                 }

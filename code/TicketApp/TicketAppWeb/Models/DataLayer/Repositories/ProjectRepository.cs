@@ -28,6 +28,8 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
 	public async Task<Dictionary<Project, List<Group>>> GetProjectsAndGroups()
 	{
 		var projects = context.Projects.ToList();
+		setProjectLeads(projects);
+
 		var projectsGroups = new Dictionary<Project, List<Group>>();
 
 		foreach (var project in projects)
@@ -35,14 +37,23 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
 			var groups = await context.Groups
 				.FromSqlRaw(@"SELECT g.*
                           FROM Groups g
-                          JOIN ProjectGroups pg ON g.Id = pg.GroupsId
-                          WHERE pg.ProjectsId = {0}", project.Id)
+                          JOIN ProjectGroups pg ON g.Id = pg.GroupId
+                          WHERE pg.ProjectId = {0}", project.Id)
 				.ToListAsync();
-
 
 			projectsGroups.Add(project, groups);
 		}
 
 		return projectsGroups;
+	}
+
+	private List<Project> setProjectLeads(List<Project> projects)
+	{
+		foreach (var project in projects)
+		{
+			project.Lead = context.Users.Find(project.LeadId);
+		}
+
+		return projects;
 	}
 }
