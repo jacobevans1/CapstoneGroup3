@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.DomainModels;
 
@@ -9,8 +8,6 @@ namespace TicketAppWeb.Models.DataLayer
 	{
 		public TicketAppContext(DbContextOptions<TicketAppContext> options) : base(options) { }
 
-		public DbSet<TicketAppUser> Users { get; set; }
-		public DbSet<IdentityRole> Roles { get; set; }
 		public DbSet<Project> Projects { get; set; }
 		public DbSet<Group> Groups { get; set; }
 
@@ -23,6 +20,5 @@ namespace TicketAppWeb.Models.DataLayer
 		{
 			optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=TicketAppDB;Trusted_Connection=True;MultipleActiveResultSets=true");
 		}
-
 	}
 }
