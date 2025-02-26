@@ -24,7 +24,7 @@ public class Project
     public string? ProjectName { get; set; }
 
     // Project description
-    [Required(ErrorMessage = "Please enter a project description")]
+
     public string? Description { get; set; } = string.Empty;
 
     // Project Lead Id
