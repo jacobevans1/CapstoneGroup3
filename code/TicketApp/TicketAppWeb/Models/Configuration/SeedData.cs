@@ -12,7 +12,7 @@ namespace TicketAppWeb.Models.Configuration
 	{
 		public static async Task Initialize(IServiceProvider serviceProvider, UserManager<TicketAppUser> userManager, RoleManager<IdentityRole> roleManager)
 		{
-			var roleNames = new[] { "Admin", "Manager", "User" };
+			var roleNames = new[] { "Admin", "User" };
 
 			foreach (var roleName in roleNames)
 			{
