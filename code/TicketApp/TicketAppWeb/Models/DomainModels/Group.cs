@@ -25,8 +25,8 @@ public class Group
     public string GroupName { get; set; } = string.Empty;
 
     // Group description
-    //[Required(ErrorMessage = "Please enter a group description")]
-    //[StringLength(255, ErrorMessage = "Description cannot exceed 255 characters")]
+    [Required(ErrorMessage = "Please enter a group description")]
+    [StringLength(255, ErrorMessage = "Description cannot exceed 255 characters")]
     public string Description { get; set; } = string.Empty;
 
     // Group manager ID

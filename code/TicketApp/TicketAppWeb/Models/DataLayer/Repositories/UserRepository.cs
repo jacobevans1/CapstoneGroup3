@@ -108,7 +108,19 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			return userRoleDictionary;
 		}
 
-		private bool checkIfUserExists(TicketAppUser user)
+        public async Task<IEnumerable<TicketAppUser>> GetAllUsersAsync()
+        {
+            return await context.Users.ToListAsync();
+        }
+
+        public async Task<TicketAppUser> GetAsync(string userId)
+        {
+            return await context.Users.FindAsync(userId);
+        }
+
+
+
+        private bool checkIfUserExists(TicketAppUser user)
 		{
 			return context.Users.Any(u => u.UserName == user.UserName);
 		}
