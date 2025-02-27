@@ -110,7 +110,7 @@
     </div>
 </div>
 
-<!-- Add User Modal -->
+<!-- Create User Modal -->
 <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -122,19 +122,41 @@
 				<div class="modal-body">
 					<!-- First Name -->
 					<div class="mb-3">
-						<label for="createFirstName" class="form-label">First Name</label>
-						<input type="text" class="form-control" id="createFirstName" asp-for="@Model.User.FirstName" placeholder="Enter first name" required>
+						<label for="createFirstName" class="form-label">
+							First Name <span class="text-danger">*</span>
+						</label>
+						<input type="text" class="form-control" id="createFirstName" asp-for="@Model.User.FirstName" required>
 					</div>
-                    
+
 					<!-- Last Name -->
 					<div class="mb-3">
-						<label for="createLastName" class="form-label">Last Name</label>
-						<input type="text" class="form-control" id="createLastName" asp-for="@Model.User.LastName" placeholder="Enter last name" required>
+						<label for="createLastName" class="form-label">
+							Last Name <span class="text-danger">*</span>
+						</label>
+						<input type="text" class="form-control" id="createLastName" asp-for="@Model.User.LastName" required>
 					</div>
-                    
+
+					<!-- Email -->
+					<div class="mb-3">
+						<label for="createEmail" class="form-label">
+							Email <span class="text-danger">*</span>
+						</label>
+						<input type="email" class="form-control" id="createEmail" asp-for="@Model.User.Email" required>
+					</div>
+
+					<!-- Phone Number -->
+					<div class="mb-3">
+						<label for="createPhone" class="form-label">
+							Phone Number
+						</label>
+						<input type="tel" class="form-control" id="createPhone" asp-for="@Model.User.PhoneNumber">
+					</div>
+
 					<!-- Role -->
 					<div class="mb-3">
-						<label for="createRole" class="form-label">Role</label>
+						<label for="createRole" class="form-label">
+							Role <span class="text-danger">*</span>
+						</label>
 						<select id="createRole" asp-for="@Model.SelectedRoleName" class="form-select" required>
 							@foreach (var role in Model.Roles)
 							{
@@ -142,7 +164,10 @@
 							}
 						</select>
 					</div>
-
+					
+					<label class="form-label">
+						<span class="text-danger">* fields are required</span>
+					</label>
 				</div>
 				<div class="modal-footer">
 					<button type="submit" class="btn btn-primary">Create Account</button>
@@ -152,6 +177,7 @@
 		</div>
 	</div>
 </div>
+
 
 <!-- Edit User Modal -->
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
@@ -165,31 +191,41 @@
 				<div class="modal-body">
 					<!-- First Name -->
 					<div class="mb-3">
-						<label for="editFirstName" class="form-label">First Name</label>
+						<label for="editFirstName" class="form-label">
+							First Name <span class="text-danger">*</span>
+						</label>
 						<input type="text" class="form-control" id="editFirstName" asp-for="@Model.User.FirstName" required>
 					</div>
 
 					<!-- Last Name -->
 					<div class="mb-3">
-						<label for="editLastName" class="form-label">Last Name</label>
+						<label for="editLastName" class="form-label">
+							Last Name <span class="text-danger">*</span>
+						</label>
 						<input type="text" class="form-control" id="editLastName" asp-for="@Model.User.LastName" required>
 					</div>
 
 					<!-- Email -->
 					<div class="mb-3">
-						<label for="editEmail" class="form-label">Email</label>
+						<label for="editEmail" class="form-label">
+							Email <span class="text-danger">*</span>
+						</label>
 						<input type="email" class="form-control" id="editEmail" asp-for="@Model.User.Email" required>
 					</div>
 
 					<!-- Phone Number -->
 					<div class="mb-3">
-						<label for="editPhone" class="form-label">Phone Number</label>
+						<label for="editPhone" class="form-label">
+							Phone Number
+						</label>
 						<input type="tel" class="form-control" id="editPhone" asp-for="@Model.User.PhoneNumber">
 					</div>
 
 					<!-- Role -->
 					<div class="mb-3">
-						<label for="editRole" class="form-label">Role</label>
+						<label for="editRole" class="form-label">
+							Role <span class="text-danger">*</span>
+						</label>
 						<select id="editRole" asp-for="@Model.SelectedRoleName" class="form-select" required>
 							@foreach (var role in Model.Roles)
 							{
@@ -197,7 +233,10 @@
 							}
 						</select>
 					</div>
-
+					
+					<label class="form-label">
+						<span class="text-danger">* fields are required</span>
+					</label>
 				</div>
 				<div class="modal-footer">
 					<button type="submit" class="btn btn-primary">Save Changes</button>
@@ -207,6 +246,7 @@
 		</div>
 	</div>
 </div>
+
 
 <!-- Delete User Modal -->
 <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">

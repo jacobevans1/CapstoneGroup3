@@ -15,8 +15,7 @@ INSERT INTO [dbo].[AspNetUsers] ([Id], [FirstName], [LastName], [UserName], [Nor
 INSERT INTO [dbo].[AspNetUsers] ([Id], [FirstName], [LastName], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount], [GroupId]) VALUES (N'e603ca5e-848c-4413-a442-ee16b541bbcf', N'Ozzie', N'Albies', N'OzzieAlbies', N'OZZIEALBIES', N'ozzie.albies@domain.com', N'OZZIE.ALBIES@DOMAIN.COM', 1, N'AQAAAAIAAYagAAAAECnte6d77Yae7DMuZeCp2yjm9Z/QzfkwoBb6ZOl/4tk5QxBPVmI69EJ0WxMFVUOqCg==', N'S2YDKJLNV7RGTH23VI75L6OPROL3DTTO', N'5cf9c28a-5e15-4f43-9680-2e1fb187d99f', NULL, 0, 0, NULL, 1, 0, NULL)
 
 INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'27ca1bde-3baf-40cf-a040-51f240e9b675', N'User', N'USER', NULL)
-INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'626a5fd6-2a9f-4c43-86b6-9ea967f2e97f', N'Admin', N'ADMIN', NULL)
-INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'95328f86-52be-4e7a-a204-bb739cdebfc1', N'Manager', N'MANAGER', NULL)
+INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'626a5fd6-2a9f-4c43-86b6-9ea967f2e97f', N'Admin', N'ADMIN', NULL))
 
 INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'50dd14fa-af13-440b-8e5e-dcde6877ec9b', N'27ca1bde-3baf-40cf-a040-51f240e9b675')
 INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'67bfc97d-1bf1-4319-9a05-2971a8d0917c', N'27ca1bde-3baf-40cf-a040-51f240e9b675')
@@ -29,8 +28,8 @@ INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'd53d9c92-b499
 INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'df7bcf1a-a2d2-42f1-8b34-b4f5e3793617', N'27ca1bde-3baf-40cf-a040-51f240e9b675')
 INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'e603ca5e-848c-4413-a442-ee16b541bbcf', N'27ca1bde-3baf-40cf-a040-51f240e9b675')
 INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'da0e26e5-59a0-48d7-94dc-2e2977b25ade', N'626a5fd6-2a9f-4c43-86b6-9ea967f2e97f')
-INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'0c669cfd-3518-4a0e-9bc4-5e61bd213960', N'95328f86-52be-4e7a-a204-bb739cdebfc1')
-INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'bc4642cd-fada-486b-9275-4cbcc581fcf0', N'95328f86-52be-4e7a-a204-bb739cdebfc1')
+INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'0c669cfd-3518-4a0e-9bc4-5e61bd213960', N'27ca1bde-3baf-40cf-a040-51f240e9b675')
+INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'bc4642cd-fada-486b-9275-4cbcc581fcf0', N'27ca1bde-3baf-40cf-a040-51f240e9b675')
 
 INSERT INTO [dbo].[Groups] ([Id], [GroupName], [Description], [ManagerId], [CreatedAt]) VALUES (N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3', N'The Braves', N'The Atlanta Braves', N'bc4642cd-fada-486b-9275-4cbcc581fcf0', '2025-02-23 14:30:00')
 INSERT INTO [dbo].[Groups] ([Id], [GroupName], [Description], [ManagerId], [CreatedAt]) VALUES (N'a15d2e37-5b66-4034-8a9a-71b5b6f6a9df', N'The Dodgers', N'The Los Angeles Dodgers', N'0c669cfd-3518-4a0e-9bc4-5e61bd213960', '2025-02-23 14:30:00')

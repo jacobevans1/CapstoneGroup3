@@ -36,8 +36,8 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 				throw new Exception("User already exists.");
 			}
 
-			user = generateUserDetails(user);
-			var password = user.UserName + "123!";
+			user.UserName = user.FirstName + user.LastName;
+			var password = "Password123!";
 
 			var result = await _userManager.CreateAsync(user, password);
 
@@ -111,13 +111,6 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		private bool checkIfUserExists(TicketAppUser user)
 		{
 			return context.Users.Any(u => u.UserName == user.UserName);
-		}
-
-		private TicketAppUser generateUserDetails(TicketAppUser user)
-		{
-			user.UserName = user.FirstName + user.LastName;
-			user.Email = user.FirstName.ToLower() + "." + user.LastName.ToLower() + "@domain.com";
-			return user;
 		}
 	}
 }
