@@ -213,6 +213,7 @@ namespace TicketAppWeb.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LeadId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProjectName")
@@ -391,7 +392,9 @@ namespace TicketAppWeb.Migrations
 
                     b.HasOne("TicketAppWeb.Models.DomainModels.TicketAppUser", "Lead")
                         .WithMany()
-                        .HasForeignKey("LeadId");
+                        .HasForeignKey("LeadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CreatedBy");
 

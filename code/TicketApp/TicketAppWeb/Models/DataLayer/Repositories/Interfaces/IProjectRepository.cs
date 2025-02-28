@@ -9,7 +9,14 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 /// </summary>
 public interface IProjectRepository : IRepository<Project>
 {
-	// Adds the new project groups.
-	void AddNewProjectGroups(Project? project, string[] groupIds, IRepository<Group> groupData);
 	Task<Dictionary<Project, List<Group>>> GetProjectsAndGroups();
+
+    Task<List<Project>> GetAllProjectsAsync();
+    Task<List<Group>> GetAvailableGroupsAsync();
+    Task<List<TicketAppUser>> GetGroupLeadsAsync(List<string> groupIds);
+    Task AddProjectAsync(Project project, List<string> selectedGroupIds);
+    Task UpdateProjectAsync(Project project, List<string> selectedGroupIds);
+    Task DeleteProjectAsync(Project project);
+    Task<Project?> GetProjectByNameAndLeadAsync(string projectName, string projectLeadId);
+    Task<List<Group>> GetGroupsByIdsAsync(List<string> selectedGroupIds);
 }

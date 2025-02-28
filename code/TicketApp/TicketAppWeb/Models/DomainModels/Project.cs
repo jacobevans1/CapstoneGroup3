@@ -24,10 +24,10 @@ public class Project
     public string? ProjectName { get; set; }
 
     // Project description
-
     public string? Description { get; set; } = string.Empty;
 
     // Project Lead Id
+    [Required(ErrorMessage = "Please select a project lead")]
     public string? LeadId { get; set; }
 
     // Project lead
@@ -44,6 +44,7 @@ public class Project
     // Date the project was created
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+    [Required(ErrorMessage = "Please assign at least one group to the project")]
     // List of project groups
     public ICollection<Group> Groups { get; set; }
 }
