@@ -15,7 +15,6 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     {
         try
         {
-            // Check if project with the same name and lead already exists
             var existingProject = await GetProjectByNameAndLeadAsync(project.ProjectName!, project.LeadId!);
 
             if (existingProject != null)

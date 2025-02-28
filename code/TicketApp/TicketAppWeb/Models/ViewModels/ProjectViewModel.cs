@@ -1,4 +1,5 @@
-﻿using TicketAppWeb.Models.DomainModels;
+﻿using System.ComponentModel.DataAnnotations;
+using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
 
 namespace TicketAppWeb.Models.ViewModels;
@@ -10,20 +11,26 @@ namespace TicketAppWeb.Models.ViewModels;
 /// </summary>
 public class ProjectViewModel
 {
-	public Project Project { get; set; } = new();
-
-	public IEnumerable<Group> AssignedGroups { get; set; } = new List<Group>();
-
-	public List<string> SelectedGroupIds { get; set; } = new List<string>();
-
-	public IEnumerable<Group> AvailableGroups { get; set; } = new List<Group>();
-
-	// Now dynamically updating group leads based on selected groups
-	public IEnumerable<TicketAppUser> AvailableGroupLeads { get; set; } = new List<TicketAppUser>();
-
+	[Required(ErrorMessage ="Please assign a project lead")]
 	public string? ProjectLeadId { get; set; }
 
-	public IEnumerable<Project> Projects { get; set; } = new List<Project>();
+	[Required(ErrorMessage ="Please provide a project name")]
+	public string? ProjectName { get; set; }
+
+	public string? Description { get; set; }
+
+    [Required(ErrorMessage = "Please assign at least one group")]
+    public List<string> SelectedGroupIds { get; set; } = new List<string>();
+
+    //public Project Project { get; set; } = new();
+
+    public List<Group> AssignedGroups { get; set; } = new List<Group>();
+
+    public List<Group> AvailableGroups { get; set; } = new List<Group>();
+
+    public List<TicketAppUser> AvailableGroupLeads { get; set; } = new List<TicketAppUser>();
+
+    public IEnumerable<Project> Projects { get; set; } = new List<Project>();
 
 	public Dictionary<Project, List<Group>> ProjectGroups { get; set; } = new Dictionary<Project, List<Group>>();
 

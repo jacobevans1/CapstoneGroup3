@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TicketAppWeb.Models.DataLayer;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
@@ -15,7 +14,6 @@ namespace TicketAppWeb.Controllers;
 /// </summary>
 public class ProjectController : Controller
 {
-	private readonly TicketAppContext _context;
 	private readonly IProjectRepository _projectRepository;
 
 	public ProjectController(IProjectRepository projectRepository)
@@ -24,139 +22,75 @@ public class ProjectController : Controller
 	}
 
 	// GET: Projects
-	public async Task<IActionResult> Index(QueryOptions<Project> options)
+	public IActionResult Index(QueryOptions<Project> options)
 	{
 		var viewModel = new ProjectViewModel();
 		LoadIndexViewData(viewModel);
 		return View(viewModel);
 	}
 
-	// Method to return group leads based on selected groups
-	[HttpGet]
-	public JsonResult GetGroupLeads(string groupIds)
-	{
-		if (string.IsNullOrEmpty(groupIds))
-			return Json(new List<object>());
+    [HttpGet]
+    public async Task<IActionResult> AddProject()
+    {
+        var model = new ProjectViewModel
+        {
+            AvailableGroups = await _projectRepository.GetAvailableGroupsAsync()
+        };
+        return View(model);
+    }
 
-		var groupIdArray = groupIds.Split(",");
-		var leads = _context.Groups
-							.Where(g => groupIdArray.Contains(g.Id))
-							.Select(g => new { id = g.ManagerId, fullName = g.Manager!.FullName })
-							.Distinct()
-							.ToList();
+    [HttpPost]
+    public async Task<IActionResult> CreatProject(ProjectViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View("AddProject", model);
+        }
 
-		return Json(leads);
-	}
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-	// Add project action
-	[HttpPost]
-	public IActionResult Add(ProjectViewModel model)
-	{
-		if (!ModelState.IsValid)
-		{
-			model.AvailableGroups = _context.Groups.ToList();
-			model.AvailableGroupLeads = _context.Groups.Select(g => g.Manager).Distinct().ToList()!;
-			return View("Index", model);
-		}
+        var project = new Project
+        {
+            ProjectName = model.ProjectName,
+            Description = model.Description,
+            LeadId = model.ProjectLeadId,
+            CreatedById = userId
+        };
 
-		var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        try
+        {
+            var assignedGroups = model.SelectedGroupIds;
+            await _projectRepository.AddProjectAsync(project, assignedGroups);
+            TempData["SuccessMessage"] = $"Project {project.ProjectName} saved successfuly";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View("AddProject", model);
+        }
+    }
 
-		var project = new Project
-		{
-			Id = Guid.NewGuid().ToString(),
-			ProjectName = model.Project.ProjectName,
-			LeadId = model.ProjectLeadId,
-			CreatedById = userId,
-			Groups = _context.Groups.Where(g => model.SelectedGroupIds.Contains(g.Id)).ToList(),
-			CreatedAt = DateTime.UtcNow
-		};
+    // Method to return group leads based on selected groups
+    [HttpGet]
+    public async Task<JsonResult> GetGroupLeads(string groupIds)
+    {
+        if (string.IsNullOrEmpty(groupIds))
+            return Json(new List<object>());
 
-		_context.Projects.Add(project);
-		_context.SaveChanges();
-		return RedirectToAction("Index");
-	}
+        var groupIdArray = groupIds.Split(",").ToList();
+        var leads = await _projectRepository.GetGroupLeadsAsync(groupIdArray);
 
-	// Edit project action
-	[HttpGet]
-	public IActionResult Edit(string id)
-	{
-		var project = _context.Projects
-			.Include(p => p.Groups)
-			.FirstOrDefault(p => p.Id == id);
-
-		if (project == null)
-		{
-			return NotFound();
-		}
-
-		var viewModel = new
-		{
-			project = new
-			{
-				id = project.Id,
-				projectName = project.ProjectName,
-				leadId = project.LeadId
-			},
-			availableGroups = _context.Groups.Select(g => new { id = g.Id, groupName = g.GroupName }).ToList(),
-			selectedGroupIds = project.Groups.Select(g => g.Id).ToList()
-		};
-
-		return Json(viewModel);
-	}
-
-	// Edit project POST action
-
-	[HttpPost]
-	public IActionResult Edit(ProjectViewModel model)
-	{
-		if (!ModelState.IsValid)
-		{
-			model.AvailableGroups = _context.Groups.ToList();
-
-			model.AvailableGroupLeads = _context.Groups.Select(g => g.Manager).Distinct().ToList()!;
-
-			return View(model);
-		}
-
-		var project = _context.Projects.Include(p => p.Groups).FirstOrDefault(p => p.Id == model.Project.Id);
-
-		if (project == null)
-		{
-			return NotFound();
-		}
-
-		project.ProjectName = model.Project.ProjectName;
-
-		project.LeadId = model.ProjectLeadId;
-
-		project.Groups = _context.Groups.Where(g => model.SelectedGroupIds.Contains(g.Id)).ToList();
-
-		_context.Projects.Update(project);
-
-		_context.SaveChanges();
-
-		return RedirectToAction("Index");
-	}
-
-	// Delete project action
-	[HttpDelete]
-	public IActionResult Delete(string id)
-	{
-		var project = _context.Projects.Include(p => p.Groups).FirstOrDefault(p => p.Id == id);
-		if (project == null)
-		{
-			return NotFound();
-		}
-
-		_context.Projects.Remove(project);
-		_context.SaveChanges();
-
-		return Ok();
-	}
+        var result = leads.Select(l => new { id = l.Id, fullName = l.FullName }).Distinct();
+        return Json(result);
+    }
 
 	private void LoadIndexViewData(ProjectViewModel vm)
 	{
 		vm.Projects = _projectRepository.GetProjectsAndGroups().Result.Keys;
 		vm.ProjectGroups = _projectRepository.GetProjectsAndGroups().Result;
+		vm.AvailableGroups = _projectRepository.GetAvailableGroupsAsync().Result;
 	}
 }

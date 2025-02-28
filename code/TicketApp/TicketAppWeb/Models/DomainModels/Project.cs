@@ -13,6 +13,8 @@ public class Project
     // Constructor
     public Project()
     {
+        Id = Guid.NewGuid().ToString();
+        CreatedAt = DateTime.UtcNow;
         Groups = new HashSet<Group>();
     }
 
