@@ -14,6 +14,14 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Group?> GetAsync(string id)
+        {
+            return await context.Groups
+                .Include(g => g.Members)
+                .Include(g => g.Manager)
+                .FirstOrDefaultAsync(g => g.Id == id);
+        }
+
         public void AddNewGroupMembers(Group? group, string[] userIds, IRepository<TicketAppUser> memberData)
         {
             if (group == null) return;

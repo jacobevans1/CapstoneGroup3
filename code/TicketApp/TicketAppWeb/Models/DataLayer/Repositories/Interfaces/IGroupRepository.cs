@@ -16,6 +16,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
         void AddNewGroupMembers(Group? group, string[] userIds, IRepository<TicketAppUser> memberData);
         Task InsertAsync(Group group);
         Task SaveAsync();
+        Task<Group?> GetAsync(string id);
 
     }
 }

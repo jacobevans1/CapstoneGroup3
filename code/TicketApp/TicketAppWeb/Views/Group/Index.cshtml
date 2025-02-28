@@ -34,6 +34,7 @@
                             <my-sorting-link sort-field="@nameof(Group.Manager)"
                                              current="@Model.CurrentRoute">Group Lead</my-sorting-link>
                         </th>
+                        <th>Actions</th> <!-- New column for actions -->
                     </tr>
                 </thead>
                 <tbody>
@@ -50,13 +51,21 @@
                             <td>
                                 @if (group.Manager != null)
                                 {
-                                    <a href="@Url.Action("Details", "User", new { id = group.Manager.Id })">@group.Manager.FirstName @group.Manager.LastName</a>
+                                    <a href="@Url.Action("Details", "User", new { id = group.Manager.Id })">
+                                        @group.Manager.FirstName @group.Manager.LastName
+                                    </a>
                                 }
+                            </td>
+                            <td>
+                                <a asp-action="EditGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-warning">
+                                    Edit
+                                </a>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
+
 
         </div>
     </div>

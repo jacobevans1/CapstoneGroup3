@@ -6,6 +6,8 @@ namespace TicketAppWeb.Models.ViewModels
 {
     public class AddGroupViewModel
     {
+        public string GroupId { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Please enter a group name.")]
         public string GroupName { get; set; } = string.Empty;
 

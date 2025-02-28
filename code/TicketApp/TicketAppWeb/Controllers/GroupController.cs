@@ -99,4 +99,65 @@ public class GroupController : Controller
         // Step 5: Redirect to Group Management Page
         return RedirectToAction("Index");
     }
+
+    [HttpGet]
+    public async Task<IActionResult> EditGroup(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
+
+        var group = await _groupRepository.GetAsync(id);
+        if (group == null)
+        {
+            return NotFound();
+        }
+
+        var users = await _userRepository.GetAllUsersAsync();
+
+        var model = new AddGroupViewModel
+        {
+            GroupName = group.GroupName,
+            Description = group.Description,
+            GroupLeadId = group.ManagerId,
+            AllUsers = users.ToList(),
+            SelectedUserIds = group.Members.Select(m => m.Id).ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateGroup(AddGroupViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            var users = await _userRepository.GetAllUsersAsync();
+            model.AllUsers = users.ToList();
+            return View("EditGroup", model);
+        }
+
+        var group = await _groupRepository.GetAsync(model.GroupId);
+        if (group == null) return NotFound();
+
+        group.GroupName = model.GroupName;
+        group.Description = model.Description;
+        group.ManagerId = model.GroupLeadId;
+
+        group.Members.Clear();
+        foreach (var userId in model.SelectedUserIds)
+        {
+            var user = await _userRepository.GetAsync(userId);
+            if (user != null)
+            {
+                group.Members.Add(user);
+            }
+        }
+
+        await _groupRepository.SaveAsync();
+        return RedirectToAction("Index");
+    }
+
+
 }
