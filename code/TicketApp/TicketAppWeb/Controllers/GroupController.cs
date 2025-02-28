@@ -118,6 +118,7 @@ public class GroupController : Controller
 
         var model = new AddGroupViewModel
         {
+            GroupId = group.Id,
             GroupName = group.GroupName,
             Description = group.Description,
             GroupLeadId = group.ManagerId,
@@ -128,18 +129,35 @@ public class GroupController : Controller
         return View(model);
     }
 
+
     [HttpPost]
     public async Task<IActionResult> UpdateGroup(AddGroupViewModel model)
     {
+        Console.WriteLine("UpdateGroup action triggered"); // Debugging step
+
         if (!ModelState.IsValid)
         {
+            Console.WriteLine("Model state is invalid");
+            foreach (var key in ModelState.Keys)
+            {
+                foreach (var error in ModelState[key].Errors)
+                {
+                    Console.WriteLine($"Validation Error - {key}: {error.ErrorMessage}");
+                }
+            }
             var users = await _userRepository.GetAllUsersAsync();
             model.AllUsers = users.ToList();
             return View("EditGroup", model);
         }
 
         var group = await _groupRepository.GetAsync(model.GroupId);
-        if (group == null) return NotFound();
+        if (group == null)
+        {
+            Console.WriteLine("Group not found");
+            return NotFound();
+        }
+
+        Console.WriteLine($"Updating group {group.GroupName} with new lead: {model.GroupLeadId}");
 
         group.GroupName = model.GroupName;
         group.Description = model.Description;
@@ -156,8 +174,9 @@ public class GroupController : Controller
         }
 
         await _groupRepository.SaveAsync();
+        Console.WriteLine("Group update successful!");
+
         return RedirectToAction("Index");
     }
-
 
 }

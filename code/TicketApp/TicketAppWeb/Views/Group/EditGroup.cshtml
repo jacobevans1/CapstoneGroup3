@@ -21,7 +21,7 @@
     </div>
 
     <form asp-action="UpdateGroup" method="post" class="styled-form">
-        <input type="hidden" name="GroupId" value="@ViewBag.GroupId" /> <!-- Pass Group ID -->
+        <input type="hidden" asp-for="GroupId" />
 
         <div class="form-group">
             <label asp-for="GroupName" class="form-label">Group Name</label>
