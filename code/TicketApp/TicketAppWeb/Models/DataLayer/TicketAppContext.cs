@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.DomainModels;
 
@@ -23,7 +24,7 @@ namespace TicketAppWeb.Models.DataLayer
 		public DbSet<TicketAppUser> Users { get; set; }
 
 		/// <summary>
-		/// Gets or sets the DbSet representing the Roles table in the database.
+		/// Gets or sets the DbSet representing the AvailableRoles table in the database.
 		/// </summary>
 		public DbSet<IdentityRole> Roles { get; set; }
 
