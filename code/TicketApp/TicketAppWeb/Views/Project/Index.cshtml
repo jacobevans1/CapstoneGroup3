@@ -29,9 +29,9 @@
                     </select>
                 </div>
             </div>
-
-            <a type="button" class="btn btn-primary mb-3" asp-action="AddProject" asp-controller="Project">Add Project</a>
-
+            <div style="width: 150px;">
+                <a type="button" class="btn btn-primary" asp-action="AddProject" asp-controller="Project" style="width: 100%;">Add Project</a>
+            </div>
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -61,12 +61,17 @@
                             <td>
                                 @if (!string.IsNullOrEmpty(project.LeadId))
                                 {
-                                    <a href="@Url.Action("Details", "User", new { id = project.LeadId })">@project.Lead!.FullName</a>
+                                    <a href="@Url.Action("Details", "User", new { id = project.LeadId })" class="badge bg-success text-dark">@project.Lead!.FullName</a>
                                 }
                             </td>
                             <td>
-                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editProjectModal" onclick="loadProjectData('@project.Id')">Edit</button>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProjectModal" onclick="confirmDelete('@project.Id')">Delete</button>
+                                <div style="width: 150px;">
+                                    <a type="button" asp-action="EditProject" asp-route-id="@project.Id" class="btn btn-warning" style="width: 100%;">Edit</a>
+                                </div>
+                                <br/>
+                                <div style="width: 150px">
+                                    <a type="button" class="btn btn-danger p-2" asp-action="AddProject" asp-controller="Project" style="width: 100%">Delete</a>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -75,187 +80,3 @@
         </div>
     </div>
 </div>
-
-<!-- Add Project Modal -->
-@*<div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Project</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="addProjectForm" asp-action="Add" asp-controller="Project" method="post">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Project Name</label>
-                        <input asp-for="Project.ProjectName" class="form-control" required />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Assign Groups</label>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6>Available Groups</h6>
-                                <ul id="availableGroups" class="list-group">
-                                    @foreach (var group in Model.AvailableGroups)
-                                    {
-                                        <li class="list-group-item">
-                                            <input type="checkbox" class="group-checkbox" value="@group.Id" />
-                                            @group.GroupName
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <h6>Assigned Groups</h6>
-                                <ul id="assignedGroups" class="list-group">
-                                    @foreach (var group in Model.AssignedGroups)
-                                    {
-                                        <li class="list-group-item">
-                                            <input type="checkbox" class="group-checkbox" value="@group.Id"/>
-                                            @group.GroupName
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Project Lead</label>
-                        <select id="projectLead" asp-for="ProjectLeadId" class="form-select">
-                            <option value="">Select a Lead</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Project Modal -->
-<div class="modal fade" id="editProjectModal" tabindex="-1" aria-labelledby="editProjectModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Project</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="editProjectForm" asp-action="Edit" asp-controller="Project" method="post">
-                <div class="modal-body">
-                    <input type="hidden" id="editProjectId" name="Project.Id" />
-
-                    <div class="mb-3">
-                        <label class="form-label">Project Name</label>
-                        <input type="text" id="editProjectName" name="Project.ProjectName" class="form-control" required />
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Assign Groups</label>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6>Available Groups</h6>
-                                <ul id="editAvailableGroups" class="list-group"></ul>
-                            </div>
-                            <div class="col-md-6">
-                                <h6>Assigned Groups</h6>
-                                <ul id="editAssignedGroups" class="list-group"></ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Project Lead</label>
-                        <select id="editProjectLead" name="ProjectLeadId" class="form-select">
-                            <option value="">Select a Lead</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const availableGroups = document.getElementById("availableGroups");
-        const assignedGroups = document.getElementById("assignedGroups");
-        const projectLeadSelect = document.getElementById("projectLead");
-
-        function createAssignedGroupItem(groupId, groupName) {
-            let listItem = document.createElement("li");
-            listItem.className = "list-group-item";
-            listItem.innerHTML = `
-                <input type="checkbox" class="assigned-group-checkbox" value="${groupId}" checked />
-                ${groupName}
-            `;
-            assignedGroups.appendChild(listItem);
-
-            // Add event listener to remove from assigned groups when unchecked
-            listItem.querySelector(".assigned-group-checkbox").addEventListener("change", function () {
-                if (!this.checked) {
-                    assignedGroups.removeChild(listItem);
-                    // Uncheck the corresponding checkbox in available groups
-                    let availableCheckbox = availableGroups.querySelector(`input[value="${groupId}"]`);
-                    if (availableCheckbox) {
-                        availableCheckbox.checked = false;
-                    }
-                    updateProjectLeads();
-                }
-            });
-        }
-
-        availableGroups.addEventListener("change", function (event) {
-            if (event.target.classList.contains("group-checkbox")) {
-                let groupId = event.target.value;
-                let groupName = event.target.parentNode.textContent.trim();
-
-                if (event.target.checked) {
-                    createAssignedGroupItem(groupId, groupName);
-                } else {
-                    // Remove from assigned groups
-                    let assignedCheckbox = assignedGroups.querySelector(`input[value="${groupId}"]`);
-                    if (assignedCheckbox) {
-                        assignedGroups.removeChild(assignedCheckbox.parentNode);
-                    }
-                }
-                updateProjectLeads();
-            }
-        });
-
-        function updateProjectLeads() {
-            projectLeadSelect.innerHTML = '<option value="">Select a Lead</option>';
-            let selectedGroupIds = Array.from(assignedGroups.querySelectorAll(".assigned-group-checkbox"))
-                .map(item => item.value);
-
-            if (selectedGroupIds.length === 0) {
-                return;
-            }
-
-            fetch(`/Project/GetGroupLeads?groupIds=${selectedGroupIds.join(',')}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length === 0) {
-                        console.warn("No leads found for the selected groups.");
-                    }
-
-                    data.forEach(lead => {
-                        let option = document.createElement("option");
-                        option.value = lead.id;
-                        option.textContent = lead.fullName;
-                        projectLeadSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error("Error fetching leads:", error));
-        }
-
-    });
-</script>
-*@

@@ -1,0 +1,235 @@
+﻿@model ProjectViewModel
+@{
+
+    ViewData["Title"] = "Edit Project";
+
+}
+
+<!-- Google Font for Bubblegum Sans -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+
+
+
+<!-- Link to CSS -->
+
+<link href="~/css/projectmanagement.css" rel="stylesheet" />
+
+
+
+<div class="container">
+
+    <div class="row">
+
+        <div class="col-md-12">
+
+            <h2 class="text-center">Edit Project</h2>
+
+            <div class="title-divider"></div>
+
+        </div>
+
+    </div>
+
+    <form asp-action="EditProject" method="post" class="styled-form">
+
+        <input type="hidden" name="id" value="@ViewContext.RouteData.Values["id"]" />
+
+        <div class="form-group">
+
+            <label asp-for="ProjectName" class="form-label">Project Name <span class="text-danger">*</span></label>
+
+            <input asp-for="ProjectName" class="form-control" />
+
+            <span asp-validation-for="ProjectName" class="text-danger"></span>
+
+        </div>
+
+        <br />
+
+        <div class="form-group">
+
+            <label asp-for="Description" class="form-label">Description</label>
+
+            <textarea asp-for="Description" class="form-control"></textarea>
+
+        </div>
+
+        <br />
+
+        <div class="row ProjectLeadId">
+
+            <div class="col-md-6">
+
+                <h6>Available Groups</h6>
+
+                <ul id="availableGroups" class="list-group">
+
+                    @foreach (var group in Model.AvailableGroups)
+                    {
+                        if (!Model.SelectedGroupIds.Contains(group.Id))
+                        {
+                            <li class="list-group-item">
+
+                                <input type="checkbox" class="group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="@group.Id" />
+
+                                @group.GroupName
+
+                            </li>
+                        }
+                    }
+                </ul>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <h6>Assigned Groups <span class="text-danger">*</span></h6>
+
+                <ul id="assignedGroups" class="list-group">
+
+                    @foreach (var group in Model.AvailableGroups)
+                    {
+                        if (Model.SelectedGroupIds.Contains(group.Id))
+                        {
+                            <li class="list-group-item">
+                                <input type="checkbox" class="assigned-group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="@group.Id" checked />
+                                @group.GroupName
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+            <span asp-validation-for="SelectedGroupIds" class="text-danger"></span>
+        </div>
+        <br />
+        <div class="form-group mt-3">
+            <label class="form-label">Project Lead <span class="text-danger">*</span></label>
+            <select id="projectLead" asp-for="ProjectLeadId" class="form-select">
+                <option value="">Select a Lead</option>
+                @foreach (var lead in Model.AvailableGroupLeads)
+                {
+                    <option value="@lead.Id" selected="@(Model.ProjectLeadId == lead.Id ? "selected" : null)">
+                        @lead.FullName
+                    </option>
+                }
+            </select>
+            <input type="hidden" id="hiddenProjectLeadId" name="ProjectLeadId" value="@Model.ProjectLeadId" />
+            <span asp-validation-for="ProjectLeadId" class="text-danger"></span>
+        </div>
+        <br />
+        <div class="mt-3 text-center">
+            <button type="submit" class="btn btn-success">Update Project</button>
+            <a asp-action="Index" asp-controller="Project" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const availableGroups = document.getElementById("availableGroups");
+            const assignedGroups = document.getElementById("assignedGroups");
+            const projectLeadSelect = document.getElementById("projectLead");
+
+            function createAssignedGroupItem(groupId, groupName) {
+                let listItem = document.createElement("li");
+                listItem.className = "list-group-item";
+                listItem.innerHTML = `
+                            <input type="checkbox" class="assigned-group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="${groupId}" checked />
+                            ${groupName}
+                        `;
+                assignedGroups.appendChild(listItem);
+
+                listItem.querySelector(".assigned-group-checkbox").addEventListener("change", function () {
+                    if (!this.checked) {
+                        assignedGroups.removeChild(listItem);
+                        moveToAvailableGroups(groupId, groupName);
+                        updateProjectLeads();
+                    }
+                });
+            }
+
+            function moveToAvailableGroups(groupId, groupName) {
+                let listItem = document.createElement("li");
+                listItem.className = "list-group-item";
+                listItem.innerHTML = `
+                            <input type="checkbox" class="group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="${groupId}" />
+                            ${groupName}
+                        `;
+                availableGroups.appendChild(listItem);
+
+                listItem.querySelector(".group-checkbox").addEventListener("change", function () {
+                    if (this.checked) {
+                        availableGroups.removeChild(listItem);
+                        createAssignedGroupItem(groupId, groupName);
+                        updateProjectLeads();
+                    }
+                });
+            }
+
+            availableGroups.addEventListener("change", function (event) {
+                if (event.target.classList.contains("group-checkbox")) {
+                    let groupId = event.target.value;
+                    let groupName = event.target.parentNode.textContent.trim();
+
+                    if (event.target.checked) {
+                        availableGroups.removeChild(event.target.parentNode);
+                        createAssignedGroupItem(groupId, groupName);
+                        updateProjectLeads();
+                    }
+                }
+            });
+
+            function updateProjectLeads() {
+                projectLeadSelect.innerHTML = '<option value="">Select a Lead</option>';
+                let selectedGroupIds = Array.from(assignedGroups.querySelectorAll(".assigned-group-checkbox"))
+                    .map(item => item.value);
+
+                if (selectedGroupIds.length === 0) return;
+
+                fetch(`/Project/GetGroupLeads?groupIds=${selectedGroupIds.join(',')}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length === 0) {
+                            console.warn("No leads found for the selected groups.");
+                        }
+                        data.forEach(lead => {
+                            let option = document.createElement("option");
+                            option.value = lead.id;
+                            option.textContent = lead.fullName;
+                            if (lead.id == document.getElementById("hiddenProjectLeadId").value) {
+                                option.selected = true;
+                            }
+                            projectLeadSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error("Error fetching leads:", error));
+            }
+
+            document.getElementById("projectLead").addEventListener("change", function () {
+                document.getElementById("hiddenProjectLeadId").value = this.value;
+            });
+
+            document.querySelectorAll(".assigned-group-checkbox").forEach(checkbox => {
+                checkbox.addEventListener("change", function () {
+                    if (!this.checked) {
+                        let listItem = this.parentNode;
+                        let groupId = this.value;
+                        let groupName = listItem.textContent.trim();
+                        assignedGroups.removeChild(listItem);
+                        moveToAvailableGroups(groupId, groupName);
+                        updateProjectLeads();
+                    }
+                });
+            });
+
+            updateProjectLeads();
+        });
+    </script>
+}
+

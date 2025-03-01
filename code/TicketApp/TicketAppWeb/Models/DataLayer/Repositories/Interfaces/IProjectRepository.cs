@@ -13,6 +13,7 @@ public interface IProjectRepository : IRepository<Project>
 
     Task<List<Project>> GetAllProjectsAsync();
     Task<List<Group>> GetAvailableGroupsAsync();
+    Task<Project?> GetProjectByIdAsync(string id);
     Task<List<TicketAppUser>> GetGroupLeadsAsync(List<string> groupIds);
     Task AddProjectAsync(Project project, List<string> selectedGroupIds);
     Task UpdateProjectAsync(Project project, List<string> selectedGroupIds);

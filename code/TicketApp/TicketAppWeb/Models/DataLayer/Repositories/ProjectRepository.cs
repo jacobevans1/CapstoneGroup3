@@ -19,23 +19,58 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
 
             if (existingProject != null)
             {
-                throw new InvalidOperationException("A project with the same name and lead already exists.");
+                // Update existing project
+                existingProject.Description = project.Description;
+                existingProject.Groups = await context.Groups
+                    .Where(g => selectedGroupIds.Contains(g.Id))
+                    .ToListAsync();
+
+                await context.SaveChangesAsync();
+                return;
             }
 
-            var selectedGroups = await context.Groups
+            // If project doesn't exist, create a new one
+            project.Groups = await context.Groups
                 .Where(g => selectedGroupIds.Contains(g.Id))
                 .ToListAsync();
-
-            project.Groups = selectedGroups;
 
             context.Projects.Add(project);
             await context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error adding project: {ex.Message}");
+            throw new Exception($"Error adding/updating project: {ex.Message}");
         }
     }
+
+    public async Task UpdateProjectAsync(Project project, List<string> selectedGroupIds)
+    {
+        try
+        {
+            var existingProject = await context.Projects
+                .Include(p => p.Groups)
+                .FirstOrDefaultAsync(p => p.Id == project.Id);
+
+            if (existingProject == null)
+            {
+                throw new KeyNotFoundException("Project not found.");
+            }
+
+            existingProject.ProjectName = project.ProjectName;
+            existingProject.Description = project.Description;
+            existingProject.LeadId = project.LeadId;
+            existingProject.Groups = await context.Groups
+                .Where(g => selectedGroupIds.Contains(g.Id))
+                .ToListAsync();
+
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error updating project: {ex.Message}");
+        }
+    }
+
 
     public async Task<Project?> GetProjectByNameAndLeadAsync(string projectName, string leadId)
     {
@@ -93,33 +128,6 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
         }
 
         return projectsGroups;
-    }
-
-    public async Task UpdateProjectAsync(Project project, List<string> selectedGroupIds)
-    {
-        try
-        {
-            var existingProject = await context.Projects
-                .Include(p => p.Groups)
-                .FirstOrDefaultAsync(p => p.Id == project.Id);
-
-            if (existingProject == null)
-            {
-                throw new KeyNotFoundException("Project not found.");
-            }
-
-            existingProject.ProjectName = project.ProjectName;
-            existingProject.LeadId = project.LeadId;
-            existingProject.Groups = await context.Groups
-                .Where(g => selectedGroupIds.Contains(g.Id))
-                .ToListAsync();
-
-            await context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error updating project: {ex.Message}");
-        }
     }
 
     private List<Project> setProjectLeads(List<Project> projects)

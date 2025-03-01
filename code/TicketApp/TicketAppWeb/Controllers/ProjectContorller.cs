@@ -73,6 +73,61 @@ public class ProjectController : Controller
         }
     }
 
+    [HttpGet]
+    public async Task<IActionResult> EditProject(string id)
+    {
+        var project = await _projectRepository.GetProjectByIdAsync(id);
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        var model = new ProjectViewModel
+        {
+            ProjectName = project.ProjectName,
+            Description = project.Description,
+            ProjectLeadId = project.LeadId,
+            SelectedGroupIds = project.Groups.Select(g => g.Id).ToList(),
+            AvailableGroups = await _projectRepository.GetAvailableGroupsAsync(),
+            AssignedGroups = project.Groups.ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditProject(ProjectViewModel model, string id)
+    {
+        if (!ModelState.IsValid)
+        {
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View(model);
+        }
+
+        var project = await _projectRepository.GetProjectByIdAsync(id);
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        project.ProjectName = model.ProjectName;
+        project.Description = model.Description;
+        project.LeadId = model.ProjectLeadId;
+
+        try
+        {
+            await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds);
+            TempData["SuccessMessage"] = $"Project {project.ProjectName} updated successfully";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View(model);
+        }
+    }
+
     // Method to return group leads based on selected groups
     [HttpGet]
     public async Task<JsonResult> GetGroupLeads(string groupIds)
