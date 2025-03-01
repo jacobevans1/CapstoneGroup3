@@ -82,28 +82,51 @@
             $('#allUsersList option:selected').each(function () {
                 let option = $(this);
                 $('#selectedUsersList').append(option);
-                updateGroupLeadDropdown();
             });
+            $('#allUsersList option').prop('selected', false); // Deselect after moving
+            updateGroupLeadDropdown();
         }
 
         function removeUser() {
             $('#selectedUsersList option:selected').each(function () {
                 let option = $(this);
                 $('#allUsersList').append(option);
-                updateGroupLeadDropdown();
             });
+            $('#selectedUsersList option').prop('selected', false); // Deselect after moving
+            updateGroupLeadDropdown();
         }
 
         function updateGroupLeadDropdown() {
             let groupLeadDropdown = $('#groupLeadDropdown');
+            let selectedLead = groupLeadDropdown.val(); // Preserve selected Group Lead
+
             groupLeadDropdown.empty();
             groupLeadDropdown.append('<option value="">Select Group Lead</option>');
 
             $('#selectedUsersList option').each(function () {
                 let userId = $(this).val();
                 let userName = $(this).text();
-                groupLeadDropdown.append('<option value="' + userId + '">' + userName + '</option>');
+                let isSelected = selectedLead === userId ? 'selected' : ''; // Keep previous selection
+                groupLeadDropdown.append('<option value="' + userId + '" ' + isSelected + '>' + userName + '</option>');
             });
         }
+
+        function selectAllMembersBeforeSubmit() {
+            $('#selectedUsersList option').prop('selected', true);
+        }
+
+        $(document).ready(function () {
+            // Ensure all users in the Potential Group Members list are selected before submitting
+            $('form').on('submit', function () {
+                selectAllMembersBeforeSubmit();
+            });
+
+            // Click anywhere on the page to deselect users, but NOT the Group Lead selection
+            $(document).on('click', function (event) {
+                if (!$(event.target).is('option') && !$(event.target).closest('#groupLeadDropdown').length) {
+                    $('#allUsersList option, #selectedUsersList option').prop('selected', false);
+                }
+            });
+        });
     </script>
 }
