@@ -16,19 +16,27 @@ public class ProjectController : Controller
 {
 	private readonly IProjectRepository _projectRepository;
 
-	public ProjectController(IProjectRepository projectRepository)
+    /// <summary>
+    /// Initializes a new instance of the ProjectController class.
+    /// </summary>
+    public ProjectController(IProjectRepository projectRepository)
 	{
 		_projectRepository = projectRepository;
 	}
 
-	// GET: Projects
-	public IActionResult Index(QueryOptions<Project> options)
+    /// <summary>
+    /// The start of the project management page.
+    /// </summary>
+    public IActionResult Index(QueryOptions<Project> options)
 	{
 		var viewModel = new ProjectViewModel();
 		LoadIndexViewData(viewModel);
 		return View(viewModel);
 	}
 
+    /// <summary>
+    /// prepare resources need to adds a project.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> AddProject()
     {
@@ -39,6 +47,9 @@ public class ProjectController : Controller
         return View(model);
     }
 
+    /// <summary>
+    /// Creats the project and saves it to the database.
+    /// </summary>
     [HttpPost]
     public async Task<IActionResult> CreatProject(ProjectViewModel model)
     {
@@ -73,6 +84,9 @@ public class ProjectController : Controller
         }
     }
 
+    /// <summary>
+    /// Gets the project to edit by Id of the project.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> EditProject(string id)
     {
@@ -95,6 +109,9 @@ public class ProjectController : Controller
         return View(model);
     }
 
+    /// <summary>
+    /// Edits the project.
+    /// </summary>
     [HttpPost]
     public async Task<IActionResult> EditProject(ProjectViewModel model, string id)
     {
@@ -128,7 +145,48 @@ public class ProjectController : Controller
         }
     }
 
-    // Method to return group leads based on selected groups
+    /// <summary>
+    /// Gets the projet to be deleted by Id.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> DeleteProject(string id)
+    {
+        var project = await _projectRepository.GetProjectByIdAsync(id);
+        if (project == null)
+        {
+            return NotFound();
+        }
+        return View(project);
+    }
+
+    /// <summary>
+    /// Confirms the project delete action.
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> ConfirmDelete(string id)
+    {
+        var project = await _projectRepository.GetProjectByIdAsync(id);
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            await _projectRepository.DeleteProjectAsync(project);
+            TempData["SuccessMessage"] = $"Project {project.ProjectName} deleted successfully";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error deleting project: {ex.Message}";
+            return RedirectToAction("Index");
+        }
+    }
+
+    /// <summary>
+    /// Gets the group leads based on selected groups
+    /// </summary>
     [HttpGet]
     public async Task<JsonResult> GetGroupLeads(string groupIds)
     {

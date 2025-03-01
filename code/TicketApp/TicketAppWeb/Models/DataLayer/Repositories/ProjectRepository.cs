@@ -11,6 +11,12 @@ namespace TicketAppWeb.Models.DataLayer.Reposetories;
 /// </summary>
 public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx), IProjectRepository
 {
+    /// <summary>
+    /// Adds the project asynchronous.
+    /// </summary>
+    /// <param name="project">The project.</param>
+    /// <param name="selectedGroupIds">The selected group ids.</param>
+    /// <exception cref="System.Exception">Error adding/updating project: {ex.Message}</exception>
     public async Task AddProjectAsync(Project project, List<string> selectedGroupIds)
     {
         try
@@ -43,6 +49,13 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
         }
     }
 
+    /// <summary>
+    /// Updates the project asynchronous.
+    /// </summary>
+    /// <param name="project">The project.</param>
+    /// <param name="selectedGroupIds">The selected group ids.</param>
+    /// <exception cref="System.Collections.Generic.KeyNotFoundException">Project not found.</exception>
+    /// <exception cref="System.Exception">Error updating project: {ex.Message}</exception>
     public async Task UpdateProjectAsync(Project project, List<string> selectedGroupIds)
     {
         try
@@ -71,7 +84,29 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
         }
     }
 
+    /// <summary>
+    /// Deletes the project asynchronous.
+    /// </summary>
+    /// <param name="project">The project.</param>
+    /// <exception cref="System.Exception">Error deleting project: {ex.Message}</exception>
+    public async Task DeleteProjectAsync(Project project)
+    {
+        try
+        {
+            context.Projects.Remove(project);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error deleting project: {ex.Message}");
+        }
+    }
 
+    /// <summary>
+    /// Gets the project by name and lead asynchronous.
+    /// </summary>
+    /// <param name="projectName">Name of the project.</param>
+    /// <param name="leadId">The lead identifier.</param>
     public async Task<Project?> GetProjectByNameAndLeadAsync(string projectName, string leadId)
     {
         return await context.Projects
@@ -79,21 +114,26 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
             .FirstOrDefaultAsync(p => p.ProjectName == projectName && p.LeadId == leadId);
     }
 
-    public Task DeleteProjectAsync(Project project)
-    {
-        throw new NotImplementedException();
-    }
-
+    /// <summary>
+    /// Gets all projects asynchronous.
+    /// </summary>
     public Task<List<Project>> GetAllProjectsAsync()
     {
         return context.Projects.Include(p => p.Groups).ToListAsync();
     }
 
+    /// <summary>
+    /// Gets the available groups asynchronous.
+    /// </summary>
     public Task<List<Group>> GetAvailableGroupsAsync()
     {
         return context.Groups.ToListAsync();
     }
 
+    /// <summary>
+    /// Gets the group leads asynchronous.
+    /// </summary>
+    /// <param name="groupIds">The group ids.</param>
     public Task<List<TicketAppUser>> GetGroupLeadsAsync(List<string> groupIds)
     {
         return context.Groups
@@ -103,11 +143,18 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
             .ToListAsync()!;
     }
 
+    /// <summary>
+    /// Gets the project by identifier asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
     public Task<Project?> GetProjectByIdAsync(string id)
     {
         return context.Projects.Include(p => p.Groups).FirstOrDefaultAsync(p => p.Id == id);
     }
 
+    /// <summary>
+    /// Gets the projects their assigned groups.
+    /// </summary>
     public async Task<Dictionary<Project, List<Group>>> GetProjectsAndGroups()
     {
         var projects = context.Projects.ToList();
@@ -130,6 +177,10 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
         return projectsGroups;
     }
 
+    /// <summary>
+    /// Sets the project leads.
+    /// </summary>
+    /// <param name="projects">The projects.</param>
     private List<Project> setProjectLeads(List<Project> projects)
 	{
 		foreach (var project in projects)
@@ -139,6 +190,11 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
 
 		return projects;
 	}
+
+    /// <summary>
+    /// Gets the groups by ids asynchronous.
+    /// </summary>
+    /// <param name="selectedGroupIds">The selected group ids.</param>
     public async Task<List<Group>> GetGroupsByIdsAsync(List<string> selectedGroupIds)
     {
         if (selectedGroupIds == null || !selectedGroupIds.Any())

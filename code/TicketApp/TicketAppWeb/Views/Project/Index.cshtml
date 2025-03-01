@@ -1,4 +1,10 @@
-﻿@model ProjectViewModel
+﻿@*
+    The the view of the home page of project management
+    Jabesi Abwe
+    03/01/2025
+*@
+
+@model ProjectViewModel
 @{
     ViewData["Title"] = "Project Management";
 }
@@ -9,6 +15,28 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
+            <!-- TempData variables -->
+            @{
+                var successMessage = TempData["SuccessMessage"] as string;
+                var errorMessage = TempData["ErrorMessage"] as string;
+            }
+
+            <!-- Display success messages if any -->
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success">
+                    @successMessage
+                </div>
+            }
+
+            <!-- Display error messages if any -->
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @errorMessage
+                </div>
+            }
+
             <h2 class="text-center">Project Management</h2>
             <div class="title-divider"></div>
             <br />
@@ -75,7 +103,7 @@
                                         <a type="button" asp-action="EditProject" asp-route-id="@project.Id" class="btn btn-warning" style="width: 100%;">Edit</a>
                                     </div>
                                     <div class="col-auto" style="width: 150px">
-                                        <a type="button" class="btn btn-danger p-2" asp-action="AddProject" asp-controller="Project" style="width: 100%">Delete</a>
+                                        <a type="button" class="btn btn-danger p-2" asp-action="DeleteProject" asp-route-id="@project.Id" style="width: 100%">Delete</a>
                                     </div>
                                 </div>
                             </td>

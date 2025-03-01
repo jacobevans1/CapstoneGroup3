@@ -1,0 +1,42 @@
+﻿@*
+    Implements the view of the delete project funtionality
+    Jabesi Abwe
+    03/01/2025
+*@
+
+@model Project
+@{
+    ViewData["Title"] = "Delete Project";
+}
+
+<!-- Google Font for Bubblegum Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+
+<!-- Link to CSS -->
+<link href="~/css/projectmanagement.css" rel="stylesheet" />
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-5" style="width: 500px;">
+        <div class="card-body text-center">
+            <h5 class="card-title text-danger">Delete Project</h5>
+            <p class="card-text">
+                Are you sure you want to delete the project: <strong>@Model.ProjectName</strong>?
+                This action can't be undone.
+            </p>
+            <form asp-action="ConfirmDelete" asp-route-id="@Model.Id" method="post">
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                    </div>
+                    <div class="col-auto">
+                        <div style="width: 150px">
+                            <a asp-action="Index" asp-controller="Project" class="btn btn-secondary" style="width: 100%">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
