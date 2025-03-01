@@ -91,9 +91,15 @@
             <span asp-validation-for="ProjectLeadId" class="text-danger"></span>
         </div>
         <br />
-        <div class="mt-3 text-center">
-            <button type="submit" class="btn btn-success">Create Project</button>
-            <a asp-action="Index" asp-controller="Project" class="btn btn-secondary">Cancel</a>
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Update Project</button>
+            </div>
+            <div class="col-auto">
+                <div style="width: 150px">
+                    <a asp-action="Index" asp-controller="Project" class="btn btn-secondary" style="width: 100%">Cancel</a>
+                </div>
+            </div>
         </div>
     </form>
 </div>

@@ -55,22 +55,28 @@
                             <td>
                                 @foreach (var group in Model.ProjectGroups[project])
                                 {
-                                    <a href="@Url.Action("Details", "Group", new { id = group.Id })" class="badge bg-info text-dark">@group.GroupName</a>
+                                    <a href="@Url.Action("Details", "Group", new { id = group.Id })" class="badge bg-info text-dark text-decoration-none me-1 d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        @group.GroupName
+                                    </a>
                                 }
                             </td>
                             <td>
                                 @if (!string.IsNullOrEmpty(project.LeadId))
                                 {
-                                    <a href="@Url.Action("Details", "User", new { id = project.LeadId })" class="badge bg-success text-dark">@project.Lead!.FullName</a>
+                                    <a href="@Url.Action("Details", "User", new { id = project.LeadId })" class="badge bg-success text-dark text-decoration-none d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        @project.Lead!.FullName
+                                    </a>
                                 }
                             </td>
+
                             <td>
-                                <div style="width: 150px;">
-                                    <a type="button" asp-action="EditProject" asp-route-id="@project.Id" class="btn btn-warning" style="width: 100%;">Edit</a>
-                                </div>
-                                <br/>
-                                <div style="width: 150px">
-                                    <a type="button" class="btn btn-danger p-2" asp-action="AddProject" asp-controller="Project" style="width: 100%">Delete</a>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <div class="col-auto" style="width: 150px;">
+                                        <a type="button" asp-action="EditProject" asp-route-id="@project.Id" class="btn btn-warning" style="width: 100%;">Edit</a>
+                                    </div>
+                                    <div class="col-auto" style="width: 150px">
+                                        <a type="button" class="btn btn-danger p-2" asp-action="AddProject" asp-controller="Project" style="width: 100%">Delete</a>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
