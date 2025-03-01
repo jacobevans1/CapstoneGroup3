@@ -57,9 +57,14 @@
                     </select>
                 </div>
             </div>
-            <div style="width: 150px;">
-                <a type="button" class="btn btn-primary" asp-action="AddProject" asp-controller="Project" style="width: 100%;">Add Project</a>
-            </div>
+
+            @if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserLeadForAnyGroup())
+            {
+                <div style="width: 150px;">
+                    <a type="button" class="btn btn-primary" asp-action="AddProject" asp-controller="Project" style="width: 100%;">Add Project</a>
+                </div>
+            }
+
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -99,12 +104,21 @@
 
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
-                                    <div class="col-auto" style="width: 150px;">
-                                        <a type="button" asp-action="EditProject" asp-route-id="@project.Id" class="btn btn-warning" style="width: 100%;">Edit</a>
-                                    </div>
-                                    <div class="col-auto" style="width: 150px">
-                                        <a type="button" class="btn btn-danger p-2" asp-action="DeleteProject" asp-route-id="@project.Id" style="width: 100%">Delete</a>
-                                    </div>
+
+                                    @if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject(project) || Model.IsCurrentUserAGroupManagerInProject(project))
+                                    {
+                                        <div class="col-auto" style="width: 150px;">
+                                            <a type="button" asp-action="EditProject" asp-route-id="@project.Id" class="btn btn-warning" style="width: 100%;">Edit</a>
+                                        </div>
+                                    }
+
+                                    @if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject(project))
+                                    {
+	                                    <div class="col-auto" style="width: 150px">
+		                                    <a type="button" class="btn btn-danger p-2" asp-action="DeleteProject" asp-route-id="@project.Id" style="width: 100%">Delete</a>
+	                                    </div>
+                                    }
+
                                 </div>
                             </td>
                         </tr>
