@@ -1,7 +1,7 @@
 ﻿@*
-    The Ui for displaying and managing projects
+    The the view of the home page of project management
     Jabesi Abwe
-    02/20/2025
+    03/01/2025
 *@
 
 @model ProjectViewModel
@@ -9,201 +9,108 @@
     ViewData["Title"] = "Project Management";
 }
 
-<!-- Google Font for Bubblegum Sans -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
-
-<!-- Link to site.css -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap">
 <link href="~/css/projectmanagement.css" rel="stylesheet" />
 
 <div class="container">
     <div class="row">
         <div class="col-md-12">
+            <!-- TempData variables -->
+            @{
+                var successMessage = TempData["SuccessMessage"] as string;
+                var errorMessage = TempData["ErrorMessage"] as string;
+            }
+
+            <!-- Display success messages if any -->
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success">
+                    @successMessage
+                </div>
+            }
+
+            <!-- Display error messages if any -->
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @errorMessage
+                </div>
+            }
+
             <h2 class="text-center">Project Management</h2>
             <div class="title-divider"></div>
             <br />
-            <br />
-            <br />
+            <br/>
 
-            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProjectModal">Add Project</button>
-
+            <!-- Filter Options -->
+            <div class="row mb-3 justify-content-end">
+                <div class="col-md-2">
+                    <input type="text" id="projectSearch" class="form-control" placeholder="Search by project name">
+                </div>
+                <div class="col-md-2">
+                    <select id="groupFilter" class="form-select">
+                        <option value="">Filter by Group</option>
+                        @foreach (var group in Model.AvailableGroups)
+                        {
+                            <option value="@group.Id">@group.GroupName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div style="width: 150px;">
+                <a type="button" class="btn btn-primary" asp-action="AddProject" asp-controller="Project" style="width: 100%;">Add Project</a>
+            </div>
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th scope="col">
-                            <my-sorting-link sort-field="@nameof(Project.ProjectName)"
-                                             current="@Model.CurrentRoute">Project Name</my-sorting-link>
+                            <my-sort-link>Project Name</my-sort-link>
                         </th>
-                        <th>Assigned Groups</th>
                         <th scope="col">
-                            <my-sorting-link sort-field="@nameof(Project.Lead)"
-                                             current="@Model.CurrentRoute">Project Lead</my-sorting-link>
+                            Assigned Groups
                         </th>
+                        <th scope="col">
+                            Project Lead
+                        </th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (Project project in Model.Projects )
+                    @foreach (var project in Model.Projects)
                     {
                         <tr>
-                            <td>@Model.Project.ProjectName</td>
+                            <td>@project.ProjectName</td>
                             <td>
-                                @foreach (var group in Model.AssignedGroups)
+                                @foreach (var group in Model.ProjectGroups[project])
                                 {
-                                    <a href="@Url.Action("Details", "Group", new { id = group.Id })" class="badge bg-info text-dark">@group.GroupName</a>
+                                    <a href="@Url.Action("Details", "Group", new { id = group.Id })" class="badge bg-info text-dark text-decoration-none me-1 d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        @group.GroupName
+                                    </a>
                                 }
                             </td>
                             <td>
-                                @if (!string.IsNullOrEmpty(Model.ProjectLeadId))
+                                @if (!string.IsNullOrEmpty(project.LeadId))
                                 {
-                                    <a href="@Url.Action("Details", "User", new { id = Model.ProjectLeadId })">@project.Lead!.FullName</a>
+                                    <a href="@Url.Action("Details", "User", new { id = project.LeadId })" class="badge bg-success text-dark text-decoration-none d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        @project.Lead!.FullName
+                                    </a>
                                 }
                             </td>
+
                             <td>
-                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editProjectModal">Edit</button>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProjectModal">Delete</button>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <div class="col-auto" style="width: 150px;">
+                                        <a type="button" asp-action="EditProject" asp-route-id="@project.Id" class="btn btn-warning" style="width: 100%;">Edit</a>
+                                    </div>
+                                    <div class="col-auto" style="width: 150px">
+                                        <a type="button" class="btn btn-danger p-2" asp-action="DeleteProject" asp-route-id="@project.Id" style="width: 100%">Delete</a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-4">
-            @{
-                for (int i = 1; i <= Model.TotalPages; i++)
-                {
-                    <my-paging-link number="@i" current="@Model.CurrentRoute" />
-                }
-            }
-        </div>
-        <div class="col-8">
-            <form asp-action="PageSizes" method="post" class="mb-2 mt-2">
-                <div class="row">
-                    <label asp-for="CurrentRoute.PageSize" class="col-auto">Page sizes</label>
-                    <div class="col-auto">
-                        <select asp-for="CurrentRoute.PageSize" class="form-select"
-                                asp-items="@(new SelectList(Model.PageSizes))">
-                        </select>
-                    </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">Apply</button>
-                    </div>
-                    <asp type="hidden" asp-for="CurrentRoute.PageNumber" />
-                    <asp type="hidden" asp-for="CurrentRoute.SortField" />
-                    <asp type="hidden" asp-for="CurrentRoute.SortDirection" />
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Add Project Modal -->
-<div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addProjectModalLabel">Add Project</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="Add" asp-controller="Project" method="post">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Project Name</label>
-                        <input asp-for="Project.ProjectName" class="form-control" required />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea asp-for="Project.Description" class="form-control"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Assign Groups</label>
-                        <select asp-for="SelectedGroupIds" class="form-select" multiple
-                                asp-items='@new MultiSelectList(Model.AvailableGroups, "Id", "GroupName")'>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Project Lead</label>
-                        <select asp-for="ProjectLeadId" class="form-select"
-                                asp-items='@new SelectList(Model.AvailableGroupLeads, "Id", "FullName")'>
-                            <option value="">Select a Lead</option>
-                        </select>
-                    </div>
-                    <input type="hidden" asp-for="Project.CreatedAt" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
-                    <input type="hidden" asp-for="Project.CreatedBy" value="@User?.Identity?.Name" />
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Project Modal -->
-<div class="modal fade" id="editProjectModal" tabindex="-1" aria-labelledby="editProjectModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editProjectModalLabel">Edit Project</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="Edit" asp-controller="Project" method="post">
-                <div class="modal-body">
-                    <input type="hidden" asp-for="Project.Id" />
-                    <div class="mb-3">
-                        <label class="form-label">Project Name</label>
-                        <input asp-for="Project.ProjectName" class="form-control" required />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea asp-for="Project.Description" class="form-control"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Assign Groups</label>
-                        <select asp-for="SelectedGroupIds" class="form-select" multiple
-                                asp-items='@new MultiSelectList(Model.AvailableGroups, "Id", "GroupName")'>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Project Lead</label>
-                        <select asp-for="ProjectLeadId" class="form-select"
-                                asp-items='@new SelectList(Model.AvailableGroupLeads, "Id", "FullName")'>
-                            <option value="">Select a Lead</option>
-                        </select>
-                    </div>
-                    <input type="hidden" asp-for="Project.CreatedAt" />
-                    <input type="hidden" asp-for="Project.CreatedBy" />
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-warning">Update</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>" 
-
-<!-- Delete Project Modal -->
-<div class="modal fade" id="deleteProjectModal" tabindex="-1" aria-labelledby="deleteProjectModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteProjectModalLabel">Delete Project</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="DeleteConfirmed" asp-controller="Project" method="post">
-                <div class="modal-body">
-                    <input type="hidden" asp-for="Project.Id" />
-                    <p>Are you sure you want to delete this project?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>

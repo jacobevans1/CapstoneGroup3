@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TicketAppWeb.Models.DataLayer;
+using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
-using TicketAppWeb.Models.Grid;
-using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 
 namespace TicketAppWeb.Controllers;
 
@@ -14,202 +14,196 @@ namespace TicketAppWeb.Controllers;
 /// </summary>
 public class ProjectController : Controller
 {
-    private readonly IRepository<Project> _projectRepository;
-    private readonly IRepository<TicketAppUser> _usersRepository;
-    private readonly IRepository<Group> _groupsRepository;
+	private readonly IProjectRepository _projectRepository;
 
-    // Dedicated Constructor
-    public ProjectController(
-        IProjectRepository projectRepository,
-        IRepository<TicketAppUser> usersRepository,
-        IRepository<Group> groupsRepository)
+    /// <summary>
+    /// Initializes a new instance of the ProjectController class.
+    /// </summary>
+    public ProjectController(IProjectRepository projectRepository)
+	{
+		_projectRepository = projectRepository;
+	}
+
+    /// <summary>
+    /// The start of the project management page.
+    /// </summary>
+    public IActionResult Index(QueryOptions<Project> options)
+	{
+		var viewModel = new ProjectViewModel();
+		LoadIndexViewData(viewModel);
+		return View(viewModel);
+	}
+
+    /// <summary>
+    /// prepare resources need to adds a project.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> AddProject()
     {
-        _projectRepository = projectRepository;
-        _usersRepository = usersRepository;
-        _groupsRepository = groupsRepository;
+        var model = new ProjectViewModel
+        {
+            AvailableGroups = await _projectRepository.GetAvailableGroupsAsync()
+        };
+        return View(model);
     }
 
-    // GET: Project/Index
-    public IActionResult Index()
-    {
-        var viewModel = new ProjectViewModel();
-        LoadIndexViewData(viewModel);
-        return View(viewModel);
-    }
-
-    // POST: Project/Index{viewModel
+    /// <summary>
+    /// Creats the project and saves it to the database.
+    /// </summary>
     [HttpPost]
-    public IActionResult Index(ProjectViewModel viewModel)
+    public async Task<IActionResult> CreatProject(ProjectViewModel model)
     {
-        viewModel.SelectedGroupIds = viewModel.SelectedGroupIds ?? Array.Empty<string>();
-        return RedirectToAction("SelectGroups", new { selectedGroups = viewModel.SelectedGroupIds });
-    }
-
-    // GET: Project/SelectGroups
-    public IActionResult SelectGroups(string[] selectedGroups)
-    {
-        var viewModel = new ProjectViewModel();
-        LoadGroupsViewData(viewModel);
-
-        var selectedGroupsList = selectedGroups
-            .Select(groupId => _groupsRepository.Get(groupId!))
-            .ToList();
-
-        var availableLeads = selectedGroupsList
-            .Where(group => group!.ManagerId != null)
-            .Select(group => group!.Members.FirstOrDefault(user => user.Id == group.ManagerId))
-            .Where(lead => lead != null)
-            .Distinct()
-            .ToList();
-
-        viewModel.AvailableGroupLeads = availableLeads!;
-
-        return View(viewModel);
-    }
-
-
-    // POST: Project/Add{vm}
-    [HttpPost]
-    public Task<IActionResult> Add(ProjectViewModel vm)
-    {
-        vm.Project.LeadId = vm.ProjectLeadId;
-
         if (!ModelState.IsValid)
         {
-            return Task.FromResult<IActionResult>(View("Add", vm));
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View("AddProject", model);
         }
 
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        vm.Project.CreatedById = User?.Identity?.Name;
-        vm.Project.CreatedAt = DateTime.Now;
-
-        _projectRepository.Insert(vm.Project);
-        _projectRepository.Save();
-
-        TempData["message"] = $"Project {vm.Project.ProjectName} added successfully.";
-
-        return Task.FromResult<IActionResult>(RedirectToAction("Index", "Project"));
-    }
-
-    // GET: Project/Edit/{id}
-    public IActionResult Edit(string id)
-    {
-        var project = _projectRepository.Get(id);
-
-        if (project == null)
+        var project = new Project
         {
-            return NotFound();
-        }
-
-        var viewModel = new ProjectViewModel
-        {
-            Project = project
+            ProjectName = model.ProjectName,
+            Description = model.Description,
+            LeadId = model.ProjectLeadId,
+            CreatedById = userId
         };
-        LoadIndexViewData(viewModel);
 
-        return View(viewModel);
-    }
-
-    // POST: Project/Edit/{id}
-    [HttpPost]
-    public IActionResult Edit(ProjectViewModel vm)
-    {
-        if (ModelState.IsValid)
+        try
         {
-            _projectRepository.Update(vm.Project);
-            _projectRepository.Save();
-
-            TempData["message"] = $"Project {vm.Project.ProjectName} updated successfully.";
-            return RedirectToAction("Index", "Project");
+            var assignedGroups = model.SelectedGroupIds;
+            await _projectRepository.AddProjectAsync(project, assignedGroups);
+            TempData["SuccessMessage"] = $"Project {project.ProjectName} saved successfuly";
+            return RedirectToAction("Index");
         }
-
-        LoadIndexViewData(vm);
-        return View("Edit", vm);
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View("AddProject", model);
+        }
     }
 
-    // GET: Project/Delete/{id}
-    public IActionResult Delete(string id)
+    /// <summary>
+    /// Gets the project to edit by Id of the project.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> EditProject(string id)
     {
-        var project = _projectRepository.Get(id);
-
+        var project = await _projectRepository.GetProjectByIdAsync(id);
         if (project == null)
         {
             return NotFound();
         }
 
+        var model = new ProjectViewModel
+        {
+            ProjectName = project.ProjectName,
+            Description = project.Description,
+            ProjectLeadId = project.LeadId,
+            SelectedGroupIds = project.Groups.Select(g => g.Id).ToList(),
+            AvailableGroups = await _projectRepository.GetAvailableGroupsAsync(),
+            AssignedGroups = project.Groups.ToList()
+        };
+
+        return View(model);
+    }
+
+    /// <summary>
+    /// Edits the project.
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> EditProject(ProjectViewModel model, string id)
+    {
+        if (!ModelState.IsValid)
+        {
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View(model);
+        }
+
+        var project = await _projectRepository.GetProjectByIdAsync(id);
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        project.ProjectName = model.ProjectName;
+        project.Description = model.Description;
+        project.LeadId = model.ProjectLeadId;
+
+        try
+        {
+            await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds);
+            TempData["SuccessMessage"] = $"Project {project.ProjectName} updated successfully";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View(model);
+        }
+    }
+
+    /// <summary>
+    /// Gets the projet to be deleted by Id.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> DeleteProject(string id)
+    {
+        var project = await _projectRepository.GetProjectByIdAsync(id);
+        if (project == null)
+        {
+            return NotFound();
+        }
         return View(project);
     }
 
-    // POST: Project/Delete/{id}
-    [HttpPost, ActionName("Delete")]
-    public IActionResult DeleteConfirmed(string id)
+    /// <summary>
+    /// Confirms the project delete action.
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> ConfirmDelete(string id)
     {
-        var project = _projectRepository.Get(id);
-
-        if (project != null)
+        var project = await _projectRepository.GetProjectByIdAsync(id);
+        if (project == null)
         {
-            _projectRepository.Delete(project);
-            _projectRepository.Save();
-            TempData["message"] = $"Project {project.ProjectName} deleted successfully.";
+            return NotFound();
         }
 
-        return RedirectToAction("Index", "Project");
+        try
+        {
+            await _projectRepository.DeleteProjectAsync(project);
+            TempData["SuccessMessage"] = $"Project {project.ProjectName} deleted successfully";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error deleting project: {ex.Message}";
+            return RedirectToAction("Index");
+        }
     }
 
-    // GET: Project/List{values}
-    public IActionResult List(ProjectGridData values)
+    /// <summary>
+    /// Gets the group leads based on selected groups
+    /// </summary>
+    [HttpGet]
+    public async Task<JsonResult> GetGroupLeads(string groupIds)
     {
-        var options = new QueryOptions<Project>
-        {
-            OrderByDirection = values.SortDirection,
-            PageNumber = values.PageNumber,
-            PageSize = values.PageSize
-        };
+        if (string.IsNullOrEmpty(groupIds))
+            return Json(new List<object>());
 
-        // Sorting logic
-        if (values.IsSortByProjectLead)
-            options.OrderBy = p => p.Lead!.FullName;
-        else
-            options.OrderBy = p => p.ProjectName!;
+        var groupIdArray = groupIds.Split(",").ToList();
+        var leads = await _projectRepository.GetGroupLeadsAsync(groupIdArray);
 
-        var viewModel = new ProjectViewModel
-        {
-            Projects = _projectRepository.List(options),
-            CurrentRoute = values,
-            TotalPages = values.GetTotalPages(_projectRepository.Count),
-            SelectedPageSize = values.PageSize
-        };
-
-        return View(viewModel); 
+        var result = leads.Select(l => new { id = l.Id, fullName = l.FullName }).Distinct();
+        return Json(result);
     }
 
-    // Project/ PageSizes{currentRoute}
-    [HttpPost]
-    public IActionResult PageSizes(ProjectGridData currentRoute)
-    {
-        return RedirectToAction("Index", currentRoute.ToDictionary());
-    }
-
-    private void LoadIndexViewData(ProjectViewModel vm)
-    {
-        vm.AvailableGroups = _groupsRepository.List(new QueryOptions<Group>
-        {
-            OrderBy = g => g.GroupName ?? string.Empty
-        });
-
-        vm.AvailableGroupLeads = _usersRepository.List(new QueryOptions<TicketAppUser>
-        {
-            OrderBy = u => u.LastName ?? string.Empty
-        });
-    }
-
-    private void LoadGroupsViewData(ProjectViewModel vm)
-    {
-        vm.SelectedGroupIds = vm.Project.Groups.Select(g => g.Id).ToArray();
-
-        vm.AvailableGroups = _groupsRepository.List(new QueryOptions<Group>
-        {
-            OrderBy = g => g.GroupName!
-        });
-    }
+	private void LoadIndexViewData(ProjectViewModel vm)
+	{
+		vm.Projects = _projectRepository.GetProjectsAndGroups().Result.Keys;
+		vm.ProjectGroups = _projectRepository.GetProjectsAndGroups().Result;
+		vm.AvailableGroups = _projectRepository.GetAvailableGroupsAsync().Result;
+	}
 }

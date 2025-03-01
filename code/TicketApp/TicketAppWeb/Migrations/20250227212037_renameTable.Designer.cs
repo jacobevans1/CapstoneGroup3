@@ -12,8 +12,8 @@ using TicketAppWeb.Models.DataLayer;
 namespace TicketAppWeb.Migrations
 {
     [DbContext(typeof(TicketAppContext))]
-    [Migration("20250222205607_fixGroupId")]
-    partial class fixGroupId
+    [Migration("20250227212037_renameTable")]
+    partial class renameTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -187,7 +187,8 @@ namespace TicketAppWeb.Migrations
 
                     b.Property<string>("GroupName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ManagerId")
                         .IsRequired()
@@ -212,10 +213,10 @@ namespace TicketAppWeb.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LeadId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProjectName")
@@ -394,7 +395,9 @@ namespace TicketAppWeb.Migrations
 
                     b.HasOne("TicketAppWeb.Models.DomainModels.TicketAppUser", "Lead")
                         .WithMany()
-                        .HasForeignKey("LeadId");
+                        .HasForeignKey("LeadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CreatedBy");
 
