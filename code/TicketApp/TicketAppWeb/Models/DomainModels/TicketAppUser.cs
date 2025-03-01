@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
+// Capstone Group 3
+// Spring 2025
 namespace TicketAppWeb.Models.DomainModels
 {
+	/// <summary>
+	/// The TicketAppUser class represents a user of the TicketApp application.
+	/// </summary>
 	public class TicketAppUser : IdentityUser
 	{
 		/// <summary>

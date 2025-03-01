@@ -2,6 +2,8 @@
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
 
+// Capstone Group 3
+// Spring 2025
 namespace TicketAppWeb.Models.ViewModels;
 
 /// <summary>

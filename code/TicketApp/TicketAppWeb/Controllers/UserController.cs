@@ -1,24 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketAppWeb.Models.DataLayer;
-using TicketAppWeb.Models.DataLayer.Repositories;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
 using TicketAppWeb.Models.ViewModels;
 
+// Capstone Group 3
+// Spring 2025
 namespace TicketAppWeb.Controllers
 {
+	/// <summary>
+	/// The UserController class represents a controller for user-related actions.
+	/// </summary>
 	public class UserController : Controller
 	{
 		private readonly IUserRepository _usersRepository;
 		private static string selectedUserId;
 		private static string selectedUsername;
 
+		/// <summary>
+		/// Initializes a new instance of the UserController class.
+		/// </summary>
+		/// <param name="usersRepository"></param>
 		public UserController(IUserRepository usersRepository)
 		{
 			_usersRepository = usersRepository;
 		}
 
+		/// <summary>
+		/// Displays the user management index view.
+		/// </summary>
 		[HttpGet]
 		public IActionResult Index()
 		{
@@ -27,12 +38,19 @@ namespace TicketAppWeb.Controllers
 			return View(viewModel);
 		}
 
+		/// <summary>
+		/// Displays the user creation view.
+		/// </summary>
 		[HttpGet]
 		public IActionResult CreateUser()
 		{
 			return View();
 		}
 
+		/// <summary>
+		/// Creates a new user.
+		/// </summary>
+		/// <param name="vm"></param>
 		[HttpPost]
 		public async Task<IActionResult> CreateUser(UserViewModel vm)
 		{
@@ -59,6 +77,10 @@ namespace TicketAppWeb.Controllers
 			return RedirectToAction("Index", "User");
 		}
 
+		/// <summary>
+		/// Retrieves the user data for editing.
+		/// </summary>
+		/// <param name="id"></param>
 		[HttpGet]
 		public IActionResult GetUserData(string id)
 		{
@@ -85,6 +107,10 @@ namespace TicketAppWeb.Controllers
 			return Json(userData);
 		}
 
+		/// <summary>
+		/// Displays the user edit view.
+		/// </summary>
+		/// <param name="vm"></param>
 		[HttpPost]
 		public async Task<IActionResult> EditUser(UserViewModel vm)
 		{
@@ -95,7 +121,7 @@ namespace TicketAppWeb.Controllers
 					vm.User.Id = selectedUserId;
 					vm.User.UserName = selectedUsername;
 					await _usersRepository.UpdateUser(vm.User, vm.SelectedRoleName);
-				
+
 				}
 				catch (Exception e)
 				{
@@ -113,6 +139,10 @@ namespace TicketAppWeb.Controllers
 			return RedirectToAction("Index", "User");
 		}
 
+		/// <summary>
+		/// Retrieves the user data for deletion.
+		/// </summary>
+		/// <param name="id"></param>
 		[HttpGet]
 		public IActionResult DeleteUser(string id)
 		{
@@ -136,6 +166,10 @@ namespace TicketAppWeb.Controllers
 			return Json(userData);
 		}
 
+		/// <summary>
+		/// Deletes a user.
+		/// </summary>
+		/// <param name="id"></param>
 		[HttpPost]
 		public IActionResult DeleteConfirmed(string id)
 		{
@@ -168,7 +202,10 @@ namespace TicketAppWeb.Controllers
 			return RedirectToAction("Index", "User");
 		}
 
-
+		/// <summary>
+		/// Filters the user grid by search term.
+		/// </summary>
+		/// <param name="currentRoute"></param>
 		[HttpPost]
 		public IActionResult PageSizes(UserGridData currentRoute)
 		{

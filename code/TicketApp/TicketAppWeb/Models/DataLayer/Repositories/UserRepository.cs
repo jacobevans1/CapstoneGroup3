@@ -3,17 +3,32 @@ using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 
+// Capstone Group 3
+// Spring 2025
 namespace TicketAppWeb.Models.DataLayer.Repositories
 {
+	/// <summary>
+	/// The UserRepository class implements IUserRepository
+	/// </summary>
 	public class UserRepository : Repository<TicketAppUser>, IUserRepository
 	{
 		private readonly UserManager<TicketAppUser> _userManager;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UserRepository"/> class.
+		/// </summary>
+		/// <param name="ctx"></param>
+		/// <param name="userManager"></param>
 		public UserRepository(TicketAppContext ctx, UserManager<TicketAppUser> userManager) : base(ctx)
 		{
 			_userManager = userManager;
 		}
 
+		/// <summary>
+		/// Creates a new user and assigns them a specified role.
+		/// </summary>
+		/// <param name="user">The user to be created.</param>
+		/// <param name="roleName">The name of the role to assign to the user.</param>
 		public async Task CreateUser(TicketAppUser user, string roleName)
 		{
 			if (checkIfUserExists(user))
@@ -21,8 +36,8 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 				throw new Exception("User already exists.");
 			}
 
-			user = generateUserDetails(user);
-			var password = user.UserName + "123!";
+			user.UserName = user.FirstName + user.LastName;
+			var password = "Password123!";
 
 			var result = await _userManager.CreateAsync(user, password);
 
@@ -38,6 +53,11 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			}
 		}
 
+		/// <summary>
+		/// Updates an existing user's details and their assigned role.
+		/// </summary>
+		/// <param name="user">The user with updated details.</param>
+		/// <param name="roleName">The name of the new role to assign to the user.</param>
 		public async Task UpdateUser(TicketAppUser user, string roleName)
 		{
 			if (checkIfUserExists(user))
@@ -61,12 +81,19 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			}
 		}
 
-
+		/// <summary>
+		/// Retrieves all roles from the database.
+		/// </summary>
+		/// <returns></returns>
 		public async Task<IEnumerable<IdentityRole>> GetRolesAsync()
 		{
 			return await context.Roles.ToListAsync();
 		}
 
+		/// <summary>
+		/// Retrieves all users along with their assigned roles.
+		/// </summary>
+		/// <returns></returns>
 		public async Task<Dictionary<TicketAppUser, string>> GetUserRolesAsync()
 		{
 			var users = context.Users.ToList();
@@ -84,13 +111,6 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		private bool checkIfUserExists(TicketAppUser user)
 		{
 			return context.Users.Any(u => u.UserName == user.UserName);
-		}
-
-		private TicketAppUser generateUserDetails(TicketAppUser user)
-		{
-			user.UserName = user.FirstName + user.LastName;
-			user.Email = user.FirstName.ToLower() + "." + user.LastName.ToLower() + "@domain.com";
-			return user;
 		}
 	}
 }
