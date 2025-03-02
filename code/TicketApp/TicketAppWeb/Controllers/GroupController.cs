@@ -179,4 +179,49 @@ public class GroupController : Controller
         return RedirectToAction("Index");
     }
 
+    [HttpGet]
+    public async Task<IActionResult> DeleteGroup(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
+
+        var group = await _groupRepository.GetAsync(id);
+        if (group == null)
+        {
+            return NotFound();
+        }
+
+        return View(group);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ConfirmDeleteGroup(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
+
+        var group = await _groupRepository.GetAsync(id);
+        if (group == null)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            await _groupRepository.DeleteGroupAsync(group);
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", "Error deleting group: " + ex.Message);
+            return View("DeleteGroup", group);
+        }
+    }
+
+
+
 }
