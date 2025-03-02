@@ -1,180 +1,227 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
-using System.Linq;
-using TicketAppWeb.Models.DataLayer;
 
-namespace TicketAppWeb.Controllers
+[Authorize]
+public class GroupController : Controller
 {
-    public class GroupController : Controller
+    private readonly IUserRepository _userRepository;
+    private readonly IGroupRepository _groupRepository;
+
+    public GroupController(IUserRepository userRepository, IGroupRepository groupRepository)
     {
-        private readonly IRepository<Group> _groupRepository;
-        private readonly IRepository<TicketAppUser> _userRepository;
+        _userRepository = userRepository;
+        _groupRepository = groupRepository;
+    }
 
-        public GroupController(IRepository<Group> groupRepository, IRepository<TicketAppUser> userRepository)
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        var groups = await _groupRepository.GetAllAsync();
+
+        var model = new GroupViewModel
         {
-            _groupRepository = groupRepository;
-            _userRepository = userRepository;
+            Groups = groups.ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AddGroup()
+    {
+        var users = await _userRepository.GetAllUsersAsync();
+
+        var model = new AddGroupViewModel
+        {
+            AllUsers = users.ToList(),
+            SelectedUserIds = new List<string>()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateGroup(AddGroupViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            var users = await _userRepository.GetAllUsersAsync();
+            model.AllUsers = users.ToList();
+            return View("AddGroup", model);
         }
 
-        /// <summary>
-        /// Loads the group management page.
-        /// </summary>
-        [HttpGet]
-        public IActionResult Index()
+        // Step 1: Create the group
+        var newGroup = new Group
         {
-            var viewModel = new GroupViewModel
-            {
-                Groups = _groupRepository.List(new QueryOptions<Group>
-                {
-                    OrderBy = g => g.GroupName
-                }),
-                AvailableUsers = _userRepository.List(new QueryOptions<TicketAppUser>
-                {
-                    OrderBy = u => u.LastName
-                }),
-                AvailableGroupManagers = _userRepository.List(new QueryOptions<TicketAppUser>
-                {
-                    OrderBy = u => u.LastName
-                })
-            };
+            GroupName = model.GroupName,
+            Description = model.Description,
+            ManagerId = model.GroupLeadId,
+        };
 
-            return View(viewModel);
-        }
-
-        /// <summary>
-        /// Loads the Add New Group modal with available users.
-        /// </summary>
-        [HttpGet]
-        public IActionResult Add()
+        // Step 2: Assign members
+        if (model.SelectedUserIds != null && model.SelectedUserIds.Any())
         {
-            var viewModel = new GroupViewModel
+            foreach (var userId in model.SelectedUserIds)
             {
-                AvailableUsers = _userRepository.List(new QueryOptions<TicketAppUser>
+                var user = await _userRepository.GetAsync(userId);
+                if (user != null)
                 {
-                    OrderBy = u => u.LastName
-                }),
-                AvailableGroupManagers = _userRepository.List(new QueryOptions<TicketAppUser>
-                {
-                    OrderBy = u => u.LastName
-                })
-            };
-
-            return PartialView("_AddGroupModal", viewModel);
-        }
-
-        /// <summary>
-        /// Handles adding a new group.
-        /// </summary>
-        [HttpPost]
-        public IActionResult Add(GroupViewModel vm)
-        {
-            if (ModelState.IsValid)
-            {
-                var newGroup = new Group
-                {
-                    GroupName = vm.Group.GroupName,
-                    Description = vm.Group.Description,
-                    ManagerId = vm.GroupManagerId
-                };
-
-                // Retrieve selected users and assign them to the group
-                var selectedUsers = _userRepository.List(new QueryOptions<TicketAppUser>
-                {
-                    Where = u => vm.SelectedUserIds.Contains(u.Id)
-                }).ToList();
-
-                newGroup.Members = selectedUsers;
-
-                _groupRepository.Insert(newGroup);
-                _groupRepository.Save();
-                TempData["Success"] = "Group added successfully!";
-                return RedirectToAction("Index");
+                    newGroup.Members.Add(user);
+                }
             }
-
-            // If model is invalid, reload available users for selection
-            vm.AvailableUsers = _userRepository.List(new QueryOptions<TicketAppUser>
-            {
-                OrderBy = u => u.LastName
-            });
-            return View("Index", vm);
         }
 
-        /// <summary>
-        /// Loads the edit group page.
-        /// </summary>
-        [HttpGet]
-        public IActionResult Edit(string id)
+        // Step 3: Assign group lead (must be in the group)
+        var groupLead = newGroup.Members.FirstOrDefault(u => u.Id == model.GroupLeadId);
+        if (groupLead != null)
         {
-            var group = _groupRepository.Get(id);
-            if (group == null)
-                return NotFound();
+            newGroup.ManagerId = groupLead.Id;
+            newGroup.Manager = groupLead;
+        }
+        else
+        {
+            ModelState.AddModelError("GroupLeadId", "The group lead must be in the group.");
+            var users = await _userRepository.GetAllUsersAsync();
+            model.AllUsers = users.ToList();
+            return View("AddGroup", model);
+        }
 
-            var viewModel = new GroupViewModel
+        // Step 4: Save to database
+        await _groupRepository.InsertAsync(newGroup);
+        await _groupRepository.SaveAsync();
+
+        // Step 5: Redirect to Group Management Page
+        return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditGroup(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
+
+        var group = await _groupRepository.GetAsync(id);
+        if (group == null)
+        {
+            return NotFound();
+        }
+
+        var users = await _userRepository.GetAllUsersAsync();
+
+        var model = new AddGroupViewModel
+        {
+            GroupId = group.Id,
+            GroupName = group.GroupName,
+            Description = group.Description,
+            GroupLeadId = group.ManagerId,
+            AllUsers = users.ToList(),
+            SelectedUserIds = group.Members.Select(m => m.Id).ToList()
+        };
+
+        return View(model);
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateGroup(AddGroupViewModel model)
+    {
+        Console.WriteLine("UpdateGroup action triggered"); // Debugging step
+
+        if (!ModelState.IsValid)
+        {
+            Console.WriteLine("Model state is invalid");
+            foreach (var key in ModelState.Keys)
             {
-                Group = group,
-                AvailableUsers = _userRepository.List(new QueryOptions<TicketAppUser>
+                foreach (var error in ModelState[key].Errors)
                 {
-                    OrderBy = u => u.LastName
-                }),
-                SelectedUserIds = group.Members.Select(u => u.Id).ToArray()
-            };
-
-            return View(viewModel);
+                    Console.WriteLine($"Validation Error - {key}: {error.ErrorMessage}");
+                }
+            }
+            var users = await _userRepository.GetAllUsersAsync();
+            model.AllUsers = users.ToList();
+            return View("EditGroup", model);
         }
 
-        /// <summary>
-        /// Handles updating a group.
-        /// </summary>
-        [HttpPost]
-        public IActionResult Edit(GroupViewModel vm)
+        var group = await _groupRepository.GetAsync(model.GroupId);
+        if (group == null)
         {
-            if (ModelState.IsValid)
-            {
-                var group = _groupRepository.Get(vm.Group.Id);
-                if (group == null)
-                    return NotFound();
-
-                group.GroupName = vm.Group.GroupName;
-                group.Description = vm.Group.Description;
-                group.ManagerId = vm.GroupManagerId;
-
-                // Update members
-                var selectedUsers = _userRepository.List(new QueryOptions<TicketAppUser>
-                {
-                    Where = u => vm.SelectedUserIds.Contains(u.Id)
-                }).ToList();
-                group.Members = selectedUsers;
-
-                _groupRepository.Update(group);
-                _groupRepository.Save();
-                TempData["Success"] = "Group updated successfully!";
-                return RedirectToAction("Index");
-            }
-
-            // If invalid, reload users
-            vm.AvailableUsers = _userRepository.List(new QueryOptions<TicketAppUser>
-            {
-                OrderBy = u => u.LastName
-            });
-            return View(vm);
+            Console.WriteLine("Group not found");
+            return NotFound();
         }
 
-        /// <summary>
-        /// Deletes a group.
-        /// </summary>
-        [HttpPost]
-        public IActionResult DeleteConfirmed(string id)
+        Console.WriteLine($"Updating group {group.GroupName} with new lead: {model.GroupLeadId}");
+
+        group.GroupName = model.GroupName;
+        group.Description = model.Description;
+        group.ManagerId = model.GroupLeadId;
+
+        group.Members.Clear();
+        foreach (var userId in model.SelectedUserIds)
         {
-            var group = _groupRepository.Get(id);
-            if (group != null)
+            var user = await _userRepository.GetAsync(userId);
+            if (user != null)
             {
-                _groupRepository.Delete(group);
-                _groupRepository.Save();
-                TempData["Success"] = "Group deleted successfully!";
+                group.Members.Add(user);
             }
+        }
+
+        await _groupRepository.SaveAsync();
+        Console.WriteLine("Group update successful!");
+
+        return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DeleteGroup(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
+
+        var group = await _groupRepository.GetAsync(id);
+        if (group == null)
+        {
+            return NotFound();
+        }
+
+        return View(group);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ConfirmDeleteGroup(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
+
+        var group = await _groupRepository.GetAsync(id);
+        if (group == null)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            await _groupRepository.DeleteGroupAsync(group);
             return RedirectToAction("Index");
         }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", "Error deleting group: " + ex.Message);
+            return View("DeleteGroup", group);
+        }
     }
+
+
+
 }

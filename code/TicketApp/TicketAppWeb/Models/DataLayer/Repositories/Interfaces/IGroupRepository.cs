@@ -9,7 +9,14 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 	/// </summary>
 	public interface IGroupRepository : IRepository<Group>
 	{
-		// Adds the new group members.
-		void AddNewGroupMembers(Group? group, string[] userIds, IRepository<TicketAppUser> memberData);
-	}
+        Task<IEnumerable<Group>> GetAllAsync();
+
+        void AddNewGroupMembers(Group? group, string[] userIds, IRepository<TicketAppUser> memberData);
+        Task InsertAsync(Group group);
+        Task SaveAsync();
+        Task<Group?> GetAsync(string id);
+        Task DeleteGroupAsync(Group group);
+
+
+    }
 }

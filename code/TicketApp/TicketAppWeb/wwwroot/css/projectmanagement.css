@@ -5,12 +5,14 @@ h2 {
     font-size: 50px;
     color: #B39EB5;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 
 h5 {
     font-family: "Bubblegum Sans", cursive;
     font-size: 30px;
     color: #B39EB5;
+    text-align: center;
 }
 
 .title-divider {
@@ -20,14 +22,18 @@ h5 {
     margin: 0 auto 20px auto;
 }
 
-.modal-title {
-    text-align: center;
-    width: 100%;
+/* Form styling */
+.styled-form {
+    background: #f9f9f9;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 .form-label {
     font-weight: 500;
     color: #B39EB5;
+    font-size: 18px;
 }
 
 .form-control {
@@ -35,15 +41,44 @@ h5 {
     color: #B39EB5;
 }
 
-.form-control::placeholder {
+    .form-control::placeholder {
+        color: #B39EB5;
+    }
+
+    .form-control:focus {
+        border-color: #B39EB5;
+        box-shadow: none;
+    }
+
+/* Buttons */
+.btn-success {
+    background-color: #B39EB5;
+    border-color: #B39EB5;
+}
+
+    .btn-success:hover {
+        background-color: #a1859e;
+    }
+
+.btn-primary, .btn-danger {
+    font-size: 16px;
+}
+
+.btn-secondary {
+    background-color: #888;
+    border-color: #888;
+    font-size: 16px;
+}
+
+/* Select boxes */
+select.form-control {
+    border: 2px solid #B39EB5;
     color: #B39EB5;
 }
 
-.form-control:focus {
-    border-color: #B39EB5;
-    box-shadow: none;
+/* Align select box titles */
+h5 {
+    margin-bottom: 10px;
 }
 
-.modal-content {
-    padding: 20px;
-}
+
