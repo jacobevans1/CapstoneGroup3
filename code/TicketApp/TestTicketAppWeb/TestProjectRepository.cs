@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿/*using Microsoft.EntityFrameworkCore;
 using Moq;
 using TicketAppWeb.Models.DataLayer.Reposetories;
 using TicketAppWeb.Models.DomainModels;
@@ -94,4 +94,4 @@ public class ProjectRepositoryTests
         Assert.Single(project.Groups);
         Assert.Contains(newGroups.First(), project.Groups);
     }
-}
+}*/

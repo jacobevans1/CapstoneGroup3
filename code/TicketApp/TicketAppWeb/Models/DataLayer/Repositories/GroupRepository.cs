@@ -53,5 +53,27 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
             await context.SaveChangesAsync();
         }
 
+        public async Task DeleteGroupAsync(Group group)
+        {
+            if (group == null) return;
+
+            // Step 1: Remove group from projects (junction table)
+            var projectsWithGroup = await context.Projects
+                .Where(p => p.Groups.Any(g => g.Id == group.Id))
+                .ToListAsync();
+
+            foreach (var project in projectsWithGroup)
+            {
+                project.Groups.Remove(group);
+            }
+
+            await context.SaveChangesAsync();
+
+            // Step 2: Remove the group itself
+            context.Groups.Remove(group);
+            await context.SaveChangesAsync();
+        }
+
+
     }
 }
