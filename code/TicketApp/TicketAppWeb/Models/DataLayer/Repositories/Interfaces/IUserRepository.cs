@@ -33,5 +33,15 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// Retrieves all users along with their assigned roles.
 		/// </summary>
 		Task<Dictionary<TicketAppUser, string>> GetUserRolesAsync();
-	}
+
+        /// <summary>
+        /// Retrieves all users from the database.
+        /// </summary>
+        Task<IEnumerable<TicketAppUser>> GetAllUsersAsync();
+
+        Task<TicketAppUser> GetAsync(string userId);
+
+
+    }
+
 }
