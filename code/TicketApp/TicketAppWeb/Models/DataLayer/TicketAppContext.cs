@@ -39,20 +39,43 @@ namespace TicketAppWeb.Models.DataLayer
 		public DbSet<Group> Groups { get; set; }
 
 
-		/// <summary>
-		/// Configures the model for the context.
-		/// </summary>
-		/// <param name="modelBuilder">The builder used to construct the model for this context.</param>
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			base.OnModelCreating(modelBuilder);
-		}
+        /// <summary>
+        /// Configures the model for the context.
+        /// </summary>
+        /// <param name="modelBuilder">The builder used to construct the model for this context.</param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
-		/// <summary>
-		/// Configures the database options for the context.
-		/// </summary>
-		/// <param name="optionsBuilder">The builder used to configure the database options.</param>
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            // Many-to-Many Relationship: Groups <-> Members (Users)
+            modelBuilder.Entity<Group>()
+                .HasMany(g => g.Members)
+                .WithMany(u => u.Groups)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserGroups",  // Use the existing table instead of recreating it
+                    j => j.HasOne<TicketAppUser>().WithMany().HasForeignKey("MembersId"),
+                    j => j.HasOne<Group>().WithMany().HasForeignKey("GroupsId"),
+                    j =>
+                    {
+                        j.HasKey("GroupsId", "MembersId");  // Define composite key
+                        j.ToTable("UserGroups"); // Explicitly reference the existing table
+                    }
+                );
+
+            // One-to-Many Relationship: Group <-> Manager (User)
+            modelBuilder.Entity<Group>()
+                .HasOne(g => g.Manager)
+                .WithMany() // The manager does not need a Groups navigation property
+                .HasForeignKey(g => g.ManagerId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent accidental deletion of managers
+        }
+
+
+        /// <summary>
+        /// Configures the database options for the context.
+        /// </summary>
+        /// <param name="optionsBuilder">The builder used to configure the database options.</param>
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=TicketAppDB;Trusted_Connection=True;MultipleActiveResultSets=true");
 		}
