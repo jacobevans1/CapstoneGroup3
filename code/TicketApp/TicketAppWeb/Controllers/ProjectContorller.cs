@@ -51,7 +51,7 @@ public class ProjectController : Controller
     /// Creats the project and saves it to the database.
     /// </summary>
     [HttpPost]
-    public async Task<IActionResult> CreatProject(ProjectViewModel model)
+    public async Task<IActionResult> CreateProject(ProjectViewModel model)
     {
         if (!ModelState.IsValid)
         {
