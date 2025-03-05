@@ -67,6 +67,7 @@
                         }
                     }
                 </select>
+
             </div>
         </div>
 
@@ -124,7 +125,7 @@
             $('#selectedUsersList option').each(function () {
                 let userId = $(this).val();
                 let userName = $(this).text();
-                let isSelected = selectedLead === userId ? 'selected' : ''; // Keep previous selection
+                let isSelected = selectedLead === userId ? 'selected' : '';
                 groupLeadDropdown.append('<option value="' + userId + '" ' + isSelected + '>' + userName + '</option>');
             });
         }

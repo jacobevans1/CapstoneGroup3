@@ -26,15 +26,13 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
         {
             if (group == null) return;
 
-            // Get current members' IDs
             var currentMemberIds = group.Members.Select(m => m.Id).ToList();
 
-            // Add only new users that are not already in the group
             foreach (string id in userIds)
             {
                 if (!currentMemberIds.Contains(id)) // Prevent duplicate members
                 {
-                    TicketAppUser? member = memberData.Get(id);
+                    var member = memberData.Get(id);
                     if (member != null)
                     {
                         group.Members.Add(member);
@@ -42,6 +40,9 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
                 }
             }
         }
+
+
+
 
         public async Task InsertAsync(Group group)
         {
