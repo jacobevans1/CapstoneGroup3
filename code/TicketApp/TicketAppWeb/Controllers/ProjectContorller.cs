@@ -27,12 +27,16 @@ public class ProjectController : Controller
     /// <summary>
     /// The start of the project management page.
     /// </summary>
-    public IActionResult Index(QueryOptions<Project> options)
-	{
-		var viewModel = new ProjectViewModel();
-		LoadIndexViewData(viewModel);
-		return View(viewModel);
-	}
+    public IActionResult Index(string? projectName, string? projectLead)
+    {
+        var viewModel = new ProjectViewModel();
+        LoadIndexViewData(viewModel);
+
+        viewModel.SearchProjectName = projectName;
+        viewModel.SearchProjectLead = projectLead;
+
+        return View(viewModel);
+    }
 
     /// <summary>
     /// prepare resources need to adds a project.
@@ -200,10 +204,12 @@ public class ProjectController : Controller
         return Json(result);
     }
 
-	private void LoadIndexViewData(ProjectViewModel vm)
-	{
-		vm.Projects = _projectRepository.GetProjectsAndGroups().Result.Keys;
-		vm.ProjectGroups = _projectRepository.GetProjectsAndGroups().Result;
-		vm.AvailableGroups = _projectRepository.GetAvailableGroupsAsync().Result;
-	}
+    private void LoadIndexViewData(ProjectViewModel vm)
+    {
+        var projectData = _projectRepository.GetFilteredProjectsAndGroups(vm.SearchProjectName, vm.SearchProjectLead).Result;
+        vm.Projects = projectData.Keys;
+        vm.ProjectGroups = projectData;
+        vm.AvailableGroups = _projectRepository.GetAvailableGroupsAsync().Result;
+    }
+
 }

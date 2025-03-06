@@ -12,8 +12,7 @@ public interface IProjectRepository : IRepository<Project>
     /// <summary>
     /// Gets the projects and groups.
     /// </summary>
-    Task<Dictionary<Project, List<Group>>> GetProjectsAndGroups();
-
+    Task<Dictionary<Project, List<Group>>> GetFilteredProjectsAndGroups(string? projectName, string? projectLead);
     /// <summary>
     /// Gets all projects asynchronous.
     /// </summary>

@@ -155,20 +155,28 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     /// <summary>
     /// Gets the projects their assigned groups.
     /// </summary>
-    public async Task<Dictionary<Project, List<Group>>> GetProjectsAndGroups()
+    public async Task<Dictionary<Project, List<Group>>> GetFilteredProjectsAndGroups(string? projectName, string? projectLead)
     {
-        var projects = context.Projects.ToList();
+        var query = context.Projects.AsQueryable();
+
+        if (!string.IsNullOrEmpty(projectName))
+        {
+            query = query.Where(p => p.ProjectName!.Contains(projectName));
+        }
+
+        if (!string.IsNullOrEmpty(projectLead))
+        {
+            query = query.Where(p => p.Lead != null && p.Lead.FullName.Contains(projectLead));
+        }
+
+        var projects = await query.ToListAsync();
         setProjectLeads(projects);
 
         var projectsGroups = new Dictionary<Project, List<Group>>();
-
         foreach (var project in projects)
         {
             var groups = await context.Groups
-                .FromSqlRaw(@"SELECT g.*
-                          FROM Groups g
-                          JOIN GroupProject pg ON g.Id = pg.GroupsId
-                          WHERE pg.ProjectsId = {0}", project.Id)
+                .Where(g => g.Projects.Any(p => p.Id == project.Id))
                 .ToListAsync();
 
             projectsGroups.Add(project, groups);
