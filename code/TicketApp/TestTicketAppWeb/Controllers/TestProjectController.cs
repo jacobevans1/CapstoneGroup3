@@ -11,7 +11,7 @@ using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
 using TicketAppWeb.Models.ViewModels;
 
-namespace TestTicketAppWeb;
+namespace TestTicketAppWeb.Controllers;
 
 public class TestProjectController
 {
