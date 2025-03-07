@@ -36,8 +36,8 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 				throw new Exception("User already exists.");
 			}
 
-			user.UserName = user.FirstName + user.LastName;
-			var password = "Password123!";
+			user.UserName = user.FirstName;
+			var password = user.FirstName + "123!";
 
 			var result = await _userManager.CreateAsync(user, password);
 

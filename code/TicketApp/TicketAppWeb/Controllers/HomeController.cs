@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
-using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
-using System.Linq;
+using System.Security.Claims;
 
 namespace TicketAppWeb.Controllers
 {
@@ -26,13 +23,10 @@ namespace TicketAppWeb.Controllers
         /// </summary>
         public async Task<IActionResult> Index()
         {
-            var userId = User.Identity!.Name;
-            var user = await _userRepository.GetAsync(userId!); // Get the user info
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // Get all the pending approval requests for projects that the user is managing groups for
             var pendingRequests = await _projectRepository.GetPendingGroupApprovalRequestsAsync(userId!);
 
-            // If no pending requests, return the empty view
             if (!pendingRequests.Any())
             {
                 return View("NoPendingApprovals");
@@ -54,18 +48,13 @@ namespace TicketAppWeb.Controllers
         {
             try
             {
-                var userId = User.Identity!.Name; // Get the current user's ID (group manager)
+                await _projectRepository.ApproveGroupForProjectAsync(projectId, groupId);
 
-                // Approve the group for the project
-                await _projectRepository.ApproveGroupForProjectAsync(projectId, groupId, userId!);
-
-                // Redirect to the home page after the approval action
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                // Log the exception and display an error message (logging omitted for simplicity)
-                ViewBag.ErrorMessage = $"Error approving group: {ex.Message}";
+                TempData["ErrorMessage"] = $"Error approving group: {ex.Message}";
                 return View("Error");
             }
         }
@@ -78,26 +67,15 @@ namespace TicketAppWeb.Controllers
         {
             try
             {
-                // Reject the group for the project
                 await _projectRepository.RejectGroupForProjectAsync(projectId, groupId);
 
-                // Redirect to the home page after the rejection action
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                // Log the exception and display an error message
-                ViewBag.ErrorMessage = $"Error rejecting group: {ex.Message}";
+                TempData["ErrorMessage"] = $"Error rejecting group: {ex.Message}";
                 return View("Error");
             }
-        }
-
-        /// <summary>
-        /// Displays an error page if an exception occurs.
-        /// </summary>
-        public IActionResult Error()
-        {
-            return View();
         }
     }
 }

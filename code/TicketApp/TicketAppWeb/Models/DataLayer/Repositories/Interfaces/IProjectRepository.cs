@@ -63,12 +63,6 @@ public interface IProjectRepository : IRepository<Project>
     Task<Project?> GetProjectByNameAndLeadAsync(string projectName, string projectLeadId);
 
     /// <summary>
-    /// Gets the groups by ids asynchronous.
-    /// </summary>
-    /// <param name="selectedGroupIds">The selected group ids.</param>
-    Task<List<Group>> GetGroupsByIdsAsync(List<string> selectedGroupIds);
-
-    /// <summary>
     /// Adds a group approval request for a project.
     /// </summary>
     Task AddGroupApprovalRequestAsync(string projectId, string groupId);
@@ -76,7 +70,7 @@ public interface IProjectRepository : IRepository<Project>
     /// <summary>
     /// Approves a group for a project.
     /// </summary>
-    Task ApproveGroupForProjectAsync(string projectId, string groupId, string managerId);
+    Task ApproveGroupForProjectAsync(string projectId, string groupId);
 
     /// <summary>
     /// Rejects a group for a project.
