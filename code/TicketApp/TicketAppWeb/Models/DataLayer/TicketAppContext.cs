@@ -38,12 +38,17 @@ namespace TicketAppWeb.Models.DataLayer
 		/// </summary>
 		public DbSet<Group> Groups { get; set; }
 
+        /// <summary>
+        /// Gets or sets the group approval requests.
+        /// </summary>
+        public DbSet<GroupApprovalRequest> GroupApprovalRequests { get; set; }
 
-		/// <summary>
-		/// Configures the model for the context.
-		/// </summary>
-		/// <param name="modelBuilder">The builder used to construct the model for this context.</param>
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+        /// <summary>
+        /// Configures the model for the context.
+        /// </summary>
+        /// <param name="modelBuilder">The builder used to construct the model for this context.</param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 		}

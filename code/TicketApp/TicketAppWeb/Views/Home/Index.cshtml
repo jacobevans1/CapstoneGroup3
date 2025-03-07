@@ -1,7 +1,45 @@
-﻿@{
-	ViewBag.Title = "Home";
-}
-<h1>Hello!</h1>
+﻿@model PendingApprovalsViewModel
 
-<!-- Content for Home -->
+@{
+    ViewData["Title"] = "Pending Group Approvals";
+}
+
+<h2>Pending Group Approvals</h2>
+
+@if (Model.PendingRequests.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Project Name</th>
+                <th>Group Name</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var request in Model.PendingRequests)
+            {
+                <tr>
+                    <td>@request.Project!.ProjectName</td>
+                    <td>@request.Group!.GroupName</td>
+                    <td>@request.Status</td>
+                    <td>
+                        <form method="post" asp-action="ApproveGroupForProject" asp-route-projectId="@request.ProjectId" asp-route-groupId="@request.GroupId">
+                            <button type="submit" class="btn btn-success">Approve</button>
+                        </form>
+                        <form method="post" asp-action="RejectGroupForProject" asp-route-projectId="@request.ProjectId" asp-route-groupId="@request.GroupId">
+                            <button type="submit" class="btn btn-danger">Reject</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No pending approvals at the moment.</p>
+}
+
 

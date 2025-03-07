@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TicketAppWeb.Models.DataLayer;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
@@ -55,6 +54,7 @@ public class ProjectController : Controller
     /// Creats the project and saves it to the database.
     /// </summary>
     [HttpPost]
+    [HttpPost]
     public async Task<IActionResult> CreateProject(ProjectViewModel model)
     {
         if (!ModelState.IsValid)
@@ -77,7 +77,8 @@ public class ProjectController : Controller
         {
             var assignedGroups = model.SelectedGroupIds;
             await _projectRepository.AddProjectAsync(project, assignedGroups);
-            TempData["SuccessMessage"] = $"Project {project.ProjectName} saved successfuly";
+
+            TempData["SuccessMessage"] = $"Project {project.ProjectName} saved successfully";
             return RedirectToAction("Index");
         }
         catch (Exception ex)
