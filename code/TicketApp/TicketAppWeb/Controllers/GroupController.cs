@@ -51,9 +51,8 @@ public class GroupController : Controller
     {
         if (!ModelState.IsValid)
         {
-            var users = await _userRepository.GetAllUsersAsync();
-            model.AllUsers = users.ToList();
-            return View("AddGroup", model);
+            model.AllUsers = (await _userRepository.GetAllUsersAsync()).ToList();
+            return View(model);
         }
 
         var newGroup = new Group
@@ -61,30 +60,26 @@ public class GroupController : Controller
             GroupName = model.GroupName,
             Description = model.Description,
             ManagerId = model.GroupLeadId,
+            Members = new HashSet<TicketAppUser>()
         };
 
-        // Ensure existing user memberships are preserved
-        if (model.SelectedUserIds != null && model.SelectedUserIds.Any())
+        if (model.SelectedUserIds != null)
         {
             foreach (var userId in model.SelectedUserIds)
             {
                 var user = await _userRepository.GetAsync(userId);
                 if (user != null)
                 {
-                    // Only add the user if they are not already in the group
-                    if (!newGroup.Members.Any(m => m.Id == userId))
-                    {
-                        newGroup.Members.Add(user);
-                    }
+                    newGroup.Members.Add(user);
                 }
             }
         }
 
         await _groupRepository.InsertAsync(newGroup);
         await _groupRepository.SaveAsync();
-
         return RedirectToAction("Index");
     }
+
 
 
 
