@@ -30,7 +30,7 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
                 existingProject.LeadId = project.LeadId;
 
                 var groupsToAdd = await context.Groups
-                    .Where(g => selectedGroupIds.Contains(g.Id))
+                    .Where(g => selectedGroupIds.Contains(g.Id!))
                     .ToListAsync();
 
                 existingProject.Groups = groupsToAdd;
@@ -45,13 +45,13 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
             if (isAdmin)
             {
                 groupsToAddDirectly = await context.Groups
-                    .Where(g => selectedGroupIds.Contains(g.Id))
+                    .Where(g => selectedGroupIds.Contains(g.Id!))
                     .ToListAsync();
             }
             else
             {
                 groupsToAddDirectly = await context.Groups
-                    .Where(g => selectedGroupIds.Contains(g.Id) && g.ManagerId == userId)
+                    .Where(g => selectedGroupIds.Contains(g.Id!) && g.ManagerId == userId)
                     .ToListAsync();
 
                 groupsNeedingApproval = selectedGroupIds
@@ -108,13 +108,13 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
             if (isAdmin)
             {
                 groupsToAddDirectly = await context.Groups
-                    .Where(g => selectedGroupIds.Contains(g.Id))
+                    .Where(g => selectedGroupIds.Contains(g.Id!))
                     .ToListAsync();
             }
             else
             {
                 groupsToAddDirectly = await context.Groups
-                    .Where(g => selectedGroupIds.Contains(g.Id) && g.ManagerId == userId)
+                    .Where(g => selectedGroupIds.Contains(g.Id!) && g.ManagerId == userId)
                     .ToListAsync();
 
                 groupsNeedingApproval = selectedGroupIds
@@ -184,7 +184,7 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     public Task<List<TicketAppUser>> GetGroupLeadsAsync(List<string> groupIds)
     {
         return context.Groups
-            .Where(g => groupIds.Contains(g.Id))
+            .Where(g => groupIds.Contains(g.Id!))
             .Select(g => g.Manager)
             .Distinct()
             .ToListAsync()!;

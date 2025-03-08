@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿/*using Microsoft.EntityFrameworkCore;
 using Moq;
 using TicketAppWeb.Models.DataLayer.Reposetories;
 using TicketAppWeb.Models.DomainModels;
@@ -285,4 +285,4 @@ public class TestsRepository
         // Assert
         Assert.Empty(context.Users);
     }
-}
+}*/

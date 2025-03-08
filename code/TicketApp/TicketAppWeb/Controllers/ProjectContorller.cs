@@ -106,7 +106,7 @@ public class ProjectController : Controller
             ProjectName = project.ProjectName,
             Description = project.Description,
             ProjectLeadId = project.LeadId,
-            SelectedGroupIds = project.Groups.Select(g => g.Id).ToList(),
+            SelectedGroupIds = project.Groups.Select(g => g.Id!).ToList(),
             AvailableGroups = await _projectRepository.GetAvailableGroupsAsync(),
             AssignedGroups = project.Groups.ToList()
         };

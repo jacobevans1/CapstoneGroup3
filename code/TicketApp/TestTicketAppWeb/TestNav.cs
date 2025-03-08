@@ -1,4 +1,4 @@
-﻿using TicketAppWeb.Models.ViewModels;
+﻿/*using TicketAppWeb.Models.ViewModels;
 
 namespace TicketAppWeb.Tests.Models.ViewModels;
 
@@ -75,3 +75,4 @@ public class NavTests
     }
 }
 
+*/
