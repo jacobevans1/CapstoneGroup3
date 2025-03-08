@@ -15,14 +15,17 @@ public static class Nav
 		return value == current ? "active" : "";
 	}
 
-	/// <summary>
-	/// Returns the "nav-active" class if the value is equal to the current value.
-	/// </summary>
-	/// <param name="value"></param>
-	/// <param name="current"></param>
-	/// <returns></returns>
-	public static string Active(string value, string current)
-	{
-		return string.Equals(value, current, StringComparison.OrdinalIgnoreCase) ? "nav-active" : string.Empty;
-	}
+    /// <summary>
+    /// Returns the "nav-active" class if the value is equal to the current value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="current"></param>
+    /// <returns></returns>
+    public static string Active(string expectedController, string currentController, string expectedAction, string currentAction)
+    {
+        return string.Equals(expectedController, currentController, StringComparison.OrdinalIgnoreCase) &&
+               string.Equals(expectedAction, currentAction, StringComparison.OrdinalIgnoreCase)
+            ? "nav-active"
+            : string.Empty;
+    }
 }
