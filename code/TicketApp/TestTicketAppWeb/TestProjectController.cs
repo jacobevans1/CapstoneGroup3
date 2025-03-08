@@ -8,6 +8,11 @@ using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
 
+/// <summary>
+/// Tests the project controller
+/// Jabesi Abwe
+/// 03/08/2025
+/// </summary>
 public class ProjectControllerTests
 {
     private readonly Mock<IProjectRepository> _mockRepo;
@@ -364,14 +369,14 @@ public class ProjectControllerTests
         var project = new Project { Id = "1", ProjectName = "Test Project" };
 
         _mockRepo.Setup(r => r.GetProjectByIdAsync("1"))
-                 .ReturnsAsync(project); // Ensure a valid project is returned
+                 .ReturnsAsync(project);
 
         _mockRepo.Setup(r => r.DeleteProjectAsync(It.IsAny<Project>()))
                  .Returns(Task.CompletedTask);
 
         var controller = new ProjectController(_mockRepo.Object)
         {
-            TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()) // Initialize TempData
+            TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>())
         };
 
         // Act
