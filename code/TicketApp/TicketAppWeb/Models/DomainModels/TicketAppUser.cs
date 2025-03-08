@@ -4,24 +4,21 @@
 // Spring 2025
 namespace TicketAppWeb.Models.DomainModels
 {
-	/// <summary>
-	/// The TicketAppUser class represents a user of the TicketApp application.
-	/// </summary>
-	public class TicketAppUser : IdentityUser
-	{
-		/// <summary>
-		/// The first name of the user.
-		/// </summary>
-		public string FirstName { get; set; } = string.Empty;
+    /// <summary>
+    /// The TicketAppUser class represents a user of the TicketApp application.
+    /// </summary>
+    public class TicketAppUser : IdentityUser
+    {
+        public TicketAppUser()
+        {
+            Groups = new HashSet<Group>();
+        }
 
-		/// <summary>
-		/// The last name of the user.
-		/// </summary>
-		public string LastName { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string FullName => $"{FirstName} {LastName}";
 
-		/// <summary>
-		/// The full name of the user.
-		/// </summary>
-		public string FullName => $"{FirstName} {LastName}";
-	}
+        // Many-to-Many relationship: User <-> Groups
+        public virtual ICollection<Group> Groups { get; set; }
+    }
 }
