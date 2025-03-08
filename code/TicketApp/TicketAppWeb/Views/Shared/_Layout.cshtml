@@ -36,21 +36,28 @@
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link @Nav.Active("UserManagement", currentAction)"
+                    <a class="nav-link @Nav.Active("Home", currentController, "Index", currentAction)"
+                       asp-action="Index" asp-controller="Home" asp-area="">
+                        <i class="fas fa-chart-line"></i>                        
+                        <span class="nav-item">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link @Nav.Active("User", currentController, "Index", currentAction)"
                        asp-action="Index" asp-controller="User" asp-area="">
                         <i class="fas fa-user"></i>
                         <span class="nav-item">User Management</span>
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link @Nav.Active("GroupManagement", currentAction)"
+                    <a class="nav-link @Nav.Active("Group", currentController, "Index", currentAction)"
                        asp-action="Index" asp-controller="Group" asp-area="">
                         <i class="fas fa-users"></i>
                         <span class="nav-item">Group Management</span>
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link @Nav.Active("ProjectManagement", currentAction)"
+                    <a class="nav-link @Nav.Active("Project", currentController, "Index", currentAction)"
                        asp-action="Index" asp-controller="Project" asp-area="">
                         <i class="fas fa-project-diagram"></i>
                         <span class="nav-item">Project Management</span>

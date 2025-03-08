@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.DomainModels;
@@ -38,12 +38,16 @@ namespace TicketAppWeb.Models.DataLayer
 		/// </summary>
 		public DbSet<Group> Groups { get; set; }
 
+        /// <summary>
+        /// Gets or sets the group approval requests.
+        /// </summary>
+        public DbSet<GroupApprovalRequest> GroupApprovalRequests { get; set; }
 
         /// <summary>
         /// Configures the model for the context.
         /// </summary>
         /// <param name="modelBuilder">The builder used to construct the model for this context.</param>
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)		
         {
             base.OnModelCreating(modelBuilder);
 
@@ -52,22 +56,22 @@ namespace TicketAppWeb.Models.DataLayer
                 .HasMany(g => g.Members)
                 .WithMany(u => u.Groups)
                 .UsingEntity<Dictionary<string, object>>(
-                    "UserGroups",  // Use the existing table instead of recreating it
+                    "UserGroups", 
                     j => j.HasOne<TicketAppUser>().WithMany().HasForeignKey("MembersId"),
                     j => j.HasOne<Group>().WithMany().HasForeignKey("GroupsId"),
                     j =>
                     {
-                        j.HasKey("GroupsId", "MembersId");  // Define composite key
-                        j.ToTable("UserGroups"); // Explicitly reference the existing table
+                        j.HasKey("GroupsId", "MembersId"); 
+                        j.ToTable("UserGroups"); 
                     }
                 );
 
             // One-to-Many Relationship: Group <-> Manager (User)
             modelBuilder.Entity<Group>()
                 .HasOne(g => g.Manager)
-                .WithMany() // The manager does not need a Groups navigation property
+                .WithMany() 
                 .HasForeignKey(g => g.ManagerId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent accidental deletion of managers
+                .OnDelete(DeleteBehavior.Restrict); 
         }
 
 

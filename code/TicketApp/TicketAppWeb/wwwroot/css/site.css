@@ -83,15 +83,15 @@ ul {
 }
 
 main {
-    flex-grow: 1; /* Allow the main content to grow */
-    margin-left: 100px; /* Ensure initial margin aligns with nav width */
+    flex-grow: 1;
+    margin-left: 100px;
     padding: 50px;
     background: var(--baby-blue);
     transition: margin-left 0.5s ease;
 }
 
 nav:hover ~ main {
-    margin-left: 280px; /* Adjust main margin when nav expands */
+    margin-left: 280px; 
 }
 
 
