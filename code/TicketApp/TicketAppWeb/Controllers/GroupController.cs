@@ -77,6 +77,9 @@ public class GroupController : Controller
 
         await _groupRepository.InsertAsync(newGroup);
         await _groupRepository.SaveAsync();
+
+        TempData["SuccessMessage"] = $"Group '{newGroup.GroupName}' created successfully!";
+
         return RedirectToAction("Index");
     }
 
@@ -160,6 +163,9 @@ public class GroupController : Controller
         }
 
         await _groupRepository.SaveAsync();
+
+        TempData["SuccessMessage"] = $"Group '{group.GroupName}' updated successfully!";
+
         return RedirectToAction("Index");
     }
 
@@ -201,11 +207,17 @@ public class GroupController : Controller
         try
         {
             await _groupRepository.DeleteGroupAsync(group);
+
+            TempData["SuccessMessage"] = $"Group '{group.GroupName}' deleted successfully!";
+
             return RedirectToAction("Index");
         }
         catch (Exception ex)
         {
             ModelState.AddModelError("", "Error deleting group: " + ex.Message);
+
+            TempData["ErrorMessage"] = $"Error deleting group: {ex.Message}";
+
             return View("DeleteGroup", group);
         }
     }

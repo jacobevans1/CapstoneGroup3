@@ -114,3 +114,13 @@
         </div>
     </div>
 </div>
+
+@section scripts
+{
+    <script>
+        setTimeout(function () {
+            document.querySelectorAll('.alert').forEach(alert => alert.style.display = 'none');
+        }, 5000);
+    </script>
+}
+
