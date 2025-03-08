@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketAppWeb.Models.DataLayer;
 
@@ -11,9 +12,11 @@ using TicketAppWeb.Models.DataLayer;
 namespace TicketAppWeb.Migrations
 {
     [DbContext(typeof(TicketAppContext))]
-    partial class TicketAppContextModelSnapshot : ModelSnapshot
+    [Migration("20250304195027_FixGroupRelationships")]
+    partial class FixGroupRelationships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -197,29 +200,6 @@ namespace TicketAppWeb.Migrations
                     b.HasIndex("ManagerId");
 
                     b.ToTable("Groups");
-                });
-
-            modelBuilder.Entity("TicketAppWeb.Models.DomainModels.GroupApprovalRequest", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("GroupId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProjectId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("GroupApprovalRequests");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Project", b =>
@@ -416,21 +396,6 @@ namespace TicketAppWeb.Migrations
                         .IsRequired();
 
                     b.Navigation("Manager");
-                });
-
-            modelBuilder.Entity("TicketAppWeb.Models.DomainModels.GroupApprovalRequest", b =>
-                {
-                    b.HasOne("TicketAppWeb.Models.DomainModels.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId");
-
-                    b.HasOne("TicketAppWeb.Models.DomainModels.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId");
-
-                    b.Navigation("Group");
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Project", b =>

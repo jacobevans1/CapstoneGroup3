@@ -81,7 +81,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var project in Model.Projects)
+                    @foreach (var project in Model.FilteredProjects)
                     {
                         <tr>
                             <td>@project.ProjectName</td>
@@ -128,3 +128,24 @@
         </div>
     </div>
 </div>
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("filterBtn").addEventListener("click", function () {
+                let projectName = document.getElementById("projectSearch").value;
+                let projectLead = document.getElementById("leadSearch").value;
+                let url = new URL(window.location.href);
+                url.searchParams.set("projectName", projectName);
+                url.searchParams.set("projectLead", projectLead);
+                window.location.href = url.toString();
+            });
+
+            document.getElementById("clearFilterBtn").addEventListener("click", function () {
+                let url = new URL(window.location.href);
+                url.searchParams.delete("projectName");
+                url.searchParams.delete("projectLead");
+                window.location.href = url.toString();
+            });
+        });
+    </script>
+}

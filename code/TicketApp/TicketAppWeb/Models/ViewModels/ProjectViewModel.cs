@@ -66,10 +66,29 @@ public class ProjectViewModel
 	/// </summary>
 	public IEnumerable<Project> Projects { get; set; } = new List<Project>();
 
-	/// <summary>
-	/// Gets or sets the project groups.
-	/// </summary>
-	public Dictionary<Project, List<Group>> ProjectGroups { get; set; } = new Dictionary<Project, List<Group>>();
+    /// <summary>
+    /// Gets or sets the name of the search project.
+    /// </summary>
+    public string? SearchProjectName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the search project lead.
+    /// </summary>
+    public string? SearchProjectLead { get; set; }
+
+    /// <summary>
+    /// Gets the filtered projects.
+    /// </summary>
+    public IEnumerable<Project> FilteredProjects => Projects
+        .Where(p => string.IsNullOrEmpty(SearchProjectName) || p.ProjectName!.Contains(SearchProjectName, StringComparison.OrdinalIgnoreCase))
+        .Where(p => string.IsNullOrEmpty(SearchProjectLead) || (p.Lead != null && p.Lead.FullName.Contains(SearchProjectLead, StringComparison.OrdinalIgnoreCase)))
+        .ToList();
+
+
+    /// <summary>
+    /// Gets or sets the project groups.
+    /// </summary>
+    public Dictionary<Project, List<Group>> ProjectGroups { get; set; } = new Dictionary<Project, List<Group>>();
 
 	/// <summary>
 	/// Gets or sets the current route.

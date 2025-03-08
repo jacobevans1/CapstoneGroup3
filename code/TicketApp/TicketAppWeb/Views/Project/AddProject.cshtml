@@ -1,10 +1,4 @@
-﻿@*
-    The the view of the add project action
-    Jabesi Abwe
-    03/01/2025
-*@
-
-@model ProjectViewModel
+﻿@model ProjectViewModel
 @{
     ViewData["Title"] = "Add New Project";
 }
@@ -37,44 +31,53 @@
             <textarea asp-for="Description" class="form-control"></textarea>
         </div>
         <br />
-        <div class="row ProjectLeadId">
-            <div class="col-md-6">
+
+        <div class="row">
+            <div class="col-md-5">
                 <h6>Available Groups</h6>
                 <ul id="availableGroups" class="list-group">
                     @foreach (var group in Model.AvailableGroups)
                     {
                         <li class="list-group-item">
-                            <input type="checkbox" class="group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="@group.Id" />
+                            <input type="checkbox" class="group-checkbox form-check-input mt-0" value="@group.Id" />
                             @group.GroupName
                         </li>
                     }
                 </ul>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-2 text-center align-self-center">
+                <button type="button" class="btn btn-primary mb-2" id="addGroupsBtn">Add →</button>
+                <br /><br />
+                <button type="button" class="btn btn-danger" id="removeGroupsBtn">← Remove</button>
+            </div>
+
+            <div class="col-md-5">
                 <h6>Assigned Groups <span class="text-danger">*</span></h6>
                 <ul id="assignedGroups" class="list-group">
                     @foreach (var group in Model.AssignedGroups)
                     {
                         <li class="list-group-item">
-                            <input type="checkbox" class="group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="@group.Id" checked />
+                            <input type="checkbox" class="assigned-group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="@group.Id" checked />
                             @group.GroupName
                         </li>
                     }
                 </ul>
             </div>
-            <span asp-validation-for="SelectedGroupIds" class="text-danger"></span>
         </div>
-        <br/>
+        <span asp-validation-for="SelectedGroupIds" class="text-danger"></span>
+        <br />
+
         <div class="form-group mt-3">
             <label class="form-label">Project Lead <span class="text-danger">*</span></label>
             <select id="projectLead" asp-for="ProjectLeadId" class="form-select">
                 <option value="">Select a Lead</option>
-                <input type="hidden" id="hiddenProjectLeadId" name="ProjectLeadId" />
             </select>
+            <input type="hidden" id="hiddenProjectLeadId" name="ProjectLeadId" />
             <span asp-validation-for="ProjectLeadId" class="text-danger"></span>
         </div>
         <br />
+
         <div class="row justify-content-center">
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary">Add Project</button>
@@ -94,44 +97,36 @@
             const availableGroups = document.getElementById("availableGroups");
             const assignedGroups = document.getElementById("assignedGroups");
             const projectLeadSelect = document.getElementById("projectLead");
+            let previousLeadId = document.getElementById("hiddenProjectLeadId").value; // Store the previous lead ID
 
-            function createAssignedGroupItem(groupId, groupName) {
-                let listItem = document.createElement("li");
-                listItem.className = "list-group-item";
-                listItem.innerHTML = `
-                        <input type="checkbox" class="assigned-group-checkbox" value="${groupId}" checked />
-                        ${groupName}
-                    `;
-                assignedGroups.appendChild(listItem);
-
-                listItem.querySelector(".assigned-group-checkbox").addEventListener("change", function () {
-                    if (!this.checked) {
-                        assignedGroups.removeChild(listItem);
-                        let availableCheckbox = availableGroups.querySelector(`input[value="${groupId}"]`);
-                        if (availableCheckbox) {
-                            availableCheckbox.checked = false;
-                        }
-                        updateProjectLeads();
-                    }
-                });
-            }
-
-            availableGroups.addEventListener("change", function (event) {
-                if (event.target.classList.contains("group-checkbox")) {
-                    let groupId = event.target.value;
-                    let groupName = event.target.parentNode.textContent.trim();
-
-                    if (event.target.checked) {
-                        createAssignedGroupItem(groupId, groupName);
-                    } else {
-                        let assignedCheckbox = assignedGroups.querySelector(`input[value="${groupId}"]`);
-                        if (assignedCheckbox) {
-                            assignedGroups.removeChild(assignedCheckbox.parentNode);
-                        }
-                    }
-                    updateProjectLeads();
-                }
+            document.getElementById("addGroupsBtn").addEventListener("click", function () {
+                moveSelectedGroups(availableGroups, assignedGroups, true);
             });
+
+            document.getElementById("removeGroupsBtn").addEventListener("click", function () {
+                moveSelectedGroups(assignedGroups, availableGroups, false);
+            });
+
+            function moveSelectedGroups(sourceList, targetList, isAdding) {
+                const selectedItems = sourceList.querySelectorAll("input:checked");
+                selectedItems.forEach(item => {
+                    let listItem = item.closest("li");
+                    item.checked = false; // Reset checked state in new list
+
+                    if (isAdding) {
+                        item.classList.add("assigned-group-checkbox");
+                        item.name = "SelectedGroupIds";
+                        item.checked = true; // Ensure it's marked as selected for form submission
+                    } else {
+                        item.classList.remove("assigned-group-checkbox");
+                        item.removeAttribute("name"); // Remove from submission
+                    }
+
+                    targetList.appendChild(listItem);
+                });
+
+                updateProjectLeads();
+            }
 
             function updateProjectLeads() {
                 projectLeadSelect.innerHTML = '<option value="">Select a Lead</option>';
@@ -155,13 +150,26 @@
                             option.textContent = lead.fullName;
                             projectLeadSelect.appendChild(option);
                         });
+
+                        // Set the previously selected lead as the selected option
+                        if (previousLeadId) {
+                            let selectedOption = projectLeadSelect.querySelector(`option[value='${previousLeadId}']`);
+                            if (selectedOption) {
+                                selectedOption.selected = true;
+                            }
+                        }
                     })
                     .catch(error => console.error("Error fetching leads:", error));
             }
 
             document.getElementById("projectLead").addEventListener("change", function () {
                 document.getElementById("hiddenProjectLeadId").value = this.value;
+                previousLeadId = this.value;
             });
+
+            updateProjectLeads();
         });
     </script>
+}
+
 }

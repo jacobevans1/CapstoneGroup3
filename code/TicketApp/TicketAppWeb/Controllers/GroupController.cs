@@ -57,49 +57,35 @@ public class GroupController : Controller
 			return View("AddGroup", model);
 		}
 
-		// Step 1: Create the group
-		var newGroup = new Group
-		{
-			GroupName = model.GroupName,
-			Description = model.Description,
-			ManagerId = model.GroupLeadId,
-		};
+        var newGroup = new Group
+        {
+            GroupName = model.GroupName,
+            Description = model.Description,
+            ManagerId = model.GroupLeadId,
+        };
 
-		// Step 2: Assign members
-		if (model.SelectedUserIds != null && model.SelectedUserIds.Any())
-		{
-			foreach (var userId in model.SelectedUserIds)
-			{
-				var user = await _userRepository.GetAsync(userId);
-				if (user != null)
-				{
-					newGroup.Members.Add(user);
-				}
-			}
-		}
+        // Ensure existing user memberships are preserved
+        if (model.SelectedUserIds != null && model.SelectedUserIds.Any())
+        {
+            foreach (var userId in model.SelectedUserIds)
+            {
+                var user = await _userRepository.GetAsync(userId);
+                if (user != null)
+                {
+                    // Only add the user if they are not already in the group
+                    if (!newGroup.Members.Any(m => m.Id == userId))
+                    {
+                        newGroup.Members.Add(user);
+                    }
+                }
+            }
+        }
 
-		// Step 3: Assign group lead (must be in the group)
-		var groupLead = newGroup.Members.FirstOrDefault(u => u.Id == model.GroupLeadId);
-		if (groupLead != null)
-		{
-			newGroup.ManagerId = groupLead.Id;
-			newGroup.Manager = groupLead;
-		}
-		else
-		{
-			ModelState.AddModelError("GroupLeadId", "The group lead must be in the group.");
-			var users = await _userRepository.GetAllUsersAsync();
-			model.AllUsers = users.ToList();
-			return View("AddGroup", model);
-		}
+        await _groupRepository.InsertAsync(newGroup);
+        await _groupRepository.SaveAsync();
 
-		// Step 4: Save to database
-		await _groupRepository.InsertAsync(newGroup);
-		await _groupRepository.SaveAsync();
-
-		// Step 5: Redirect to Group Management Page
-		return RedirectToAction("Index");
-	}
+        return RedirectToAction("Index");
+    }
 
 	[HttpGet]
 	public async Task<IActionResult> EditGroup(string id)
@@ -131,62 +117,67 @@ public class GroupController : Controller
 	}
 
 
-	[HttpPost]
-	public async Task<IActionResult> UpdateGroup(AddGroupViewModel model)
-	{
-		Console.WriteLine("UpdateGroup action triggered"); // Debugging step
+    [HttpPost]
+    public async Task<IActionResult> UpdateGroup(AddGroupViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            var users = await _userRepository.GetAllUsersAsync();
+            model.AllUsers = users.ToList();
+            return View("EditGroup", model);
+        }
 
-		if (!ModelState.IsValid)
-		{
-			Console.WriteLine("Model state is invalid");
-			foreach (var key in ModelState.Keys)
-			{
-				foreach (var error in ModelState[key].Errors)
-				{
-					Console.WriteLine($"Validation Error - {key}: {error.ErrorMessage}");
-				}
-			}
-			var users = await _userRepository.GetAllUsersAsync();
-			model.AllUsers = users.ToList();
-			return View("EditGroup", model);
-		}
+        var group = await _groupRepository.GetAsync(model.GroupId);
+        if (group == null)
+        {
+            return NotFound();
+        }
 
-		var group = await _groupRepository.GetAsync(model.GroupId);
-		if (group == null)
-		{
-			Console.WriteLine("Group not found");
-			return NotFound();
-		}
+        // Update group details
+        group.GroupName = model.GroupName;
+        group.Description = model.Description;
+        group.ManagerId = model.GroupLeadId;
 
-		Console.WriteLine($"Updating group {group.GroupName} with new lead: {model.GroupLeadId}");
+        // Get current members of the group
+        var existingMemberIds = group.Members.Select(m => m.Id).ToList();
 
-		group.GroupName = model.GroupName;
-		group.Description = model.Description;
-		group.ManagerId = model.GroupLeadId;
+        // Find members to **remove** (they are in the DB but not in the new selection)
+        var membersToRemove = existingMemberIds.Except(model.SelectedUserIds).ToList();
+        foreach (var userId in membersToRemove)
+        {
+            var user = group.Members.FirstOrDefault(m => m.Id == userId);
+            if (user != null)
+            {
+                group.Members.Remove(user); // Remove deselected members
+            }
+        }
 
-		group.Members.Clear();
-		foreach (var userId in model.SelectedUserIds)
-		{
-			var user = await _userRepository.GetAsync(userId);
-			if (user != null)
-			{
-				group.Members.Add(user);
-			}
-		}
+        // Find members to **add** (they are newly selected but were not in the group before)
+        var membersToAdd = model.SelectedUserIds.Except(existingMemberIds).ToList();
+        foreach (var userId in membersToAdd)
+        {
+            var user = await _userRepository.GetAsync(userId);
+            if (user != null)
+            {
+                group.Members.Add(user); // Add newly selected members
+            }
+        }
 
-		await _groupRepository.SaveAsync();
-		Console.WriteLine("Group update successful!");
+        await _groupRepository.SaveAsync();
+        return RedirectToAction("Index");
+    }
 
-		return RedirectToAction("Index");
-	}
 
-	[HttpGet]
-	public async Task<IActionResult> DeleteGroup(string id)
-	{
-		if (string.IsNullOrEmpty(id))
-		{
-			return NotFound();
-		}
+
+
+
+    [HttpGet]
+    public async Task<IActionResult> DeleteGroup(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
 
 		var group = await _groupRepository.GetAsync(id);
 		if (group == null)

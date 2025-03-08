@@ -23,6 +23,7 @@ namespace TicketAppWeb.Models.Configuration
 				}
 			}
 
+			// Create Admin User
 			var adminUser = await userManager.FindByEmailAsync("admin@domain.com");
 			if (adminUser == null)
 			{
@@ -39,6 +40,35 @@ namespace TicketAppWeb.Models.Configuration
 				if (result.Succeeded)
 				{
 					await userManager.AddToRoleAsync(adminUser, "Admin");
+				}
+			}
+
+			// Create standard users
+			await CreateUserIfNotExists(userManager, "jabesi@domain.com", "Jabesi", "Abwe", "User");
+			await CreateUserIfNotExists(userManager, "jacob@domain.com", "Jacob", "Evans", "User");
+		}
+
+		/// <summary>
+		/// Creates a user if they do not already exist.
+		/// </summary>
+		private static async Task CreateUserIfNotExists(UserManager<TicketAppUser> userManager, string email, string firstName, string lastName, string role)
+		{
+			var user = await userManager.FindByEmailAsync(email);
+			if (user == null)
+			{
+				user = new TicketAppUser
+				{
+					UserName = firstName + lastName,
+					FirstName = firstName,
+					LastName = lastName,
+					Email = email,
+					EmailConfirmed = true
+				};
+
+				var result = await userManager.CreateAsync(user, firstName + lastName + "123!");
+				if (result.Succeeded)
+				{
+					await userManager.AddToRoleAsync(user, role);
 				}
 			}
 		}
