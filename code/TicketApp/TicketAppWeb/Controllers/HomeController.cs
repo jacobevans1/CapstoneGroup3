@@ -10,12 +10,10 @@ namespace TicketAppWeb.Controllers
     public class HomeController : Controller
     {
         private readonly IProjectRepository _projectRepository;
-        private readonly IUserRepository _userRepository;
 
-        public HomeController(IProjectRepository projectRepository, IUserRepository userRepository)
+        public HomeController(IProjectRepository projectRepository)
         {
             _projectRepository = projectRepository;
-            _userRepository = userRepository;
         }
 
         /// <summary>
@@ -23,21 +21,17 @@ namespace TicketAppWeb.Controllers
         /// </summary>
         public async Task<IActionResult> Index()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return View(await GetPendingApprovalsViewModel());
+        }
 
-            var pendingRequests = await _projectRepository.GetPendingGroupApprovalRequestsAsync(userId!);
-
-            if (!pendingRequests.Any())
-            {
-                return View("NoPendingApprovals");
-            }
-
-            var pendingApprovalViewModel = new PendingApprovalsViewModel
-            {
-                PendingRequests = pendingRequests
-            };
-
-            return View(pendingApprovalViewModel);
+        /// <summary>
+        /// Fetches the pending approvals view content (for AJAX refresh).
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetPendingApprovals()
+        {
+            var model = await GetPendingApprovalsViewModel();
+            return PartialView("_PendingApprovalsPartial", model);
         }
 
         /// <summary>
@@ -49,13 +43,11 @@ namespace TicketAppWeb.Controllers
             try
             {
                 await _projectRepository.ApproveGroupForProjectAsync(projectId, groupId);
-
-                return RedirectToAction("Index");
+                return Json(new { success = true });
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Error approving group: {ex.Message}";
-                return View("Error");
+                return Json(new { success = false, message = ex.Message });
             }
         }
 
@@ -68,14 +60,26 @@ namespace TicketAppWeb.Controllers
             try
             {
                 await _projectRepository.RejectGroupForProjectAsync(projectId, groupId);
-
-                return RedirectToAction("Index");
+                return Json(new { success = true });
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Error rejecting group: {ex.Message}";
-                return View("Error");
+                return Json(new { success = false, message = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// Helper method to get the pending approvals view model.
+        /// </summary>
+        private async Task<PendingApprovalsViewModel> GetPendingApprovalsViewModel()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var pendingRequests = await _projectRepository.GetPendingGroupApprovalRequestsAsync(userId!);
+
+            return new PendingApprovalsViewModel
+            {
+                PendingRequests = pendingRequests
+            };
         }
     }
 }

@@ -17,7 +17,7 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     /// <param name="project">The project.</param>
     /// <param name="selectedGroupIds">The selected group ids.</param>
     /// <exception cref="System.Exception">Error adding/updating project: {ex.Message}</exception>
-    public async Task AddProjectAsync(Project project, List<string> selectedGroupIds)
+    public async Task AddProjectAsync(Project project, List<string> selectedGroupIds, bool isAdmin)
     {
         try
         {
@@ -29,26 +29,37 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
                 existingProject.Description = project.Description;
                 existingProject.LeadId = project.LeadId;
 
-                var groupsUserManages = await context.Groups
-                    .Where(g => selectedGroupIds.Contains(g.Id) && g.ManagerId == userId)
+                var groupsToAdd = await context.Groups
+                    .Where(g => selectedGroupIds.Contains(g.Id))
                     .ToListAsync();
 
-                existingProject.Groups = groupsUserManages;
+                existingProject.Groups = groupsToAdd;
 
                 await context.SaveChangesAsync();
                 return;
             }
 
-            var groupsUserManagesDirectly = await context.Groups
-                .Where(g => selectedGroupIds.Contains(g.Id) && g.ManagerId == userId)
-                .ToListAsync();
+            List<Group> groupsToAddDirectly;
+            List<string> groupsNeedingApproval = [];
 
-            var groupsNeedingApproval = selectedGroupIds
-                .Where(gId => !groupsUserManagesDirectly.Any(g => g.Id == gId))
-                .ToList();
+            if (isAdmin)
+            {
+                groupsToAddDirectly = await context.Groups
+                    .Where(g => selectedGroupIds.Contains(g.Id))
+                    .ToListAsync();
+            }
+            else
+            {
+                groupsToAddDirectly = await context.Groups
+                    .Where(g => selectedGroupIds.Contains(g.Id) && g.ManagerId == userId)
+                    .ToListAsync();
 
-            project.Groups = groupsUserManagesDirectly;
+                groupsNeedingApproval = selectedGroupIds
+                    .Where(gId => !groupsToAddDirectly.Any(g => g.Id == gId))
+                    .ToList();
+            }
 
+            project.Groups = groupsToAddDirectly;
             context.Projects.Add(project);
             await context.SaveChangesAsync();
 
@@ -70,9 +81,10 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     /// </summary>
     /// <param name="project">The project.</param>
     /// <param name="selectedGroupIds">The selected group ids.</param>
+    /// <param name="isAdmin"></param>
     /// <exception cref="System.Collections.Generic.KeyNotFoundException">Project not found.</exception>
     /// <exception cref="System.Exception">Error updating project: {ex.Message}</exception>
-    public async Task UpdateProjectAsync(Project project, List<string> selectedGroupIds)
+    public async Task UpdateProjectAsync(Project project, List<string> selectedGroupIds, bool isAdmin)
     {
         try
         {
@@ -90,21 +102,33 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
             existingProject.LeadId = project.LeadId;
 
             var userId = project.CreatedById;
-            var groupsToApprove = new List<Group>();
+            List<Group> groupsToAddDirectly;
+            List<string> groupsNeedingApproval = [];
 
-            foreach (var groupId in selectedGroupIds)
+            if (isAdmin)
             {
-                var group = await context.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
-                if (group != null && group.ManagerId != userId)
-                {
-                    groupsToApprove.Add(group);
-                    await AddGroupApprovalRequestAsync(project.Id!, group.Id);
-                }
+                groupsToAddDirectly = await context.Groups
+                    .Where(g => selectedGroupIds.Contains(g.Id))
+                    .ToListAsync();
+            }
+            else
+            {
+                groupsToAddDirectly = await context.Groups
+                    .Where(g => selectedGroupIds.Contains(g.Id) && g.ManagerId == userId)
+                    .ToListAsync();
+
+                groupsNeedingApproval = selectedGroupIds
+                    .Where(gId => !groupsToAddDirectly.Any(g => g.Id == gId))
+                    .ToList();
             }
 
-            existingProject.Groups = await context.Groups
-                .Where(g => selectedGroupIds.Contains(g.Id))
-                .ToListAsync();
+            existingProject.Groups = groupsToAddDirectly;
+            await context.SaveChangesAsync();
+
+            foreach (var groupId in groupsNeedingApproval)
+            {
+                await AddGroupApprovalRequestAsync(project.Id!, groupId);
+            }
 
             await context.SaveChangesAsync();
         }

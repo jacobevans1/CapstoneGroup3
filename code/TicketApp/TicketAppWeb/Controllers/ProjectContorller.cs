@@ -54,7 +54,6 @@ public class ProjectController : Controller
     /// Creats the project and saves it to the database.
     /// </summary>
     [HttpPost]
-    [HttpPost]
     public async Task<IActionResult> CreateProject(ProjectViewModel model)
     {
         if (!ModelState.IsValid)
@@ -64,6 +63,7 @@ public class ProjectController : Controller
         }
 
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var isAdmin = User.IsInRole("Admin");
 
         var project = new Project
         {
@@ -76,7 +76,7 @@ public class ProjectController : Controller
         try
         {
             var assignedGroups = model.SelectedGroupIds;
-            await _projectRepository.AddProjectAsync(project, assignedGroups);
+            await _projectRepository.AddProjectAsync(project, assignedGroups, isAdmin);
 
             TempData["SuccessMessage"] = $"Project {project.ProjectName} saved successfully";
             return RedirectToAction("Index");
@@ -132,13 +132,15 @@ public class ProjectController : Controller
             return NotFound();
         }
 
+        var isAdmin = User.IsInRole("Admin");
+
         project.ProjectName = model.ProjectName;
         project.Description = model.Description;
         project.LeadId = model.ProjectLeadId;
 
         try
         {
-            await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds);
+            await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds, isAdmin);
             TempData["SuccessMessage"] = $"Project {project.ProjectName} updated successfully";
             return RedirectToAction("Index");
         }

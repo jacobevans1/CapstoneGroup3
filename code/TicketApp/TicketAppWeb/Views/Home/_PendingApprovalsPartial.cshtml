@@ -1,0 +1,30 @@
+﻿@model PendingApprovalsViewModel
+
+@if (Model.PendingRequests.Any())
+{
+    var request = Model.PendingRequests.First();
+    <div class="card shadow-lg p-4 mb-3">
+        <div class="card-body text-center">
+            <h6 class="card-title text-dark">
+                Approval Request for project: <strong>@request.Project!.ProjectName</strong>
+            </h6>
+            <p class="card-text">
+                Group: <strong>@request.Group!.GroupName</strong>
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <button class="btn btn-success approve-btn" data-project-id="@request.ProjectId" data-group-id="@request.GroupId">Approve</button>
+                <button class="btn btn-danger reject-btn" data-project-id="@request.ProjectId" data-group-id="@request.GroupId">Reject</button>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- No Pending Approvals Card -->
+    <div class="card shadow-lg p-4">
+        <div class="card-body text-center">
+            <h6 class="card-title text-muted">No Pending Approvals</h6>
+            <p class="card-text">There are no approval requests at the moment.</p>
+        </div>
+    </div>
+}

@@ -13,10 +13,6 @@ public interface IProjectRepository : IRepository<Project>
     /// Gets the projects and groups.
     /// </summary>
     Task<Dictionary<Project, List<Group>>> GetFilteredProjectsAndGroups(string? projectName, string? projectLead);
-    /// <summary>
-    /// Gets all projects asynchronous.
-    /// </summary>
-    Task<List<Project>> GetAllProjectsAsync();
 
     /// <summary>
     /// Gets the available groups asynchronous.
@@ -40,14 +36,14 @@ public interface IProjectRepository : IRepository<Project>
     /// </summary>
     /// <param name="project">The project.</param>
     /// <param name="selectedGroupIds">The selected group ids.</param>
-    Task AddProjectAsync(Project project, List<string> selectedGroupIds);
+    Task AddProjectAsync(Project project, List<string> selectedGroupIds, bool isAdmin);
 
     /// <summary>
     /// Updates the project asynchronous.
     /// </summary>
     /// <param name="project">The project.</param>
     /// <param name="selectedGroupIds">The selected group ids.</param>
-    Task UpdateProjectAsync(Project project, List<string> selectedGroupIds);
+    Task UpdateProjectAsync(Project project, List<string> selectedGroupIds, bool isAdmin);
 
     /// <summary>
     /// Deletes the project asynchronous.
