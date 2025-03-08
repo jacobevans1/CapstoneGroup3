@@ -38,35 +38,61 @@
 
         <div class="row">
             <!-- Available Users -->
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <h6>Available Users</h6>
                 <ul id="availableUsers" class="list-group">
                     @foreach (var user in Model.AllUsers)
                     {
-                        <li class="list-group-item">
-                            <input type="checkbox" class="user-checkbox form-check-input mt-0" name="SelectedUserIds" value="@user.Id" />
-                            @user.UserName (@user.Email)
-                        </li>
+                        if (!Model.SelectedUserIds.Contains(user.Id))
+                        {
+                            <li class="list-group-item">
+                                <input type="checkbox" class="user-checkbox form-check-input mt-0" value="@user.Id" />
+                                @user.UserName (@user.Email)
+                            </li>
+                        }
                     }
                 </ul>
             </div>
 
+            <div class="col-md-2 text-center align-self-center">
+                <button type="button" class="btn btn-primary mb-2" id="addUsersBtn">Add →</button>
+                <br /><br />
+                <button type="button" class="btn btn-danger" id="removeUsersBtn">← Remove</button>
+            </div>
+
             <!-- Selected Members -->
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <h6>Selected Members <span class="text-danger">*</span></h6>
                 <ul id="selectedUsers" class="list-group">
-                    <!-- Selected users will appear here dynamically -->
+                    @foreach (var user in Model.AllUsers)
+                    {
+                        if (Model.SelectedUserIds.Contains(user.Id))
+                        {
+                            <li class="list-group-item">
+                                <input type="checkbox" class="assigned-user-checkbox form-check-input mt-0" name="SelectedUserIds" value="@user.Id" checked />
+                                @user.UserName (@user.Email)
+                            </li>
+                        }
+                    }
                 </ul>
             </div>
         </div>
+        <span asp-validation-for="SelectedUserIds" class="text-danger"></span>
+        <br />
 
         <!-- Group Lead Selection -->
         <div class="form-group mt-3">
             <label class="form-label">Group Lead <span class="text-danger">*</span></label>
-            <select asp-for="GroupLeadId" class="form-select" id="groupLeadDropdown">
-                <option value="">Select Group Lead</option>
-                <input type="hidden" id="hiddenGroupLeadId" name="GroupLeadId" />
+            <select id="groupLead" asp-for="GroupLeadId" class="form-select">
+                <option value="">Select a Lead</option>
+                @foreach (var user in Model.AllUsers.Where(u => Model.SelectedUserIds.Contains(u.Id)))
+                {
+                    <option value="@user.Id" selected="@(Model.GroupLeadId == user.Id ? "selected" : null)">
+                        @user.UserName (@user.Email)
+                    </option>
+                }
             </select>
+            <input type="hidden" id="hiddenGroupLeadId" name="GroupLeadId" value="@Model.GroupLeadId" />
             <span asp-validation-for="GroupLeadId" class="text-danger"></span>
         </div>
 
@@ -87,16 +113,45 @@
         document.addEventListener("DOMContentLoaded", function () {
             const availableUsers = document.getElementById("availableUsers");
             const selectedUsers = document.getElementById("selectedUsers");
-            const groupLeadSelect = document.getElementById("groupLeadDropdown");
+            const groupLeadSelect = document.getElementById("groupLead");
 
-            // Function to update the Group Lead dropdown
-            function updateGroupLeadDropdown() {
-                groupLeadSelect.innerHTML = '<option value="">Select Group Lead</option>';
+            document.getElementById("addUsersBtn").addEventListener("click", function () {
+                moveSelectedUsers(availableUsers, selectedUsers, true);
+            });
 
-                let selectedUserIds = Array.from(selectedUsers.querySelectorAll(".user-checkbox"))
+            document.getElementById("removeUsersBtn").addEventListener("click", function () {
+                moveSelectedUsers(selectedUsers, availableUsers, false);
+            });
+
+            function moveSelectedUsers(sourceList, targetList, isAdding) {
+                const selectedItems = sourceList.querySelectorAll("input:checked");
+                selectedItems.forEach(item => {
+                    let listItem = item.closest("li");
+                    item.checked = false; // Reset checked state in new list
+
+                    if (isAdding) {
+                        item.classList.add("assigned-user-checkbox");
+                        item.name = "SelectedUserIds";
+                        item.checked = true; // Ensure it's marked as selected for form submission
+                    } else {
+                        item.classList.remove("assigned-user-checkbox");
+                        item.removeAttribute("name"); // Remove from submission
+                    }
+
+                    targetList.appendChild(listItem);
+                });
+
+                updateGroupLeads();
+            }
+
+            function updateGroupLeads() {
+                groupLeadSelect.innerHTML = '<option value="">Select a Lead</option>';
+                let selectedUserIds = Array.from(selectedUsers.querySelectorAll(".assigned-user-checkbox"))
                     .map(item => item.value);
 
-                if (selectedUserIds.length === 0) return;
+                if (selectedUserIds.length === 0) {
+                    return;
+                }
 
                 selectedUserIds.forEach(userId => {
                     let userText = document.querySelector(`input[value="${userId}"]`).parentNode.textContent.trim();
@@ -106,72 +161,19 @@
                     groupLeadSelect.appendChild(option);
                 });
 
-                // Ensure the selected lead is still in the list
-                let selectedLead = groupLeadSelect.getAttribute("data-selected");
-                if (selectedLead && !selectedUserIds.includes(selectedLead)) {
-                    groupLeadSelect.value = "";
-                    document.getElementById("hiddenGroupLeadId").value = "";
+                if (document.getElementById("hiddenGroupLeadId").value) {
+                    let selectedOption = groupLeadSelect.querySelector(`option[value='${document.getElementById("hiddenGroupLeadId").value}']`);
+                    if (selectedOption) {
+                        selectedOption.selected = true;
+                    }
                 }
             }
 
-            // Function to sync user selections between Available and Selected lists
-            function syncUserSelection(event) {
-                let checkbox = event.target;
-                let userId = checkbox.value;
-                let userText = checkbox.parentNode.textContent.trim();
-
-                if (checkbox.checked) {
-                    // Move user to selected list
-                    let listItem = document.createElement("li");
-                    listItem.className = "list-group-item";
-                    listItem.innerHTML = `
-                                        <input type="checkbox" class="user-checkbox form-check-input mt-0" name="SelectedUserIds" value="${userId}" checked />
-                                ${userText}
-                            `;
-                    selectedUsers.appendChild(listItem);
-
-                    // Add deselect event
-                    listItem.querySelector(".user-checkbox").addEventListener("change", function () {
-                        if (!this.checked) {
-                            removeUser(userId);
-                        }
-                    });
-
-                } else {
-                    // Remove user from selected list
-                    removeUser(userId);
-                }
-
-                updateGroupLeadDropdown();
-            }
-
-            // Function to remove user from both lists when deselected
-            function removeUser(userId) {
-                let availableCheckbox = availableUsers.querySelector(`input[value="${userId}"]`);
-                let selectedCheckbox = selectedUsers.querySelector(`input[value="${userId}"]`);
-
-                if (availableCheckbox) {
-                    availableCheckbox.checked = false;
-                }
-                if (selectedCheckbox) {
-                    selectedCheckbox.parentNode.remove();
-                }
-
-                updateGroupLeadDropdown();
-            }
-
-            // Attach event listeners to all checkboxes
-            availableUsers.addEventListener("change", function (event) {
-                if (event.target.classList.contains("user-checkbox")) {
-                    syncUserSelection(event);
-                }
-            });
-
-            // Ensure group lead selection persists
-            groupLeadSelect.addEventListener("change", function () {
+            document.getElementById("groupLead").addEventListener("change", function () {
                 document.getElementById("hiddenGroupLeadId").value = this.value;
-                groupLeadSelect.setAttribute("data-selected", this.value);
             });
+
+            updateGroupLeads();
         });
     </script>
 }
