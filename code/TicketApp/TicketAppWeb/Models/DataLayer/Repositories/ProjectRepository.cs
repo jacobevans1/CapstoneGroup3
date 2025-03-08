@@ -21,6 +21,7 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     {
         try
         {
+            // Check if the project already exists
             var existingProject = await GetProjectByNameAndLeadAsync(project.ProjectName!, project.LeadId!);
             var userId = project.CreatedById;
 
@@ -33,14 +34,28 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
                     .Where(g => selectedGroupIds.Contains(g.Id!))
                     .ToListAsync();
 
-                existingProject.Groups = groupsToAdd;
+                foreach (var group in groupsToAdd)
+                {
+                    if (!existingProject.Groups.Contains(group))
+                    {
+                        existingProject.Groups.Add(group);
+                    }
+                }
+
+                foreach (var group in existingProject.Groups.ToList())
+                {
+                    if (!selectedGroupIds.Contains(group.Id!))
+                    {
+                        existingProject.Groups.Remove(group);
+                    }
+                }
 
                 await context.SaveChangesAsync();
                 return;
             }
 
             List<Group> groupsToAddDirectly;
-            List<string> groupsNeedingApproval = [];
+            List<string> groupsNeedingApproval = new List<string>();
 
             if (isAdmin)
             {
@@ -76,6 +91,7 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
         }
     }
 
+
     /// <summary>
     /// Updates the project asynchronous.
     /// </summary>
@@ -103,7 +119,7 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
 
             var userId = project.CreatedById;
             List<Group> groupsToAddDirectly;
-            List<string> groupsNeedingApproval = [];
+            List<string> groupsNeedingApproval = new List<string>();
 
             if (isAdmin)
             {
@@ -122,9 +138,28 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
                     .ToList();
             }
 
-            existingProject.Groups = groupsToAddDirectly;
+            // Update the existing project's groups
+            // Add newly selected groups if not already present
+            foreach (var group in groupsToAddDirectly)
+            {
+                if (!existingProject.Groups.Contains(group))
+                {
+                    existingProject.Groups.Add(group);
+                }
+            }
+
+            // Remove groups that are no longer selected
+            foreach (var group in existingProject.Groups.ToList())
+            {
+                if (!selectedGroupIds.Contains(group.Id!))
+                {
+                    existingProject.Groups.Remove(group);
+                }
+            }
+
             await context.SaveChangesAsync();
 
+            // Handle group approval requests for groups needing approval
             foreach (var groupId in groupsNeedingApproval)
             {
                 await AddGroupApprovalRequestAsync(project.Id!, groupId);
@@ -137,7 +172,6 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
             throw new Exception($"Error updating project: {ex.Message}");
         }
     }
-
 
     /// <summary>
     /// Deletes the project asynchronous.
@@ -199,6 +233,7 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
         return context.Projects.Include(p => p.Groups).FirstOrDefaultAsync(p => p.Id == id);
     }
 
+
     /// <summary>
     /// Gets the projects their assigned groups.
     /// </summary>
@@ -211,24 +246,25 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
             query = query.Where(p => p.ProjectName!.Contains(projectName));
         }
 
-        if (!string.IsNullOrEmpty(projectLead))
-        {
-            query = query.Where(p => p.Lead != null && p.Lead.FullName.Contains(projectLead));
-        }
-
         var projects = await query.ToListAsync();
         setProjectLeads(projects);
 
+        if (!string.IsNullOrEmpty(projectLead))
+        {
+            projects = projects.Where(p => p.Lead!.FullName.Contains(projectLead))
+            .ToList();
+
+        }
+
         var projectsGroups = new Dictionary<Project, List<Group>>();
+
         foreach (var project in projects)
         {
             var groups = await context.Groups
                 .Where(g => g.Projects.Any(p => p.Id == project.Id))
                 .ToListAsync();
-
             projectsGroups.Add(project, groups);
         }
-
         return projectsGroups;
     }
 
