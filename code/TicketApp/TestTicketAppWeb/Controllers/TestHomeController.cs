@@ -7,7 +7,7 @@ using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
 
-namespace TestTicketAppWeb;
+namespace TestTicketAppWeb.Controllers;
 
 /// <summary>
 /// Test the current implementation of the home controller

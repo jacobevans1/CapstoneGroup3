@@ -82,7 +82,6 @@ var userManager = services.GetRequiredService<UserManager<TicketAppUser>>();
 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
 SeedData.Initialize(services, userManager, roleManager).Wait();
-SeedData.AddUsers(services, userManager, roleManager).Wait();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
