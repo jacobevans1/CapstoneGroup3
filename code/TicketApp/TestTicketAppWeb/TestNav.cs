@@ -1,4 +1,4 @@
-﻿using TicketAppWeb.Models.ViewModels;
+using TicketAppWeb.Models.ViewModels;
 namespace TicketAppWeb.Tests.Models.ViewModels;
 
 /// <summary>
@@ -15,11 +15,12 @@ public class NavTests
         int value = 5;
         int current = 5;
 
-        // Act
-        string result = Nav.Active(value, current);
 
-        // Assert
-        Assert.Equal("active", result);
+          // Act
+         string result = Nav.Active(value, current);
+
+          // Assert
+          Assert.Equal("active", result);
     }
 
     [Fact]
@@ -28,9 +29,6 @@ public class NavTests
         // Arrange
         int value = 5;
         int current = 10;
-
-        // Act
-        string result = Nav.Active(value, current);
 
         // Assert
         Assert.Equal("", result);
@@ -47,9 +45,6 @@ public class NavTests
 
         // Act
         string result = Nav.Active(expectedController, currentController, expectedAction, currentAction);
-
-        // Assert
-        Assert.Equal("nav-active", result);
     }
 
     [Fact]

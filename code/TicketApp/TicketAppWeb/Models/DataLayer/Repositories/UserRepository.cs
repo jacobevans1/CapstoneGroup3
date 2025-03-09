@@ -36,8 +36,9 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 				throw new Exception("User already exists.");
 			}
 
-			user.UserName = user.FirstName;
-			var password = user.FirstName + "123!";
+			user.UserName = user.FirstName + user.LastName;
+			var password = user.UserName + "123!";
+			user.EmailConfirmed = true;
 
 			var result = await _userManager.CreateAsync(user, password);
 
@@ -108,19 +109,19 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			return userRoleDictionary;
 		}
 
-        public async Task<IEnumerable<TicketAppUser>> GetAllUsersAsync()
-        {
-            return await context.Users.ToListAsync();
-        }
+		public async Task<IEnumerable<TicketAppUser>> GetAllUsersAsync()
+		{
+			return await context.Users.ToListAsync();
+		}
 
-        public async Task<TicketAppUser> GetAsync(string userId)
-        {
-            return await context.Users.FindAsync(userId);
-        }
+		public async Task<TicketAppUser> GetAsync(string userId)
+		{
+			return await context.Users.FindAsync(userId);
+		}
 
 
 
-        private bool checkIfUserExists(TicketAppUser user)
+		private bool checkIfUserExists(TicketAppUser user)
 		{
 			return context.Users.Any(u => u.UserName == user.UserName);
 		}
