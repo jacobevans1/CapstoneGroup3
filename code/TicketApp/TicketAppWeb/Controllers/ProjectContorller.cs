@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TicketAppWeb.Models.DataLayer;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
@@ -27,12 +26,16 @@ public class ProjectController : Controller
     /// <summary>
     /// The start of the project management page.
     /// </summary>
-    public IActionResult Index(QueryOptions<Project> options)
-	{
-		var viewModel = new ProjectViewModel();
-		LoadIndexViewData(viewModel);
-		return View(viewModel);
-	}
+    public IActionResult Index(string? projectName, string? projectLead)
+    {
+        var viewModel = new ProjectViewModel();
+        LoadIndexViewData(viewModel);
+
+        viewModel.SearchProjectName = projectName;
+        viewModel.SearchProjectLead = projectLead;
+
+        return View(viewModel);
+    }
 
     /// <summary>
     /// prepare resources need to adds a project.
@@ -51,7 +54,7 @@ public class ProjectController : Controller
     /// Creats the project and saves it to the database.
     /// </summary>
     [HttpPost]
-    public async Task<IActionResult> CreatProject(ProjectViewModel model)
+    public async Task<IActionResult> CreateProject(ProjectViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -60,6 +63,7 @@ public class ProjectController : Controller
         }
 
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var isAdmin = User.IsInRole("Admin");
 
         var project = new Project
         {
@@ -72,8 +76,9 @@ public class ProjectController : Controller
         try
         {
             var assignedGroups = model.SelectedGroupIds;
-            await _projectRepository.AddProjectAsync(project, assignedGroups);
-            TempData["SuccessMessage"] = $"Project {project.ProjectName} saved successfuly";
+            await _projectRepository.AddProjectAsync(project, assignedGroups, isAdmin);
+
+            TempData["SuccessMessage"] = $"Project {project.ProjectName} saved successfully";
             return RedirectToAction("Index");
         }
         catch (Exception ex)
@@ -127,13 +132,15 @@ public class ProjectController : Controller
             return NotFound();
         }
 
+        var isAdmin = User.IsInRole("Admin");
+
         project.ProjectName = model.ProjectName;
         project.Description = model.Description;
         project.LeadId = model.ProjectLeadId;
 
         try
         {
-            await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds);
+            await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds, isAdmin);
             TempData["SuccessMessage"] = $"Project {project.ProjectName} updated successfully";
             return RedirectToAction("Index");
         }
@@ -200,10 +207,12 @@ public class ProjectController : Controller
         return Json(result);
     }
 
-	private void LoadIndexViewData(ProjectViewModel vm)
-	{
-		vm.Projects = _projectRepository.GetProjectsAndGroups().Result.Keys;
-		vm.ProjectGroups = _projectRepository.GetProjectsAndGroups().Result;
-		vm.AvailableGroups = _projectRepository.GetAvailableGroupsAsync().Result;
-	}
+    private void LoadIndexViewData(ProjectViewModel vm)
+    {
+        var projectData = _projectRepository.GetFilteredProjectsAndGroups(vm.SearchProjectName, vm.SearchProjectLead).Result;
+        vm.Projects = projectData.Keys;
+        vm.ProjectGroups = projectData;
+        vm.AvailableGroups = _projectRepository.GetAvailableGroupsAsync().Result;
+    }
+
 }
