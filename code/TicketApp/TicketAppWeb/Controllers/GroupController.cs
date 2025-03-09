@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
@@ -10,20 +7,28 @@ using TicketAppWeb.Models.ViewModels;
 [Authorize]
 public class GroupController : Controller
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IGroupRepository _groupRepository;
+	private readonly SingletonService _singletonService;
+	private readonly IUserRepository _userRepository;
+	private readonly IGroupRepository _groupRepository;
 
-    public GroupController(IUserRepository userRepository, IGroupRepository groupRepository)
-    {
-        _userRepository = userRepository;
-        _groupRepository = groupRepository;
-    }
+	public GroupController(SingletonService singletonService, IUserRepository userRepository, IGroupRepository groupRepository)
+	{
+		_singletonService = singletonService;
+		_userRepository = userRepository;
+		_groupRepository = groupRepository;
+	}
 
     [HttpGet]
     public async Task<IActionResult> Index(string? groupName, string? groupLead)
     {
         var groups = await _groupRepository.GetAllAsync();
 
+		var model = new GroupViewModel
+		{
+			Groups = groups.ToList(),
+			CurrentUser = _singletonService.CurrentUser,
+			CurrentUserRole = _singletonService.CurrentUserRole
+		};
         var model = new GroupViewModel
         {
             Groups = groups.ToList(),
@@ -31,23 +36,22 @@ public class GroupController : Controller
             SearchGroupLead = groupLead
         };
 
-        return View(model);
-    }
+		return View(model);
+	}
 
+	[HttpGet]
+	public async Task<IActionResult> AddGroup()
+	{
+		var users = await _userRepository.GetAllUsersAsync();
 
-    [HttpGet]
-    public async Task<IActionResult> AddGroup()
-    {
-        var users = await _userRepository.GetAllUsersAsync();
+		var model = new AddGroupViewModel
+		{
+			AllUsers = users.ToList(),
+			SelectedUserIds = new List<string>()
+		};
 
-        var model = new AddGroupViewModel
-        {
-            AllUsers = users.ToList(),
-            SelectedUserIds = new List<string>()
-        };
-
-        return View(model);
-    }
+		return View(model);
+	}
 
     [HttpPost]
     public async Task<IActionResult> CreateGroup(AddGroupViewModel model)
@@ -97,26 +101,26 @@ public class GroupController : Controller
             return NotFound();
         }
 
-        var group = await _groupRepository.GetAsync(id);
-        if (group == null)
-        {
-            return NotFound();
-        }
+		var group = await _groupRepository.GetAsync(id);
+		if (group == null)
+		{
+			return NotFound();
+		}
 
-        var users = await _userRepository.GetAllUsersAsync();
+		var users = await _userRepository.GetAllUsersAsync();
 
-        var model = new AddGroupViewModel
-        {
-            GroupId = group.Id,
-            GroupName = group.GroupName,
-            Description = group.Description,
-            GroupLeadId = group.ManagerId,
-            AllUsers = users.ToList(),
-            SelectedUserIds = group.Members.Select(m => m.Id).ToList()
-        };
+		var model = new AddGroupViewModel
+		{
+			GroupId = group.Id,
+			GroupName = group.GroupName,
+			Description = group.Description,
+			GroupLeadId = group.ManagerId,
+			AllUsers = users.ToList(),
+			SelectedUserIds = group.Members.Select(m => m.Id).ToList()
+		};
 
-        return View(model);
-    }
+		return View(model);
+	}
 
 
     [HttpPost]
@@ -184,28 +188,28 @@ public class GroupController : Controller
             return NotFound();
         }
 
-        var group = await _groupRepository.GetAsync(id);
-        if (group == null)
-        {
-            return NotFound();
-        }
+		var group = await _groupRepository.GetAsync(id);
+		if (group == null)
+		{
+			return NotFound();
+		}
 
-        return View(group);
-    }
+		return View(group);
+	}
 
-    [HttpPost]
-    public async Task<IActionResult> ConfirmDeleteGroup(string id)
-    {
-        if (string.IsNullOrEmpty(id))
-        {
-            return NotFound();
-        }
+	[HttpPost]
+	public async Task<IActionResult> ConfirmDeleteGroup(string id)
+	{
+		if (string.IsNullOrEmpty(id))
+		{
+			return NotFound();
+		}
 
-        var group = await _groupRepository.GetAsync(id);
-        if (group == null)
-        {
-            return NotFound();
-        }
+		var group = await _groupRepository.GetAsync(id);
+		if (group == null)
+		{
+			return NotFound();
+		}
 
         try
         {
