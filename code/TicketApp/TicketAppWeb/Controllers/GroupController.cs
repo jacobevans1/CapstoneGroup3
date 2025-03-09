@@ -20,17 +20,20 @@ public class GroupController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? groupName, string? groupLead)
     {
         var groups = await _groupRepository.GetAllAsync();
 
         var model = new GroupViewModel
         {
-            Groups = groups.ToList()
+            Groups = groups.ToList(),
+            SearchGroupName = groupName,
+            SearchGroupLead = groupLead
         };
 
         return View(model);
     }
+
 
     [HttpGet]
     public async Task<IActionResult> AddGroup()

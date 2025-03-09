@@ -26,11 +26,20 @@ namespace TicketAppWeb.Models.ViewModels
 		// Gets or sets the group manager's name.
 		public string? GroupManagerName { get; set; }
 
-		// Gets or sets the groups.
-		public IEnumerable<Group> Groups { get; set; } = new List<Group>();
+        public string? SearchGroupName { get; set; }
+        public string? SearchGroupLead { get; set; }
 
-		// Gets or sets the current route (contains filtering/sorting information).
-		public GroupGridData CurrentRoute { get; set; } = new GroupGridData();
+        // Gets or sets the groups.
+        public IEnumerable<Group> Groups { get; set; } = new List<Group>();
+
+        public IEnumerable<Group> FilteredGroups => Groups
+        .Where(g => string.IsNullOrEmpty(SearchGroupName) || g.GroupName.Contains(SearchGroupName, StringComparison.OrdinalIgnoreCase))
+        .Where(g => string.IsNullOrEmpty(SearchGroupLead) || (g.Manager != null && g.Manager.FullName.Contains(SearchGroupLead, StringComparison.OrdinalIgnoreCase)))
+        .ToList();
+    
+
+    // Gets or sets the current route (contains filtering/sorting information).
+    public GroupGridData CurrentRoute { get; set; } = new GroupGridData();
 
 		// Gets or sets the total pages.
 		public int TotalPages { get; set; }
