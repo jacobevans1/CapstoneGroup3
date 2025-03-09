@@ -12,29 +12,34 @@ namespace TicketAppWeb.Models.ViewModels
 	public class UserViewModel
 	{
 		/// <summary>
-		///	The user object to store the user details.
+		/// The currently logged in user's role.
+		/// </summary>
+		public string? CurrentUserRole { get; set; }
+
+		/// <summary>
+		///	The user object to store the user details. Used for creating a new user or editing an existing user.
 		/// </summary>
 		public TicketAppUser User { get; set; } = new();
 
 		/// <summary>
-		/// The name of the role selected in the dropdown.
-		/// </summary>
-		public string? SelectedRoleName { get; set; }
-
-		/// <summary>
-		/// The list of users from the database.
+		/// The list of all the users from the database.
 		/// </summary>
 		public IEnumerable<TicketAppUser> Users { get; set; } = new List<TicketAppUser>();
 
 		/// <summary>
-		/// The dictionary of users and their roles.
+		/// The dictionary of users and their roles. Used for displaying the user grid.
 		/// </summary>
 		public Dictionary<TicketAppUser, string> UserRoles { get; set; } = new Dictionary<TicketAppUser, string>();
 
 		/// <summary>
-		/// The list of roles from the database.
+		/// The list of available roles from the database. Used for the dropdown.
 		/// </summary>
-		public IEnumerable<IdentityRole> Roles { get; set; } = new List<IdentityRole>();
+		public IEnumerable<IdentityRole> AvailableRoles { get; set; } = new List<IdentityRole>();
+
+		/// <summary>
+		/// The name of the role selected in the dropdown. Used for creating a new user or editing an existing user.
+		/// </summary>
+		public string? SelectedRoleName { get; set; }
 
 		/// <summary>
 		/// The current route for the user grid.

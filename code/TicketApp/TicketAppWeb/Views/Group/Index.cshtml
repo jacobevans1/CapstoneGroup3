@@ -16,11 +16,13 @@
         <div class="col-md-12">
             <h2 class="text-center">Group Management</h2>
             <div class="title-divider"></div>
-            <br />
-            <br />
-            <div style="width: 150px;">
-                <a class="btn btn-primary mb-3" asp-controller="Group" asp-action="AddGroup" style="width: 100%;">Add Group</a>
-            </div>
+            
+            @if (Model.CurrentUserRole == "Admin")
+            {
+	            <div style="width: 150px;">
+		            <a class="btn btn-primary mb-3" asp-controller="Group" asp-action="AddGroup" style="width: 100%;">Add Group</a>
+	            </div>
+            }
 
             <table class="table table-striped">
                 <thead>
@@ -56,20 +58,24 @@
                                     </a>
                                 }
                             </td>
-                            <td>
-                                <div class="d-flex justify-content-center gap-2">
-                                    <div class="col-auto" style="width: 150px;">
-                                        <a asp-action="EditGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-warning" style="width: 100%;">
-                                            Edit
-                                        </a>
-                                    </div>
-                                    <div class="col-auto" style="width: 150px">
-                                        <a asp-action="DeleteGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-danger" style="width: 100%;">
-                                            Delete
-                                        </a>
-                                    </div>
-                                </div>
-                            </td>
+	                        <td>
+
+                                @if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserGroupManagerForGroup(group))
+                                {
+	                                <div class="d-flex justify-content-center gap-2">
+		                                <div class="col-auto" style="width: 150px;">
+			                                <a asp-action="EditGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-warning" style="width: 100%;">
+				                                Edit
+			                                </a>
+		                                </div>
+		                                <div class="col-auto" style="width: 150px">
+			                                <a asp-action="DeleteGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-danger" style="width: 100%;">
+				                                Delete
+			                                </a>
+		                                </div>
+	                                </div>
+                                }
+	                        </td>
 
                         </tr>
                     }

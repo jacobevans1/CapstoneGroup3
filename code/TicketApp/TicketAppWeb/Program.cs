@@ -14,10 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews(options =>
 {
-    var policy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-    options.Filters.Add(new AuthorizeFilter(policy)); // This applies authorization to ALL controllers
+	var policy = new AuthorizationPolicyBuilder()
+		.RequireAuthenticatedUser()
+		.Build();
+	options.Filters.Add(new AuthorizeFilter(policy)); // This applies authorization to ALL controllers
 });
 
 builder.Services.AddRazorPages();
@@ -59,10 +59,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.Cookie.HttpOnly = true;
 	options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
 
-    options.LoginPath = "/Login/Index";
-    options.LogoutPath = "/Login/Logout";  
-    options.AccessDeniedPath = "/Login/AccessDenied";
-    options.SlidingExpiration = true;
+	options.LoginPath = "/Login/Index";
+	options.LogoutPath = "/Login/Logout";
+	options.AccessDeniedPath = "/Login/AccessDenied";
+	options.SlidingExpiration = true;
 
 });
 
@@ -70,6 +70,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+builder.Services.AddSingleton<SingletonService>();
 
 var app = builder.Build();
 
