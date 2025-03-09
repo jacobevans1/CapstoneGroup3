@@ -18,11 +18,13 @@ public class ProjectControllerTests
 	private readonly Mock<IProjectRepository> _mockRepo;
 	private readonly ProjectController _controller;
 	private readonly ClaimsPrincipal _user;
+	private readonly SingletonService _ton;
 
 	public ProjectControllerTests()
 	{
 		_mockRepo = new Mock<IProjectRepository>();
-		_controller = new ProjectController(_mockRepo.Object);
+		_ton = new SingletonService();
+		_controller = new ProjectController(_ton, _mockRepo.Object);
 
 		// Simulate a logged-in user
 		var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test-user") };
@@ -142,7 +144,7 @@ public class ProjectControllerTests
 		_mockRepo.Setup(r => r.AddProjectAsync(It.IsAny<Project>(), It.IsAny<List<string>>(), false))
 				 .Returns(Task.CompletedTask);
 
-		var controller = new ProjectController(_mockRepo.Object)
+		var controller = new ProjectController(_ton, _mockRepo.Object)
 		{
 			TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>())
 		};
@@ -293,7 +295,7 @@ public class ProjectControllerTests
 			SelectedGroupIds = new List<string> { "group1" }
 		};
 
-		var controller = new ProjectController(_mockRepo.Object)
+		var controller = new ProjectController(_ton, _mockRepo.Object)
 		{
 			TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>())
 		};
@@ -374,7 +376,7 @@ public class ProjectControllerTests
 		_mockRepo.Setup(r => r.DeleteProjectAsync(It.IsAny<Project>()))
 				 .Returns(Task.CompletedTask);
 
-		var controller = new ProjectController(_mockRepo.Object)
+		var controller = new ProjectController(_ton, _mockRepo.Object)
 		{
 			TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>())
 		};
@@ -393,7 +395,7 @@ public class ProjectControllerTests
 	public async Task GetGroupLeads_EmptyGroupIds_ReturnsEmptyList()
 	{
 		// Arrange
-		var controller = new ProjectController(_mockRepo.Object);
+		var controller = new ProjectController(_ton, _mockRepo.Object);
 
 		// Act
 		var result = await controller.GetGroupLeads(null!) as JsonResult;
@@ -418,7 +420,7 @@ public class ProjectControllerTests
 		_mockRepo.Setup(r => r.GetGroupLeadsAsync(It.IsAny<List<string>>()))
 				 .ReturnsAsync(leads);
 
-		var controller = new ProjectController(_mockRepo.Object);
+		var controller = new ProjectController(_ton, _mockRepo.Object);
 
 		// Act
 		var result = await controller.GetGroupLeads(groupIds) as JsonResult;
