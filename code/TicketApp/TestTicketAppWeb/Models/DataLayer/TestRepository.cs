@@ -4,6 +4,8 @@ using TicketAppWeb.Models.DataLayer;
 using TicketAppWeb.Models.DataLayer.Repositories;
 using TicketAppWeb.Models.DomainModels;
 
+namespace TestTicketAppWeb.Models.DataLayer;
+
 /// <summary>
 /// Tests the reposetory class
 /// Jabesi
@@ -120,10 +122,10 @@ public class TestsRepository
 	{
 		// Arrange
 		var data = new List<Group>
-	{
-		new Group { Id = "group1Id", GroupName = "Group A", ManagerId = "manager1Id" },
-		new Group { Id = "group2Id", GroupName = "Group B", ManagerId = "manager2Id" }
-	};
+		{
+			new Group { Id = "group1Id", GroupName = "Group A", ManagerId = "manager1Id" },
+			new Group { Id = "group2Id", GroupName = "Group B", ManagerId = "manager2Id" }
+		};
 		var context = CreateMockContext(data, "TestDatabase_ListWithOrderByDescending");
 		var repository = new Repository<Group>(context);
 		var options = new QueryOptions<Group> { OrderBy = g => g.GroupName!, OrderByDirection = "desc" };

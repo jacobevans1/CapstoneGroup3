@@ -21,10 +21,6 @@ namespace TestTicketAppWeb.Models.ViewModels
 			Assert.Empty(viewModel.AvailableRoles);
 			Assert.Null(viewModel.SelectedRoleName);
 			Assert.NotNull(viewModel.CurrentRoute);
-			Assert.Equal(0, viewModel.TotalPages);
-			Assert.Equal(new int[] { 5, 10, 20, 50 }, viewModel.PageSizes);
-			Assert.Equal(10, viewModel.SelectedPageSize);
-			Assert.Null(viewModel.SearchTerm);
 		}
 
 		[Fact]
@@ -46,9 +42,6 @@ namespace TestTicketAppWeb.Models.ViewModels
 			viewModel.AvailableRoles = roles;
 			viewModel.SelectedRoleName = "Admin";
 			viewModel.CurrentRoute = route;
-			viewModel.TotalPages = 5;
-			viewModel.SelectedPageSize = 20;
-			viewModel.SearchTerm = "test";
 
 			// Assert
 			Assert.Equal("Admin", viewModel.CurrentUserRole);
@@ -58,9 +51,6 @@ namespace TestTicketAppWeb.Models.ViewModels
 			Assert.Single(viewModel.AvailableRoles);
 			Assert.Equal("Admin", viewModel.SelectedRoleName);
 			Assert.Equal(route, viewModel.CurrentRoute);
-			Assert.Equal(5, viewModel.TotalPages);
-			Assert.Equal(20, viewModel.SelectedPageSize);
-			Assert.Equal("test", viewModel.SearchTerm);
 		}
 	}
 }

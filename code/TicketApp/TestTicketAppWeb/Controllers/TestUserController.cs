@@ -45,7 +45,7 @@ namespace TestTicketAppWeb.Controllers
 			_mockUserRepository.Setup(r => r.GetUserRolesAsync()).ReturnsAsync(new Dictionary<TicketAppUser, string>());
 
 			// Act
-			var result = _controller.Index();
+			var result = _controller.Index(null);
 
 			// Assert
 			var viewResult = Assert.IsType<ViewResult>(result);

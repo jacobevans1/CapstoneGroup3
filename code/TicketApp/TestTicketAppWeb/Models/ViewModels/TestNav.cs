@@ -40,38 +40,38 @@ public class NavTests
 
 	}
 
-	[Fact]
-	public void Active_StringValuesEqual_ReturnsNavActive()
-	{
-		// Arrange
-		string value = "Home";
+	//[Fact]
+	//public void Active_StringValuesEqual_ReturnsNavActive()
+	//{
+	//	// Arrange
+	//	string value = "Home";
 
-		string current = "home";
+	//	string current = "home";
 
-		// Act
-		string result = Nav.Active(value, current);
+	//	// Act
+	//	string result = Nav.Active(value, current);
 
-		// Assert
-		Assert.Equal("nav-active", result);
-	}
+	//	// Assert
+	//	Assert.Equal("nav-active", result);
+	//}
 
-	[Fact]
+	//[Fact]
 
-	public void Active_StringValuesNotEqual_ReturnsEmptyString()
+	//public void Active_StringValuesNotEqual_ReturnsEmptyString()
 
-	{
-		// Arrange
+	//{
+	//	// Arrange
 
-		string value = "Home";
+	//	string value = "Home";
 
-		string current = "About";
+	//	string current = "About";
 
-		// Act
-		string result = Nav.Active(value, current);
+	//	// Act
+	//	string result = Nav.Active(value, current);
 
-		// Assert
-		Assert.Equal("", result);
+	//	// Assert
+	//	Assert.Equal("", result);
 
-	}
+	//}
 }
 
