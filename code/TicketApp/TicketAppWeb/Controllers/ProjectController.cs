@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TicketAppWeb.Models.DataLayer;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
@@ -29,11 +28,13 @@ public class ProjectController : Controller
 	/// <summary>
 	/// The start of the project management page.
 	/// </summary>
-	public IActionResult Index(QueryOptions<Project> options)
+	public IActionResult Index(string? projectName, string? projectLead)
 	{
 		var viewModel = new ProjectViewModel();
 		LoadIndexViewData(viewModel);
 
+		viewModel.SearchProjectName = projectName;
+		viewModel.SearchProjectLead = projectLead;
 		viewModel.CurrentUser = _singletonService.CurrentUser;
 		viewModel.CurrentUserRole = _singletonService.CurrentUserRole;
 
@@ -66,6 +67,7 @@ public class ProjectController : Controller
 		}
 
 		var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+		var isAdmin = User.IsInRole("Admin");
 
 		var project = new Project
 		{
@@ -78,8 +80,8 @@ public class ProjectController : Controller
 		try
 		{
 			var assignedGroups = model.SelectedGroupIds;
-			await _projectRepository.AddProjectAsync(project, assignedGroups);
-			TempData["SuccessMessage"] = $"Project {project.ProjectName} saved successfuly";
+			await _projectRepository.AddProjectAsync(project, assignedGroups, isAdmin);
+			TempData["SuccessMessage"] = $"Project {project.ProjectName} saved successfully";
 			return RedirectToAction("Index");
 		}
 		catch (Exception ex)
@@ -137,9 +139,11 @@ public class ProjectController : Controller
 		project.Description = model.Description;
 		project.LeadId = model.ProjectLeadId;
 
+		var isAdmin = User.IsInRole("Admin");
+
 		try
 		{
-			await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds);
+			await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds, isAdmin);
 			TempData["SuccessMessage"] = $"Project {project.ProjectName} updated successfully";
 			return RedirectToAction("Index");
 		}
@@ -208,8 +212,9 @@ public class ProjectController : Controller
 
 	private void LoadIndexViewData(ProjectViewModel vm)
 	{
-		vm.Projects = _projectRepository.GetProjectsAndGroups().Result.Keys;
-		vm.ProjectGroups = _projectRepository.GetProjectsAndGroups().Result;
+		var projectData = _projectRepository.GetFilteredProjectsAndGroups(vm.SearchProjectName, vm.SearchProjectLead).Result;
+		vm.Projects = projectData.Keys;
+		vm.ProjectGroups = projectData;
 		vm.AvailableGroups = _projectRepository.GetAvailableGroupsAsync().Result;
 	}
 }
