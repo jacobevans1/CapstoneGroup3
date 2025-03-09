@@ -17,46 +17,90 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     /// <param name="project">The project.</param>
     /// <param name="selectedGroupIds">The selected group ids.</param>
     /// <exception cref="System.Exception">Error adding/updating project: {ex.Message}</exception>
-    public async Task AddProjectAsync(Project project, List<string> selectedGroupIds)
+    public async Task AddProjectAsync(Project project, List<string> selectedGroupIds, bool isAdmin)
     {
         try
         {
+            // Check if the project already exists
             var existingProject = await GetProjectByNameAndLeadAsync(project.ProjectName!, project.LeadId!);
+            var userId = project.CreatedById;
 
             if (existingProject != null)
             {
-                // Update existing project
                 existingProject.Description = project.Description;
-                existingProject.Groups = await context.Groups
-                    .Where(g => selectedGroupIds.Contains(g.Id))
+                existingProject.LeadId = project.LeadId;
+
+                var groupsToAdd = await context.Groups
+                    .Where(g => selectedGroupIds.Contains(g.Id!))
                     .ToListAsync();
+
+                foreach (var group in groupsToAdd)
+                {
+                    if (!existingProject.Groups.Contains(group))
+                    {
+                        existingProject.Groups.Add(group);
+                    }
+                }
+
+                foreach (var group in existingProject.Groups.ToList())
+                {
+                    if (!selectedGroupIds.Contains(group.Id!))
+                    {
+                        existingProject.Groups.Remove(group);
+                    }
+                }
 
                 await context.SaveChangesAsync();
                 return;
             }
 
-            // If project doesn't exist, create a new one
-            project.Groups = await context.Groups
-                .Where(g => selectedGroupIds.Contains(g.Id))
-                .ToListAsync();
+            List<Group> groupsToAddDirectly;
+            List<string> groupsNeedingApproval = new List<string>();
 
-            context.Projects.Add(project);
-            await context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error adding/updating project: {ex.Message}");
-        }
-    }
+            if (isAdmin)
+            {
+                groupsToAddDirectly = await context.Groups
+                    .Where(g => selectedGroupIds.Contains(g.Id!))
+                    .ToListAsync();
+            }
+            else
+            {
+                groupsToAddDirectly = await context.Groups
+                    .Where(g => selectedGroupIds.Contains(g.Id!) && g.ManagerId == userId)
+                    .ToListAsync();
+
+				groupsNeedingApproval = selectedGroupIds
+					.Where(gId => !groupsToAddDirectly.Any(g => g.Id == gId))
+					.ToList();
+			}
+
+			project.Groups = groupsToAddDirectly;
+			context.Projects.Add(project);
+			await context.SaveChangesAsync();
+
+			foreach (var groupId in groupsNeedingApproval)
+			{
+				await AddGroupApprovalRequestAsync(project.Id!, groupId);
+			}
+
+			await context.SaveChangesAsync();
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Error adding/updating project: {ex.Message}");
+		}
+	}
+
 
     /// <summary>
     /// Updates the project asynchronous.
     /// </summary>
     /// <param name="project">The project.</param>
     /// <param name="selectedGroupIds">The selected group ids.</param>
+    /// <param name="isAdmin"></param>
     /// <exception cref="System.Collections.Generic.KeyNotFoundException">Project not found.</exception>
     /// <exception cref="System.Exception">Error updating project: {ex.Message}</exception>
-    public async Task UpdateProjectAsync(Project project, List<string> selectedGroupIds)
+    public async Task UpdateProjectAsync(Project project, List<string> selectedGroupIds, bool isAdmin)
     {
         try
         {
@@ -72,9 +116,50 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
             existingProject.ProjectName = project.ProjectName;
             existingProject.Description = project.Description;
             existingProject.LeadId = project.LeadId;
-            existingProject.Groups = await context.Groups
-                .Where(g => selectedGroupIds.Contains(g.Id))
-                .ToListAsync();
+
+            var userId = project.CreatedById;
+            List<Group> groupsToAddDirectly;
+            List<string> groupsNeedingApproval = new List<string>();
+
+            if (isAdmin)
+            {
+                groupsToAddDirectly = await context.Groups
+                    .Where(g => selectedGroupIds.Contains(g.Id!))
+                    .ToListAsync();
+            }
+            else
+            {
+                groupsToAddDirectly = await context.Groups
+                    .Where(g => selectedGroupIds.Contains(g.Id!) && g.ManagerId == userId)
+                    .ToListAsync();
+
+                groupsNeedingApproval = selectedGroupIds
+                    .Where(gId => !groupsToAddDirectly.Any(g => g.Id == gId))
+                    .ToList();
+            }
+
+            foreach (var group in groupsToAddDirectly)
+            {
+                if (!existingProject.Groups.Contains(group))
+                {
+                    existingProject.Groups.Add(group);
+                }
+            }
+
+            foreach (var group in existingProject.Groups.ToList())
+            {
+                if (!selectedGroupIds.Contains(group.Id!))
+                {
+                    existingProject.Groups.Remove(group);
+                }
+            }
+
+            await context.SaveChangesAsync();
+
+            foreach (var groupId in groupsNeedingApproval)
+            {
+                await AddGroupApprovalRequestAsync(project.Id!, groupId);
+            }
 
             await context.SaveChangesAsync();
         }
@@ -115,14 +200,6 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     }
 
     /// <summary>
-    /// Gets all projects asynchronous.
-    /// </summary>
-    public Task<List<Project>> GetAllProjectsAsync()
-    {
-        return context.Projects.Include(p => p.Groups).ToListAsync();
-    }
-
-    /// <summary>
     /// Gets the available groups asynchronous.
     /// </summary>
     public Task<List<Group>> GetAvailableGroupsAsync()
@@ -137,7 +214,7 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     public Task<List<TicketAppUser>> GetGroupLeadsAsync(List<string> groupIds)
     {
         return context.Groups
-            .Where(g => groupIds.Contains(g.Id))
+            .Where(g => groupIds.Contains(g.Id!))
             .Select(g => g.Manager)
             .Distinct()
             .ToListAsync()!;
@@ -152,28 +229,38 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
         return context.Projects.Include(p => p.Groups).FirstOrDefaultAsync(p => p.Id == id);
     }
 
+
     /// <summary>
     /// Gets the projects their assigned groups.
     /// </summary>
-    public async Task<Dictionary<Project, List<Group>>> GetProjectsAndGroups()
+    public async Task<Dictionary<Project, List<Group>>> GetFilteredProjectsAndGroups(string? projectName, string? projectLead)
     {
-        var projects = context.Projects.ToList();
+        var query = context.Projects.AsQueryable();
+
+        if (!string.IsNullOrEmpty(projectName))
+        {
+            query = query.Where(p => p.ProjectName!.Contains(projectName));
+        }
+
+        var projects = await query.ToListAsync();
         setProjectLeads(projects);
+
+        if (!string.IsNullOrEmpty(projectLead))
+        {
+            projects = projects.Where(p => p.Lead!.FullName.Contains(projectLead))
+            .ToList();
+
+        }
 
         var projectsGroups = new Dictionary<Project, List<Group>>();
 
         foreach (var project in projects)
         {
             var groups = await context.Groups
-                .FromSqlRaw(@"SELECT g.*
-                          FROM Groups g
-                          JOIN GroupProject pg ON g.Id = pg.GroupsId
-                          WHERE pg.ProjectsId = {0}", project.Id)
+                .Where(g => g.Projects.Any(p => p.Id == project.Id))
                 .ToListAsync();
-
             projectsGroups.Add(project, groups);
         }
-
         return projectsGroups;
     }
 
@@ -192,16 +279,128 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
 	}
 
     /// <summary>
-    /// Gets the groups by ids asynchronous.
+    /// Adds a group approval request for a project.
     /// </summary>
-    /// <param name="selectedGroupIds">The selected group ids.</param>
-    public async Task<List<Group>> GetGroupsByIdsAsync(List<string> selectedGroupIds)
+    /// <param name="projectId"></param>
+    /// <param name="groupId"></param>
+    /// <exception cref="System.Exception">Error adding group approval request: {ex.Message}</exception>
+    public async Task AddGroupApprovalRequestAsync(string projectId, string groupId)
     {
-        if (selectedGroupIds == null || !selectedGroupIds.Any())
-            return new List<Group>();
+        try
+        {
+            var request = new GroupApprovalRequest
+            {
+                Id = Guid.NewGuid().ToString(),
+                ProjectId = projectId,
+                GroupId = groupId,
+                Status = "Pending"
+            };
 
-        return await context.Groups
-            .Where(g => selectedGroupIds.Contains(g.Id))
+            context.GroupApprovalRequests.Add(request);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error adding group approval request: {ex.Message}");
+        }
+    }
+
+
+    /// <summary>
+    /// Approves a group for a project.
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="groupId"></param>
+    /// <exception cref="System.Exception">
+    /// No pending approval request found.
+    /// or
+    /// Error approving group for project: {ex.Message}
+    /// </exception>
+    public async Task ApproveGroupForProjectAsync(string projectId, string groupId)
+    {
+        try
+        {
+            var request = await context.GroupApprovalRequests
+                .FirstOrDefaultAsync(r => r.ProjectId == projectId && r.GroupId == groupId && r.Status == "Pending");
+
+            if (request == null)
+            {
+                throw new Exception("No pending approval request found.");
+            }
+
+            request.Status = "Approved";
+
+            var project = await context.Projects
+                .Include(p => p.Groups)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project != null)
+            {
+                var group = await context.Groups.FindAsync(groupId);
+                if (group != null)
+                {
+                    project.Groups.Add(group);
+                }
+            }
+
+            context.GroupApprovalRequests.Update(request);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error approving group for project: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Rejects a group for a project.
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="groupId"></param>
+    /// <exception cref="System.Exception">
+    /// No pending approval request found.
+    /// or
+    /// Error rejecting group for project: {ex.Message}
+    /// </exception>
+    public async Task RejectGroupForProjectAsync(string projectId, string groupId)
+    {
+        try
+        {
+            var request = await context.GroupApprovalRequests
+                .FirstOrDefaultAsync(r => r.ProjectId == projectId && r.GroupId == groupId && r.Status == "Pending");
+
+            if (request == null)
+            {
+                throw new Exception("No pending approval request found.");
+            }
+
+            request.Status = "Rejected";
+
+            context.GroupApprovalRequests.Update(request);
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error rejecting group for project: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Gets the pending group approval requests asynchronous.
+    /// </summary>
+    /// <param name="managerId">The manager identifier.</param>
+    /// <returns></returns>
+    public async Task<List<GroupApprovalRequest>> GetPendingGroupApprovalRequestsAsync(string managerId)
+    {
+        var managedGroupIds = await context.Groups
+            .Where(g => g.ManagerId == managerId)
+            .Select(g => g.Id)
+            .ToListAsync();
+
+        return await context.GroupApprovalRequests
+            .Where(r => managedGroupIds.Contains(r.GroupId!) && r.Status == "Pending")
+            .Include(r => r.Project)
+            .Include(r => r.Group)
             .ToListAsync();
     }
 }

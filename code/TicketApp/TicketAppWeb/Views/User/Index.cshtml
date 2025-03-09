@@ -40,11 +40,11 @@
         <div class="col-md-12">
             <h2 class="text-center">User Management</h2>
             <div class="title-divider"></div>
-            <br />
-            <br />
-            <br />
 
-            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">Add User</button>
+            @if (Model.CurrentUserRole == "Admin")
+            {
+				<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">Add User</button>
+            }
 
             <table class="table table-striped">
                 <thead>
@@ -70,10 +70,14 @@
                             <td>@user.FullName</td>
 	                        <td>@user.Email</td>
 							<td>@Model.UserRoles[user]</td>
-                            <td>
-	                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="@user.Id">Edit</button>
-	                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal" data-user-id="@user.Id">Delete</button>
-                            </td>
+                            
+	                        @if (Model.CurrentUserRole == "Admin")
+	                        {
+		                        <td>
+			                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="@user.Id">Edit</button>
+			                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal" data-user-id="@user.Id">Delete</button>
+		                        </td>
+	                        }
                         </tr>
                     }
                 </tbody>
@@ -158,7 +162,7 @@
 							Role <span class="text-danger">*</span>
 						</label>
 						<select id="createRole" asp-for="@Model.SelectedRoleName" class="form-select" required>
-							@foreach (var role in Model.Roles)
+							@foreach (var role in Model.AvailableRoles)
 							{
 								<option value="@role.Name">@role.Name</option>
 							}
@@ -227,7 +231,7 @@
 							Role <span class="text-danger">*</span>
 						</label>
 						<select id="editRole" asp-for="@Model.SelectedRoleName" class="form-select" required>
-							@foreach (var role in Model.Roles)
+							@foreach (var role in Model.AvailableRoles)
 							{
 								<option value="@role.Name">@role.Name</option>
 							}

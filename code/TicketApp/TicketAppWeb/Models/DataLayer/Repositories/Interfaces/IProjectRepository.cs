@@ -12,12 +12,7 @@ public interface IProjectRepository : IRepository<Project>
     /// <summary>
     /// Gets the projects and groups.
     /// </summary>
-    Task<Dictionary<Project, List<Group>>> GetProjectsAndGroups();
-
-    /// <summary>
-    /// Gets all projects asynchronous.
-    /// </summary>
-    Task<List<Project>> GetAllProjectsAsync();
+    Task<Dictionary<Project, List<Group>>> GetFilteredProjectsAndGroups(string? projectName, string? projectLead);
 
     /// <summary>
     /// Gets the available groups asynchronous.
@@ -41,14 +36,14 @@ public interface IProjectRepository : IRepository<Project>
     /// </summary>
     /// <param name="project">The project.</param>
     /// <param name="selectedGroupIds">The selected group ids.</param>
-    Task AddProjectAsync(Project project, List<string> selectedGroupIds);
+    Task AddProjectAsync(Project project, List<string> selectedGroupIds, bool isAdmin);
 
     /// <summary>
     /// Updates the project asynchronous.
     /// </summary>
     /// <param name="project">The project.</param>
     /// <param name="selectedGroupIds">The selected group ids.</param>
-    Task UpdateProjectAsync(Project project, List<string> selectedGroupIds);
+    Task UpdateProjectAsync(Project project, List<string> selectedGroupIds, bool isAdmin);
 
     /// <summary>
     /// Deletes the project asynchronous.
@@ -64,8 +59,22 @@ public interface IProjectRepository : IRepository<Project>
     Task<Project?> GetProjectByNameAndLeadAsync(string projectName, string projectLeadId);
 
     /// <summary>
-    /// Gets the groups by ids asynchronous.
+    /// Adds a group approval request for a project.
     /// </summary>
-    /// <param name="selectedGroupIds">The selected group ids.</param>
-    Task<List<Group>> GetGroupsByIdsAsync(List<string> selectedGroupIds);
+    Task AddGroupApprovalRequestAsync(string projectId, string groupId);
+
+    /// <summary>
+    /// Approves a group for a project.
+    /// </summary>
+    Task ApproveGroupForProjectAsync(string projectId, string groupId);
+
+    /// <summary>
+    /// Rejects a group for a project.
+    /// </summary>
+    Task RejectGroupForProjectAsync(string projectId, string groupId);
+
+    /// <summary>
+    /// Gets all pending group approval requests for a project.
+    /// </summary>
+    Task<List<GroupApprovalRequest>> GetPendingGroupApprovalRequestsAsync(string projectId);
 }

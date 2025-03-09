@@ -1,459 +1,433 @@
-﻿/* using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Routing;
 using Moq;
 using System.Security.Claims;
 using TicketAppWeb.Controllers;
-using TicketAppWeb.Models.DataLayer;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
-using TicketAppWeb.Models.Grid;
 using TicketAppWeb.Models.ViewModels;
 
-namespace TestTicketAppWeb.Controllers;
-
-public class TestProjectController
+/// <summary>
+/// Tests the project controller
+/// Jabesi Abwe
+/// 03/08/2025
+/// </summary>
+public class ProjectControllerTests
 {
-    private readonly Mock<IProjectRepository> _projectRepoMock;
-    private readonly Mock<IRepository<TicketAppUser>> _usersRepoMock;
-    private readonly Mock<IRepository<Group>> _groupsRepoMock;
+    private readonly Mock<IProjectRepository> _mockRepo;
     private readonly ProjectController _controller;
+    private readonly ClaimsPrincipal _user;
 
-    public TestProjectController()
+    public ProjectControllerTests()
     {
-        _projectRepoMock = new Mock<IProjectRepository>();
-        _usersRepoMock = new Mock<IRepository<TicketAppUser>>();
-        _groupsRepoMock = new Mock<IRepository<Group>>();
-        _controller = new ProjectController(
-            _projectRepoMock.Object,
-            _usersRepoMock.Object,
-            _groupsRepoMock.Object
-        );
-        var tempData = new Mock<ITempDataDictionary>();
-        _controller.TempData = tempData.Object;
+        _mockRepo = new Mock<IProjectRepository>();
+        _controller = new ProjectController(_mockRepo.Object);
+
+        // Simulate a logged-in user
+        var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test-user") };
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        _user = new ClaimsPrincipal(identity);
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = _user }
+        };
     }
+
+    [Fact]
+    public  void Index_ReturnsViewResult_WithEmptyProjects()
+    {
+        // Arrange
+        _mockRepo.Setup(r => r.GetFilteredProjectsAndGroups(It.IsAny<string>(), It.IsAny<string>()))
+                 .ReturnsAsync(new Dictionary<Project, List<Group>>());
+
+        _mockRepo.Setup(r => r.GetAvailableGroupsAsync()).ReturnsAsync(new List<Group>());
+
+        // Act
+        var result =  _controller.Index(null, null) as ViewResult;
+
+        // Assert
+        Assert.NotNull(result);
+        var model = Assert.IsType<ProjectViewModel>(result.Model);
+        Assert.Empty(model.Projects);
+    }
+    
 
     [Fact]
     public void Index_ReturnsViewResult_WithViewModel()
     {
-        // Arrange / Act
-        var result = _controller.Index();
-        var viewResult = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsAssignableFrom<ProjectViewModel>(viewResult.ViewData.Model);
+        // Arrange
+        _mockRepo.Setup(r => r.GetFilteredProjectsAndGroups(It.IsAny<string>(), It.IsAny<string>()))
+                 .ReturnsAsync(new Dictionary<Project, List<Group>>());
+
+        _mockRepo.Setup(r => r.GetAvailableGroupsAsync()).ReturnsAsync(new List<Group>());
+
+        // Act
+        var result = _controller.Index(null, null) as ViewResult;
 
         // Assert
-        Assert.NotNull(model);
+        Assert.NotNull(result);
+        Assert.IsType<ProjectViewModel>(result.Model);
     }
 
     [Fact]
-    public void Index_PostRedirectsToSelectGroups()
+    public async Task AddProject_ReturnsViewResult_WithAvailableGroups()
     {
         // Arrange
-        var projectViewModel = new ProjectViewModel
+        var availableGroups = new List<Group> { new Group { Id = "1", GroupName = "Group A" } };
+        _mockRepo.Setup(r => r.GetAvailableGroupsAsync()).ReturnsAsync(availableGroups);
+
+        // Act
+        var result = await _controller.AddProject() as ViewResult;
+
+        // Assert
+        Assert.NotNull(result);
+        var model = Assert.IsType<ProjectViewModel>(result.Model);
+        Assert.Single(model.AvailableGroups);
+        Assert.Equal("Group A", model.AvailableGroups[0].GroupName);
+    }
+    
+    [Fact]
+    public async Task CreateProject_DatabaseFailure_ReturnsViewWithErrorMessage()
+    {
+        // Arrange
+        var model = new ProjectViewModel
         {
-            Project = new Project { Id = "1", ProjectName = "Test Project", LeadId = "leadId", CreatedById = "userId", CreatedAt = DateTime.Now },
-            ProjectLeadId = "leadId"
+            ProjectName = "New Project",
+            Description = "Test Description",
+            ProjectLeadId = "lead-id",
+            SelectedGroupIds = new List<string> { "group1" }
+        };
+
+        _mockRepo.Setup(r => r.AddProjectAsync(It.IsAny<Project>(), It.IsAny<List<string>>(), false))
+                 .ThrowsAsync(new Exception("Database error"));
+
+        // Act
+        var result = await _controller.CreateProject(model) as ViewResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("AddProject", result.ViewName);
+    }
+
+    [Fact]
+    public async Task CreateProject_InvalidModel_ReturnsViewWithSameModel()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("ProjectName", "Required");
+
+        var model = new ProjectViewModel();
+        _mockRepo.Setup(r => r.GetAvailableGroupsAsync()).ReturnsAsync(new List<Group>());
+
+        // Act
+        var result = await _controller.CreateProject(model) as ViewResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("AddProject", result.ViewName);
+    }
+
+    [Fact]
+    public async Task CreateProject_ValidModel_CallsAddProjectAsync_AndRedirectsToIndex()
+    {
+        // Arrange
+        var model = new ProjectViewModel
+        {
+            ProjectName = "New Project",
+            Description = "Test Description",
+            ProjectLeadId = "lead-id",
+            SelectedGroupIds = new List<string> { "group1" }
+        };
+
+        _mockRepo.Setup(r => r.AddProjectAsync(It.IsAny<Project>(), It.IsAny<List<string>>(), false))
+                 .Returns(Task.CompletedTask);
+
+        var controller = new ProjectController(_mockRepo.Object)
+        {
+            TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()) 
+        };
+
+        // Mock User Claims
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+        new Claim(ClaimTypes.NameIdentifier, "user-id"), 
+        new Claim(ClaimTypes.Role, "User") 
+    }, "mock"));
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = user }
         };
 
         // Act
-        var result = _controller.Index(projectViewModel);
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        var result = await controller.CreateProject(model) as RedirectToActionResult;
 
         // Assert
-        Assert.Equal("SelectGroups", redirectResult.ActionName);
+        Assert.NotNull(result);
+        Assert.Equal("Index", result.ActionName);
+
+        _mockRepo.Verify(r => r.AddProjectAsync(It.IsAny<Project>(), model.SelectedGroupIds, false), Times.Once);
     }
 
     [Fact]
-    public void Index_Post_HandlesNullSelectedGroupIds()
+    public async Task EditProject_Get_InvalidId_ReturnsNotFound()
     {
         // Arrange
-        var projectViewModel = new ProjectViewModel
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("invalid-id")).ReturnsAsync((Project)null!);
+
+        // Act
+        var result = await _controller.EditProject("invalid-id") as NotFoundResult;
+
+        // Assert
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public async Task EditProject_Post_ProjectDoesNotExist_ReturnsNotFound()
+    {
+        // Arrange
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("1")).ReturnsAsync((Project)null!);
+
+        var model = new ProjectViewModel { ProjectName = "Updated Project" };
+
+        // Act
+        var result = await _controller.EditProject(model, "1") as NotFoundResult;
+
+        // Assert
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public async Task EditProject_Post_DatabaseFailure_ReturnsViewWithErrorMessage()
+    {
+        // Arrange
+        var project = new Project
         {
-            Project = new Project { Id = "1", ProjectName = "Test Project", LeadId = "leadId", CreatedById = "userId", CreatedAt = DateTime.Now },
-            ProjectLeadId = "leadId",
-            SelectedGroupIds = null!
+            Id = "1",
+            ProjectName = "Test Project"
+        };
+
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("1")).ReturnsAsync(project);
+
+        _mockRepo.Setup(r => r.UpdateProjectAsync(It.IsAny<Project>(), It.IsAny<List<string>>(), false))
+                 .ThrowsAsync(new Exception("Database error"));
+
+        var model = new ProjectViewModel
+        {
+            ProjectName = "Updated Project",
+            SelectedGroupIds = new List<string> { "group1" }
         };
 
         // Act
-        var result = _controller.Index(projectViewModel);
+        var result = await _controller.EditProject(model, "1") as ViewResult;
 
         // Assert
-        Assert.Empty(projectViewModel.SelectedGroupIds);
-
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("SelectGroups", redirectResult.ActionName);
+        Assert.NotNull(result);
     }
 
     [Fact]
-    public async Task Add_Project_WithValidModel_RedirectsToIndex()
+    public async Task EditProject_Get_ReturnsViewWithModel_WhenProjectExists()
     {
         // Arrange
-        var projectViewModel = new ProjectViewModel
+        var project = new Project
         {
-            Project = new Project
-            {
-                Id = "1",
-                ProjectName = "Test Project",
-                LeadId = "leadId",
-                CreatedById = "userId",
-                CreatedAt = DateTime.Now
-            },
-            ProjectLeadId = "leadId"
+            Id = "1",
+            ProjectName = "Test Project",
+            Description = "Description",
+            LeadId = "lead-id",
+            Groups = new List<Group> { new Group { Id = "group1", GroupName = "Group A" } }
         };
 
-        _projectRepoMock.Setup(repo => repo.Insert(It.IsAny<Project>())).Verifiable();
-        _projectRepoMock.Setup(repo => repo.Save()).Verifiable();
-
-        var tempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
-
-        _controller.TempData = tempData;
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("1")).ReturnsAsync(project);
+        _mockRepo.Setup(r => r.GetAvailableGroupsAsync()).ReturnsAsync(new List<Group>());
 
         // Act
-        var result = await _controller.Add(projectViewModel);
+        var result = await _controller.EditProject("1") as ViewResult;
 
         // Assert
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectResult.ActionName);
-        Assert.Equal("Project", redirectResult.ControllerName);
-
-        Assert.True(_controller.TempData.ContainsKey("message"));
-        Assert.Equal($"Project {projectViewModel.Project.ProjectName} added successfully.", _controller.TempData["message"]);
-
-        _projectRepoMock.Verify(repo => repo.Insert(It.IsAny<Project>()), Times.Once);
-        _projectRepoMock.Verify(repo => repo.Save(), Times.Once);
+        Assert.NotNull(result);
+        var model = Assert.IsType<ProjectViewModel>(result.Model);
+        Assert.Equal("Test Project", model.ProjectName);
+        Assert.Single(model.SelectedGroupIds);
     }
 
     [Fact]
-    public async Task Add_Project_WithUserIdentityNull_SetsCreatedByIdToNull()
+    public async Task EditProject_Post_InvalidModel_ReturnsView()
     {
         // Arrange
-        var projectViewModel = new ProjectViewModel
+        var model = new ProjectViewModel();
+        _controller.ModelState.AddModelError("ProjectName", "Required");
+
+        _mockRepo.Setup(r => r.GetAvailableGroupsAsync()).ReturnsAsync(new List<Group>());
+
+        // Act
+        var result = await _controller.EditProject(model, "1") as ViewResult;
+
+        // Assert
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public async Task EditProject_Post_ValidModel_CallsUpdateProjectAsync_AndRedirectsToIndex()
+    {
+        // Arrange
+        var project = new Project
         {
-            Project = new Project
-            {
-                Id = "1",
-                ProjectName = "Test Project",
-                LeadId = "leadId",
-                CreatedById = null,
-                CreatedAt = DateTime.Now
-            }
+            Id = "1",
+            ProjectName = "Test Project",
+            Description = "Description",
+            LeadId = "lead-id"
         };
 
-        var mockHttpContext = new Mock<HttpContext>();
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("1"))
+                 .ReturnsAsync(project);
 
-        mockHttpContext.Setup(ctx => ctx.User).Returns(new ClaimsPrincipal(new ClaimsIdentity()));
+        _mockRepo.Setup(r => r.UpdateProjectAsync(It.IsAny<Project>(), It.IsAny<List<string>>(), false))
+                 .Returns(Task.CompletedTask);
 
-        _controller.ControllerContext = new ControllerContext
+        var model = new ProjectViewModel
         {
-            HttpContext = mockHttpContext.Object
+            ProjectName = "Updated Project",
+            Description = "Updated Description",
+            ProjectLeadId = "lead-id",
+            SelectedGroupIds = new List<string> { "group1" }
         };
 
-        _projectRepoMock.Setup(repo => repo.Insert(It.IsAny<Project>())).Verifiable();
-        _projectRepoMock.Setup(repo => repo.Save()).Verifiable();
-
-        // Act
-        var result = await _controller.Add(projectViewModel);
-
-        // Assert
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectResult.ActionName);
-        Assert.Equal("Project", redirectResult.ControllerName);
-
-        Assert.Null(projectViewModel.Project.CreatedById);
-
-        _projectRepoMock.Verify(repo => repo.Insert(It.IsAny<Project>()), Times.Once);
-        _projectRepoMock.Verify(repo => repo.Save(), Times.Once);
-    }
-
-    [Fact]
-    public async Task Add_Project_WithInvalidModel_ReturnsViewWithValidationErrors()
-    {
-        // Arrange
-        var projectViewModel = new ProjectViewModel
+        var controller = new ProjectController(_mockRepo.Object)
         {
-            Project = new Project { Id = "1", ProjectName = "", LeadId = "leadId", CreatedById = "userId", CreatedAt = DateTime.Now }
+            TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>())
         };
 
-        _controller.ModelState.AddModelError("Project.ProjectName", "Project name is required");
-
-        // Act
-        var result = await _controller.Add(projectViewModel);
-
-        // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        Assert.Equal("Add", viewResult.ViewName);
-        Assert.True(_controller.ModelState.ContainsKey("Project.ProjectName"));
-
-        _projectRepoMock.Verify(repo => repo.Insert(It.IsAny<Project>()), Times.Never);
-        _projectRepoMock.Verify(repo => repo.Save(), Times.Never);
-    }
-
-    [Fact]
-    public void Edit_ReturnsViewResult_WithProject()
-    {
-        // Arrange
-        var project = new Project { Id = "1", ProjectName = "Test Project", LeadId = "leadId", CreatedById = "userId", CreatedAt = DateTime.Now };
-        _projectRepoMock.Setup(repo => repo.Get("1")).Returns(project);
-
-        // Act
-        var result = _controller.Edit("1");
-
-        // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsAssignableFrom<ProjectViewModel>(viewResult.ViewData.Model);
-        Assert.Equal(project, model.Project);
-    }
-
-    [Fact]
-    public void Edit_PostRedirectsToIndex()
-    {
-        // Arrange 
-        var projectViewModel = new ProjectViewModel
+        // Mock User Claims
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
-            Project = new Project { Id = "1", ProjectName = "Test Project", LeadId = "leadId", CreatedById = "userId", CreatedAt = DateTime.Now }
-        };
+        new Claim(ClaimTypes.NameIdentifier, "user-id"),
+        new Claim(ClaimTypes.Role, "User")
+    }, "mock"));
 
-        _projectRepoMock.Setup(repo => repo.Update(It.IsAny<Project>())).Verifiable();
-        _projectRepoMock.Setup(repo => repo.Save()).Verifiable();
-
-        // Act
-        var result = _controller.Edit(projectViewModel);
-
-        // Assert
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectResult.ActionName);
-
-        _projectRepoMock.Verify();
-    }
-
-    [Fact]
-    public void Edit_Post_ReturnsViewWithInvalidModel()
-    {
-        // Arrange
-        var projectViewModel = new ProjectViewModel
+        controller.ControllerContext = new ControllerContext
         {
-            Project = new Project { Id = "1", ProjectName = "", LeadId = "leadId", CreatedById = "userId", CreatedAt = DateTime.Now }
-        };
-
-        _controller.ModelState.AddModelError("Project.ProjectName", "Project name is required");
-
-        // Act
-        var result = _controller.Edit(projectViewModel);
-
-        var viewResult = Assert.IsType<ViewResult>(result);
-
-        // Assert
-        Assert.True(_controller.ModelState.ContainsKey("Project.ProjectName"));
-        Assert.Equal("Edit", viewResult.ViewName);
-
-        _projectRepoMock.Verify(repo => repo.Update(It.IsAny<Project>()), Times.Never);
-        _projectRepoMock.Verify(repo => repo.Save(), Times.Never);
-    }
-
-
-    [Fact]
-    public void Edit_Get_NonExistingId_ReturnsNotFound()
-    {
-        // Arrange
-        _projectRepoMock.Setup(repo => repo.Get(It.IsAny<string>())).Returns((Project?)null);
-
-        // Act
-        var result = _controller.Edit("invalid-id");
-
-        // Assert
-        Assert.IsType<NotFoundResult>(result);
-    }
-
-    [Fact]
-    public void Delete_ReturnsViewResult_WithProject()
-    {
-        // Arrange
-        var project = new Project { Id = "1", ProjectName = "Test Project", LeadId = "leadId", CreatedById = "userId", CreatedAt = DateTime.Now };
-        _projectRepoMock.Setup(repo => repo.Get("1")).Returns(project);
-
-        // Act
-        var result = _controller.Delete("1");
-
-        var viewResult = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsAssignableFrom<Project>(viewResult.ViewData.Model);
-
-        // Assert
-        Assert.Equal(project, model);
-    }
-
-    [Fact]
-    public void Delete_ReturnsNotFound_WhenProjectDoesNotExist()
-    {
-        // Arrange
-        _projectRepoMock.Setup(repo => repo.Get("invalid-id")).Returns((Project?)null);
-
-        // Act
-        var result = _controller.Delete("invalid-id");
-
-        // Assert
-        Assert.IsType<NotFoundResult>(result);
-    }
-
-    [Fact]
-    public void DeleteConfirmed_ReturnsRedirectToIndex()
-    {
-        // Arrange
-        var project = new Project { Id = "1", ProjectName = "Test Project", LeadId = "leadId", CreatedById = "userId", CreatedAt = DateTime.Now };
-        _projectRepoMock.Setup(repo => repo.Get("1")).Returns(project);
-        _projectRepoMock.Setup(repo => repo.Delete(It.IsAny<Project>())).Verifiable();
-        _projectRepoMock.Setup(repo => repo.Save()).Verifiable();
-
-        // Act
-        var result = _controller.DeleteConfirmed("1");
-
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-
-        // Assert
-        Assert.Equal("Index", redirectResult.ActionName);
-
-        _projectRepoMock.Verify();
-    }
-
-    [Fact]
-    public void DeleteConfirmed_NonExistingProject_DoesNotThrow()
-    {
-        // Arrange
-        _projectRepoMock.Setup(repo => repo.Get(It.IsAny<string>())).Returns((Project?)null);
-
-        // Act
-        var result = _controller.DeleteConfirmed("invalid-id");
-
-        // Assert
-        var redirect = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirect.ActionName);
-    }
-
-    [Fact]
-    public void SelectGroups_LoadsGroups_AndFiltersAvailableLeads()
-    {
-        // Arrange
-        var group1 = new Group { Id = "G1", ManagerId = "M1", Members = new List<TicketAppUser> { new TicketAppUser { Id = "M1" } } };
-        var group2 = new Group { Id = "G2", ManagerId = "M2", Members = new List<TicketAppUser> { new TicketAppUser { Id = "M2" } } };
-
-        var selectedGroupIds = new[] { "G1", "G2" };
-
-        _groupsRepoMock.Setup(repo => repo.Get("G1")).Returns(group1);
-        _groupsRepoMock.Setup(repo => repo.Get("G2")).Returns(group2);
-
-        // Act
-        var result = _controller.SelectGroups(selectedGroupIds);
-
-        // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsType<ProjectViewModel>(viewResult.Model);
-
-        Assert.Equal(2, model.AvailableGroupLeads.Count());
-        Assert.Contains(model.AvailableGroupLeads, lead => lead.Id == "M1");
-        Assert.Contains(model.AvailableGroupLeads, lead => lead.Id == "M2");
-    }
-
-    [Fact]
-    public void SelectGroups_ReturnsView_WhenNoGroupsAreSelected()
-    {
-        // Arrange
-        var selectedGroupIds = new string[] { };
-        _groupsRepoMock.Setup(repo => repo.List(It.IsAny<QueryOptions<Group>>())).Returns(new List<Group>());
-
-        // Act
-        var result = _controller.SelectGroups(selectedGroupIds);
-
-        // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsType<ProjectViewModel>(viewResult.Model);
-        Assert.Empty(model.AvailableGroupLeads);
-    }
-
-    [Fact]
-    public void List_Get_Returns_Projects_With_Options()
-    {
-        // Arrange
-        var gridData = new ProjectGridData { SortDirection = "asc", PageNumber = 1, PageSize = 10 };
-        _projectRepoMock.Setup(repo => repo.List(It.IsAny<QueryOptions<Project>>()))
-            .Returns(new List<Project> { new Project { ProjectName = "Test Project" } });
-
-        // Act
-        var result = _controller.List(gridData);
-
-        // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsAssignableFrom<ProjectViewModel>(viewResult.Model);
-        Assert.NotEmpty(model.Projects);
-    }
-
-    [Fact]
-
-    public void List_SortsByProjectLead_WhenIsSortByProjectLeadIsTrue()
-    {
-        // Arrange
-        var gridData = new ProjectGridData
-        {
-            SortField = nameof(TicketAppUser),
-
-            SortDirection = "asc",
-
-            PageNumber = 1,
-
-            PageSize = 10
-        };
-
-        var projects = new List<Project>
-
-        {
-            new Project { ProjectName = "Project X", Lead = new TicketAppUser { FirstName = "Charlie", LastName = "Brown" } },
-
-            new Project { ProjectName = "Project Y", Lead = new TicketAppUser { FirstName = "Alice", LastName = "Smith" } },
-
-            new Project { ProjectName = "Project Z", Lead = new TicketAppUser { FirstName = "Bob", LastName = "Johnson" } }
-        };
-
-        _projectRepoMock.Setup(repo => repo.List(It.IsAny<QueryOptions<Project>>()))
-
-            .Returns(projects.OrderBy(p => p.Lead?.FullName).ToList());
-
-        // Act
-
-        var result = _controller.List(gridData);
-
-        // Assert
-
-        var viewResult = Assert.IsType<ViewResult>(result);
-
-        var model = Assert.IsType<ProjectViewModel>(viewResult.Model, exactMatch: false);
-
-        Assert.Equal("Alice Smith", model.Projects.First()?.Lead?.FullName);
-
-        Assert.Equal("Charlie Brown", model.Projects.Last()?.Lead?.FullName);
-
-    }
-
-    [Fact]
-    public void PageSizes_RedirectsToIndex_WithCorrectRouteParameters()
-    {
-        // Arrange
-        var currentRoute = new ProjectGridData
-        {
-            SortDirection = "asc",
-            PageNumber = 1,
-            PageSize = 10,
-            SortField = nameof(TicketAppUser),
+            HttpContext = new DefaultHttpContext { User = user }
         };
 
         // Act
-        var result = _controller.PageSizes(currentRoute);
+        var result = await controller.EditProject(model, "1") as RedirectToActionResult;
 
         // Assert
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectResult.ActionName);
-        var routeValues = Assert.IsType<RouteValueDictionary>(redirectResult.RouteValues);
+        Assert.NotNull(result);
+        Assert.Equal("Index", result.ActionName);
 
-        Assert.Equal("asc", routeValues["SortDirection"]);
-        Assert.Equal(1, Convert.ToInt32(routeValues["PageNumber"])); 
-        Assert.Equal(10, Convert.ToInt32(routeValues["PageSize"]));
+        _mockRepo.Verify(r => r.UpdateProjectAsync(It.IsAny<Project>(), model.SelectedGroupIds, false), Times.Once);
     }
-}*/
+
+    [Fact]
+    public async Task DeleteProject_InvalidId_ReturnsNotFound()
+    {
+        // Arrange
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("invalid-id")).ReturnsAsync((Project)null!);
+
+        // Act
+        var result = await _controller.DeleteProject("invalid-id") as NotFoundResult;
+
+        // Assert
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public async Task ConfirmDelete_InvalidId_ReturnsNotFound()
+    {
+        // Arrange
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("invalid-id")).ReturnsAsync((Project)null!);
+
+        // Act
+        var result = await _controller.ConfirmDelete("invalid-id") as NotFoundResult;
+
+        // Assert
+        Assert.NotNull(result);
+    }
+
+
+    [Fact]
+    public async Task DeleteProject_ValidId_ReturnsView()
+    {
+        // Arrange
+        var project = new Project { Id = "1", ProjectName = "Test Project" };
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("1")).ReturnsAsync(project);
+
+        // Act
+        var result = await _controller.DeleteProject("1") as ViewResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsType<Project>(result.Model);
+    }
+
+    [Fact]
+    public async Task ConfirmDelete_ValidId_CallsDeleteProjectAsync_AndRedirectsToIndex()
+    {
+        // Arrange
+        var project = new Project { Id = "1", ProjectName = "Test Project" };
+
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("1"))
+                 .ReturnsAsync(project);
+
+        _mockRepo.Setup(r => r.DeleteProjectAsync(It.IsAny<Project>()))
+                 .Returns(Task.CompletedTask);
+
+        var controller = new ProjectController(_mockRepo.Object)
+        {
+            TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>())
+        };
+
+        // Act
+        var result = await controller.ConfirmDelete("1") as RedirectToActionResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("Index", result.ActionName);
+
+        _mockRepo.Verify(r => r.DeleteProjectAsync(project), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetGroupLeads_EmptyGroupIds_ReturnsEmptyList()
+    {
+        // Arrange
+        var controller = new ProjectController(_mockRepo.Object);
+
+        // Act
+        var result = await controller.GetGroupLeads(null!) as JsonResult;
+
+        // Assert
+        Assert.NotNull(result);
+        var jsonData = result.Value as IEnumerable<object>;
+        Assert.Empty(jsonData!);  // Expected empty list
+    }
+
+    [Fact]
+    public async Task GetGroupLeads_ValidGroupIds_ReturnsLeads()
+    {
+        // Arrange
+        var groupIds = "1,2,3";
+        var leads = new List<TicketAppUser>
+    {
+        new TicketAppUser { Id = "1", FirstName = "John", LastName = "Doe" },
+        new TicketAppUser { Id = "2", FirstName = "Jane", LastName = "Doe" }
+    };
+
+        _mockRepo.Setup(r => r.GetGroupLeadsAsync(It.IsAny<List<string>>()))
+                 .ReturnsAsync(leads);
+
+        var controller = new ProjectController(_mockRepo.Object);
+
+        // Act
+        var result = await controller.GetGroupLeads(groupIds) as JsonResult;
+
+        // Assert
+        Assert.NotNull(result);
+        var jsonData = result.Value as IEnumerable<object>;
+        Assert.NotNull(jsonData);
+        Assert.Equal(2, jsonData.Count());
+    }
+
+}
