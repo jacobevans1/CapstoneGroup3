@@ -18,23 +18,19 @@ public class GroupController : Controller
 		_groupRepository = groupRepository;
 	}
 
-    [HttpGet]
-    public async Task<IActionResult> Index(string? groupName, string? groupLead)
-    {
-        var groups = await _groupRepository.GetAllAsync();
+	[HttpGet]
+	public async Task<IActionResult> Index(string? groupName, string? groupLead)
+	{
+		var groups = await _groupRepository.GetAllAsync();
 
 		var model = new GroupViewModel
 		{
 			Groups = groups.ToList(),
+			SearchGroupName = groupName,
+			SearchGroupLead = groupLead,
 			CurrentUser = _singletonService.CurrentUser,
 			CurrentUserRole = _singletonService.CurrentUserRole
 		};
-        var model = new GroupViewModel
-        {
-            Groups = groups.ToList(),
-            SearchGroupName = groupName,
-            SearchGroupLead = groupLead
-        };
 
 		return View(model);
 	}
@@ -53,53 +49,53 @@ public class GroupController : Controller
 		return View(model);
 	}
 
-    [HttpPost]
-    public async Task<IActionResult> CreateGroup(AddGroupViewModel model)
-    {
-        if (!ModelState.IsValid)
-        {
-            model.AllUsers = (await _userRepository.GetAllUsersAsync()).ToList();
-            return View(model);
-        }
+	[HttpPost]
+	public async Task<IActionResult> AddGroup(AddGroupViewModel model)
+	{
+		if (!ModelState.IsValid)
+		{
+			model.AllUsers = (await _userRepository.GetAllUsersAsync()).ToList();
+			return View(model);
+		}
 
-        var newGroup = new Group
-        {
-            GroupName = model.GroupName,
-            Description = model.Description,
-            ManagerId = model.GroupLeadId,
-            Members = new HashSet<TicketAppUser>()
-        };
+		var newGroup = new Group
+		{
+			GroupName = model.GroupName,
+			Description = model.Description,
+			ManagerId = model.GroupLeadId,
+			Members = new HashSet<TicketAppUser>()
+		};
 
-        if (model.SelectedUserIds != null)
-        {
-            foreach (var userId in model.SelectedUserIds)
-            {
-                var user = await _userRepository.GetAsync(userId);
-                if (user != null)
-                {
-                    newGroup.Members.Add(user);
-                }
-            }
-        }
+		if (model.SelectedUserIds != null)
+		{
+			foreach (var userId in model.SelectedUserIds)
+			{
+				var user = await _userRepository.GetAsync(userId);
+				if (user != null)
+				{
+					newGroup.Members.Add(user);
+				}
+			}
+		}
 
-        await _groupRepository.InsertAsync(newGroup);
-        await _groupRepository.SaveAsync();
+		await _groupRepository.InsertAsync(newGroup);
+		await _groupRepository.SaveAsync();
 
-        TempData["SuccessMessage"] = $"Group '{newGroup.GroupName}' created successfully!";
+		TempData["SuccessMessage"] = $"Group '{newGroup.GroupName}' created successfully!";
 
-        return RedirectToAction("Index");
-    }
-
-
+		return RedirectToAction("Index");
+	}
 
 
-    [HttpGet]
-    public async Task<IActionResult> EditGroup(string id)
-    {
-        if (string.IsNullOrEmpty(id))
-        {
-            return NotFound();
-        }
+
+
+	[HttpGet]
+	public async Task<IActionResult> EditGroup(string id)
+	{
+		if (string.IsNullOrEmpty(id))
+		{
+			return NotFound();
+		}
 
 		var group = await _groupRepository.GetAsync(id);
 		if (group == null)
@@ -123,70 +119,70 @@ public class GroupController : Controller
 	}
 
 
-    [HttpPost]
-    public async Task<IActionResult> UpdateGroup(AddGroupViewModel model)
-    {
-        if (!ModelState.IsValid)
-        {
-            var users = await _userRepository.GetAllUsersAsync();
-            model.AllUsers = users.ToList();
-            return View("EditGroup", model);
-        }
+	[HttpPost]
+	public async Task<IActionResult> UpdateGroup(AddGroupViewModel model)
+	{
+		if (!ModelState.IsValid)
+		{
+			var users = await _userRepository.GetAllUsersAsync();
+			model.AllUsers = users.ToList();
+			return View("EditGroup", model);
+		}
 
-        var group = await _groupRepository.GetAsync(model.GroupId);
-        if (group == null)
-        {
-            return NotFound();
-        }
+		var group = await _groupRepository.GetAsync(model.GroupId);
+		if (group == null)
+		{
+			return NotFound();
+		}
 
-        // Update group details
-        group.GroupName = model.GroupName;
-        group.Description = model.Description;
-        group.ManagerId = model.GroupLeadId;
+		// Update group details
+		group.GroupName = model.GroupName;
+		group.Description = model.Description;
+		group.ManagerId = model.GroupLeadId;
 
-        // Get current members of the group
-        var existingMemberIds = group.Members.Select(m => m.Id).ToList();
+		// Get current members of the group
+		var existingMemberIds = group.Members.Select(m => m.Id).ToList();
 
-        // Find members to **remove** (they are in the DB but not in the new selection)
-        var membersToRemove = existingMemberIds.Except(model.SelectedUserIds).ToList();
-        foreach (var userId in membersToRemove)
-        {
-            var user = group.Members.FirstOrDefault(m => m.Id == userId);
-            if (user != null)
-            {
-                group.Members.Remove(user); // Remove deselected members
-            }
-        }
+		// Find members to **remove** (they are in the DB but not in the new selection)
+		var membersToRemove = existingMemberIds.Except(model.SelectedUserIds).ToList();
+		foreach (var userId in membersToRemove)
+		{
+			var user = group.Members.FirstOrDefault(m => m.Id == userId);
+			if (user != null)
+			{
+				group.Members.Remove(user); // Remove deselected members
+			}
+		}
 
-        // Find members to **add** (they are newly selected but were not in the group before)
-        var membersToAdd = model.SelectedUserIds.Except(existingMemberIds).ToList();
-        foreach (var userId in membersToAdd)
-        {
-            var user = await _userRepository.GetAsync(userId);
-            if (user != null)
-            {
-                group.Members.Add(user); // Add newly selected members
-            }
-        }
+		// Find members to **add** (they are newly selected but were not in the group before)
+		var membersToAdd = model.SelectedUserIds.Except(existingMemberIds).ToList();
+		foreach (var userId in membersToAdd)
+		{
+			var user = await _userRepository.GetAsync(userId);
+			if (user != null)
+			{
+				group.Members.Add(user); // Add newly selected members
+			}
+		}
 
-        await _groupRepository.SaveAsync();
+		await _groupRepository.SaveAsync();
 
-        TempData["SuccessMessage"] = $"Group '{group.GroupName}' updated successfully!";
+		TempData["SuccessMessage"] = $"Group '{group.GroupName}' updated successfully!";
 
-        return RedirectToAction("Index");
-    }
-
-
+		return RedirectToAction("Index");
+	}
 
 
 
-    [HttpGet]
-    public async Task<IActionResult> DeleteGroup(string id)
-    {
-        if (string.IsNullOrEmpty(id))
-        {
-            return NotFound();
-        }
+
+
+	[HttpGet]
+	public async Task<IActionResult> DeleteGroup(string id)
+	{
+		if (string.IsNullOrEmpty(id))
+		{
+			return NotFound();
+		}
 
 		var group = await _groupRepository.GetAsync(id);
 		if (group == null)
@@ -211,23 +207,23 @@ public class GroupController : Controller
 			return NotFound();
 		}
 
-        try
-        {
-            await _groupRepository.DeleteGroupAsync(group);
+		try
+		{
+			await _groupRepository.DeleteGroupAsync(group);
 
-            TempData["SuccessMessage"] = $"Group '{group.GroupName}' deleted successfully!";
+			TempData["SuccessMessage"] = $"Group '{group.GroupName}' deleted successfully!";
 
-            return RedirectToAction("Index");
-        }
-        catch (Exception ex)
-        {
-            ModelState.AddModelError("", "Error deleting group: " + ex.Message);
+			return RedirectToAction("Index");
+		}
+		catch (Exception ex)
+		{
+			ModelState.AddModelError("", "Error deleting group: " + ex.Message);
 
-            TempData["ErrorMessage"] = $"Error deleting group: {ex.Message}";
+			TempData["ErrorMessage"] = $"Error deleting group: {ex.Message}";
 
-            return View("DeleteGroup", group);
-        }
-    }
+			return View("DeleteGroup", group);
+		}
+	}
 
 
 
