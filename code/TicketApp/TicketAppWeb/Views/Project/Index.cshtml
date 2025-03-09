@@ -13,119 +13,120 @@
 <link href="~/css/projectmanagement.css" rel="stylesheet" />
 
 <div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <!-- TempData variables -->
-            @{
-                var successMessage = TempData["SuccessMessage"] as string;
-                var errorMessage = TempData["ErrorMessage"] as string;
-            }
+	<div class="row">
+		<div class="col-md-12">
+			<!-- TempData variables -->
+			@{
+				var successMessage = TempData["SuccessMessage"] as string;
+				var errorMessage = TempData["ErrorMessage"] as string;
+			}
 
-            <!-- Display success messages if any -->
-            @if (!string.IsNullOrEmpty(successMessage))
-            {
-                <div class="alert alert-success">
-                    @successMessage
-                </div>
-            }
+			<!-- Display success messages if any -->
+			@if (!string.IsNullOrEmpty(successMessage))
+			{
+				<div class="alert alert-success">
+					@successMessage
+				</div>
+			}
 
-            <!-- Display error messages if any -->
-            @if (!string.IsNullOrEmpty(errorMessage))
-            {
-                <div class="alert alert-danger">
-                    @errorMessage
-                </div>
-            }
+			<!-- Display error messages if any -->
+			@if (!string.IsNullOrEmpty(errorMessage))
+			{
+				<div class="alert alert-danger">
+					@errorMessage
+				</div>
+			}
 
-            <h2 class="text-center">Project Management</h2>
-            <div class="title-divider"></div>
+			<h2 class="text-center">Project Management</h2>
+			<div class="title-divider"></div>
 
-            <!-- Filter Options -->
-            <div class="row mb-3">
-                <div class="col-md-12 d-flex justify-content-between align-items-center">
-                    
-	                <!-- Add Project Button -->
-	                @if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserLeadForAnyGroup())
-		            {
-			            <div style="width: 150px;">
-				            <a type="button" class="btn btn-primary" asp-action="AddProject" asp-controller="Project" style="width: 100%;">Add Project</a>
-			            </div>
-		            }
+			<!-- Filter Options -->
+			<div class="row mb-3">
+				<div class="col-md-12 d-flex justify-content-between align-items-center">
+	                    
+					<!-- Add Project Button -->
+					@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserLeadForAnyGroup())
+					{
+						<div style="width: 150px;">
+							<a type="button" class="btn btn-primary" asp-action="AddProject" asp-controller="Project" style="width: 100%;">Add Project</a>
+						</div>
+					}
 
-	                <div class="d-flex gap-2">
-		                <input type="text" id="projectSearch" class="form-control" placeholder="Search by project name">
-		                <select id="groupFilter" class="form-select">
-			                <option value="">Filter by Group</option>
-			                @foreach (var group in Model.AvailableGroups)
-			                {
-				                <option value="@group.Id">@group.GroupName</option>
-			                }
-		                </select>
-	                </div>
-            </div>
+					<div class="d-flex gap-2">
+						<input type="text" id="projectSearch" class="form-control" placeholder="Search by project name">
+						<select id="groupFilter" class="form-select">
+							<option value="">Filter by Group</option>
+							@foreach (var group in Model.AvailableGroups)
+							{
+								<option value="@group.Id">@group.GroupName</option>
+							}
+						</select>
+					</div>
+				</div>
 
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">
-                            <my-sort-link>Project Name</my-sort-link>
-                        </th>
-                        <th scope="col">
-                            Assigned Groups
-                        </th>
-                        <th scope="col">
-                            Project Lead
-                        </th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var project in Model.FilteredProjects)
-                    {
-                        <tr>
-                            <td>@project.ProjectName</td>
-                            <td>
-                                @foreach (var group in Model.ProjectGroups[project])
-                                {
-                                    <a href="@Url.Action("Details", "Group", new { id = group.Id })" class="badge bg-info text-dark text-decoration-none me-1 d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                        @group.GroupName
-                                    </a>
-                                }
-                            </td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(project.LeadId))
-                                {
-                                    <a href="@Url.Action("Details", "User", new { id = project.LeadId })" class="badge bg-success text-dark text-decoration-none d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                        @project.Lead!.FullName
-                                    </a>
-                                }
-                            </td>
+				<table class="table table-striped">
+					<thead>
+					<tr>
+						<th scope="col">
+							<my-sort-link>Project Name</my-sort-link>
+						</th>
+						<th scope="col">
+							Assigned Groups
+						</th>
+						<th scope="col">
+							Project Lead
+						</th>
+						<th scope="col"></th>
+					</tr>
+					</thead>
+					<tbody>
+					@foreach (var project in Model.FilteredProjects)
+					{
+						<tr>
+							<td>@project.ProjectName</td>
+							<td>
+								@foreach (var group in Model.ProjectGroups[project])
+								{
+									<a href="@Url.Action("Details", "Group", new { id = group.Id })" class="badge bg-info text-dark text-decoration-none me-1 d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+										@group.GroupName
+									</a>
+								}
+							</td>
+							<td>
+								@if (!string.IsNullOrEmpty(project.LeadId))
+								{
+									<a href="@Url.Action("Details", "User", new { id = project.LeadId })" class="badge bg-success text-dark text-decoration-none d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+										@project.Lead!.FullName
+									</a>
+								}
+							</td>
 
-                            <td>
-                                <div class="d-flex justify-content-center gap-2">
+							<td>
+								<div class="d-flex justify-content-center gap-2">
 
-                                    @if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject(project) || Model.IsCurrentUserAGroupManagerInProject(project))
-                                    {
-                                        <div class="col-auto" style="width: 150px;">
-                                            <a type="button" asp-action="EditProject" asp-route-id="@project.Id" class="btn btn-warning" style="width: 100%;">Edit</a>
-                                        </div>
-                                    }
+									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject(project) || Model.IsCurrentUserAGroupManagerInProject(project))
+									{
+										<div class="col-auto" style="width: 150px;">
+											<a type="button" asp-action="EditProject" asp-route-id="@project.Id" class="btn btn-warning" style="width: 100%;">Edit</a>
+										</div>
+									}
 
-                                    @if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject(project))
-                                    {
-	                                    <div class="col-auto" style="width: 150px">
-		                                    <a type="button" class="btn btn-danger p-2" asp-action="DeleteProject" asp-route-id="@project.Id" style="width: 100%">Delete</a>
-	                                    </div>
-                                    }
+									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject(project))
+									{
+										<div class="col-auto" style="width: 150px">
+											<a type="button" class="btn btn-danger p-2" asp-action="DeleteProject" asp-route-id="@project.Id" style="width: 100%">Delete</a>
+										</div>
+									}
 
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+								</div>
+							</td>
+						</tr>
+					}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 </div>
 
 @section scripts {

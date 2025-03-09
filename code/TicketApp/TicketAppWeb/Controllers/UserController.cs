@@ -34,12 +34,14 @@ namespace TicketAppWeb.Controllers
 		/// Displays the user management index view.
 		/// </summary>
 		[HttpGet]
-		public IActionResult Index()
+		public IActionResult Index(string? userName)
 		{
 			var viewModel = new UserViewModel();
-			LoadIndexViewData(viewModel);
 
+			viewModel.UserNameSearchString = userName;
 			viewModel.CurrentUserRole = _singletonService.CurrentUserRole;
+
+			LoadIndexViewData(viewModel);
 
 			return View(viewModel);
 		}
