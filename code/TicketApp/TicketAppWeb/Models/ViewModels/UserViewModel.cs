@@ -42,29 +42,20 @@ namespace TicketAppWeb.Models.ViewModels
 		public string? SelectedRoleName { get; set; }
 
 		/// <summary>
-		/// The current route for the user grid.
+		/// Gets or sets the name of the user search string.
 		/// </summary>
-		public UserGridData CurrentRoute { get; set; } = new UserGridData();
+		public string? UserNameSearchString { get; set; }
 
 		/// <summary>
-		/// The total number of pages in the user grid.
+		/// Gets the filtered users based on the search string.
 		/// </summary>
-		public int TotalPages { get; set; }
+		public IEnumerable<TicketAppUser> FilteredUsers => Users
+			.Where(u => string.IsNullOrEmpty(UserNameSearchString) || u.FullName!.Contains(UserNameSearchString, StringComparison.OrdinalIgnoreCase)).ToList();
 
 		/// <summary>
-		/// The list of page sizes for the user grid.
+		/// Gets or sets the current route.
 		/// </summary>
-		public readonly int[] PageSizes = { 5, 10, 20, 50 };
-
-		/// <summary>
-		/// The selected page size for the user grid.
-		/// </summary>
-		public int SelectedPageSize { get; set; } = 10;
-
-		/// <summary>
-		/// The search term for the user grid.
-		/// </summary>
-		public string? SearchTerm { get; set; }
+		public ProjectGridData CurrentRoute { get; set; } = new ProjectGridData();
 	}
 
 }
