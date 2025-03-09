@@ -69,27 +69,27 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
                     .Where(g => selectedGroupIds.Contains(g.Id!) && g.ManagerId == userId)
                     .ToListAsync();
 
-                groupsNeedingApproval = selectedGroupIds
-                    .Where(gId => !groupsToAddDirectly.Any(g => g.Id == gId))
-                    .ToList();
-            }
+				groupsNeedingApproval = selectedGroupIds
+					.Where(gId => !groupsToAddDirectly.Any(g => g.Id == gId))
+					.ToList();
+			}
 
-            project.Groups = groupsToAddDirectly;
-            context.Projects.Add(project);
-            await context.SaveChangesAsync();
+			project.Groups = groupsToAddDirectly;
+			context.Projects.Add(project);
+			await context.SaveChangesAsync();
 
-            foreach (var groupId in groupsNeedingApproval)
-            {
-                await AddGroupApprovalRequestAsync(project.Id!, groupId);
-            }
+			foreach (var groupId in groupsNeedingApproval)
+			{
+				await AddGroupApprovalRequestAsync(project.Id!, groupId);
+			}
 
-            await context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error adding/updating project: {ex.Message}");
-        }
-    }
+			await context.SaveChangesAsync();
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Error adding/updating project: {ex.Message}");
+		}
+	}
 
 
     /// <summary>

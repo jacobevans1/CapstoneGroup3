@@ -3,7 +3,7 @@
     ViewData["Title"] = "Group Management";
 }
 
-<!-- Google Font for Bubblegum Sans -->
+<!-- Google Font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
@@ -14,31 +14,62 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
+            <!-- Display Success and Error Messages -->
+            @{
+                var successMessage = TempData["SuccessMessage"] as string;
+                var errorMessage = TempData["ErrorMessage"] as string;
+            }
+
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success">
+                    @successMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @errorMessage
+                </div>
+            }
+
             <h2 class="text-center">Group Management</h2>
             <div class="title-divider"></div>
-            <br />
-            <br />
-            <div style="width: 150px;">
-                <a class="btn btn-primary mb-3" asp-controller="Group" asp-action="AddGroup" style="width: 100%;">Add Group</a>
+
+            <!-- Filter Options -->
+            <div class="row mb-3">
+                <div class="col-md-12 d-flex justify-content-between align-items-center">
+	                
+	                <!-- Add Group Button -->
+                    @if (Model.CurrentUserRole == "Admin")
+                    {
+	                    <div style="width: 150px;">
+		                    <a class="btn btn-primary mb-3" asp-controller="Group" asp-action="AddGroup" style="width: 100%;">Add Group</a>
+	                    </div>
+                    }
+
+                    <!-- Search Fields -->
+                    <div class="d-flex gap-2">
+                        <input type="text" id="groupSearch" class="form-control" placeholder="Search by group name" value="@Model.SearchGroupName">
+                        <input type="text" id="leadSearch" class="form-control" placeholder="Search by group lead name" value="@Model.SearchGroupLead">
+                        <button type="button" class="btn btn-primary" id="filterBtn">Filter</button>
+                        <button type="button" class="btn btn-secondary" id="clearFilterBtn">Clear</button>
+                    </div>
+                </div>
             </div>
 
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th scope="col">
-                            <my-sorting-link sort-field="@nameof(Group.GroupName)"
-                                             current="@Model.CurrentRoute">Group Name</my-sorting-link>
-                        </th>
-                        <th>Members</th>
-                        <th scope="col">
-                            <my-sorting-link sort-field="@nameof(Group.Manager)"
-                                             current="@Model.CurrentRoute">Group Lead</my-sorting-link>
-                        </th>
-                        <th>Actions</th> <!-- New column for actions -->
+                        <th scope="col">Group Name</th>
+                        <th scope="col">Members</th>
+                        <th scope="col">Group Lead</th>
+                        <th scope="col">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (Group group in Model.Groups)
+                    @foreach (var group in Model.FilteredGroups)
                     {
                         <tr>
                             <td>@group.GroupName</td>
@@ -56,52 +87,56 @@
                                     </a>
                                 }
                             </td>
-                            <td>
-                                <div class="d-flex justify-content-center gap-2">
-                                    <div class="col-auto" style="width: 150px;">
-                                        <a asp-action="EditGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-warning" style="width: 100%;">
-                                            Edit
-                                        </a>
-                                    </div>
-                                    <div class="col-auto" style="width: 150px">
-                                        <a asp-action="DeleteGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-danger" style="width: 100%;">
-                                            Delete
-                                        </a>
-                                    </div>
-                                </div>
-                            </td>
+	                        <td>
+
+                                @if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserGroupManagerForGroup(group))
+                                {
+	                                <div class="d-flex justify-content-center gap-2">
+		                                <div class="col-auto" style="width: 150px;">
+			                                <a asp-action="EditGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-warning" style="width: 100%;">
+				                                Edit
+			                                </a>
+		                                </div>
+		                                <div class="col-auto" style="width: 150px">
+			                                <a asp-action="DeleteGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-danger" style="width: 100%;">
+				                                Delete
+			                                </a>
+		                                </div>
+	                                </div>
+                                }
+	                        </td>
 
                         </tr>
                     }
                 </tbody>
             </table>
-
-
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-4">
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                <my-paging-link number="@i" current="@Model.CurrentRoute" />
-            }
-        </div>
-        <div class="col-8">
-            <form asp-action="PageSizes" method="post" class="mb-2 mt-2">
-                <div class="row">
-                    <label asp-for="CurrentRoute.PageSize" class="col-auto">Page sizes</label>
-                    <div class="col-auto">
-                        <select asp-for="CurrentRoute.PageSize" class="form-select"
-                                asp-items="@(new SelectList(Model.PageSizes))">
-                        </select>
-                    </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">Apply</button>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
 </div>
 
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("filterBtn").addEventListener("click", function () {
+                let groupName = document.getElementById("groupSearch").value;
+                let groupLead = document.getElementById("leadSearch").value;
+                let url = new URL(window.location.href);
+                url.searchParams.set("groupName", groupName);
+                url.searchParams.set("groupLead", groupLead);
+                window.location.href = url.toString();
+            });
+
+            document.getElementById("clearFilterBtn").addEventListener("click", function () {
+                let url = new URL(window.location.href);
+                url.searchParams.delete("groupName");
+                url.searchParams.delete("groupLead");
+                window.location.href = url.toString();
+            });
+        });
+
+        setTimeout(function () {
+            document.querySelectorAll('.alert').forEach(alert => alert.style.display = 'none');
+        }, 5000);
+
+    </script>
+}

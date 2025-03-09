@@ -11,9 +11,11 @@ namespace TicketAppWeb.Controllers
 	{
 		private readonly SignInManager<TicketAppUser> _signInManager;
 		private readonly UserManager<TicketAppUser> _userManager;
+		private readonly SingletonService _singletonService;
 
-		public LoginController(SignInManager<TicketAppUser> signInManager, UserManager<TicketAppUser> userManager)
+		public LoginController(SingletonService singletonService, SignInManager<TicketAppUser> signInManager, UserManager<TicketAppUser> userManager)
 		{
+			_singletonService = singletonService;
 			_signInManager = signInManager;
 			_userManager = userManager;
 		}
@@ -43,6 +45,8 @@ namespace TicketAppWeb.Controllers
 			var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: false);
 			if (result.Succeeded)
 			{
+				_singletonService.CurrentUser = user;
+				_singletonService.CurrentUserRole = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
 				return RedirectToAction("Index", "Home");
 			}
 			else
@@ -56,6 +60,7 @@ namespace TicketAppWeb.Controllers
 		public async Task<IActionResult> Logout()
 		{
 			await _signInManager.SignOutAsync();
+			_singletonService.CurrentUser = null;
 			return RedirectToAction("Index", "Login");
 		}
 	}

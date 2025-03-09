@@ -14,7 +14,9 @@ namespace TicketAppWeb.Controllers
 	/// </summary>
 	public class UserController : Controller
 	{
+		private readonly SingletonService _singletonService;
 		private readonly IUserRepository _usersRepository;
+
 		private static string selectedUserId;
 		private static string selectedUsername;
 
@@ -22,8 +24,9 @@ namespace TicketAppWeb.Controllers
 		/// Initializes a new instance of the UserController class.
 		/// </summary>
 		/// <param name="usersRepository"></param>
-		public UserController(IUserRepository usersRepository)
+		public UserController(SingletonService singletonService, IUserRepository usersRepository)
 		{
+			_singletonService = singletonService;
 			_usersRepository = usersRepository;
 		}
 
@@ -35,6 +38,9 @@ namespace TicketAppWeb.Controllers
 		{
 			var viewModel = new UserViewModel();
 			LoadIndexViewData(viewModel);
+
+			viewModel.CurrentUserRole = _singletonService.CurrentUserRole;
+
 			return View(viewModel);
 		}
 
@@ -219,7 +225,7 @@ namespace TicketAppWeb.Controllers
 				OrderBy = u => u.LastName ?? string.Empty
 			});
 
-			vm.Roles = _usersRepository.GetRolesAsync().Result;
+			vm.AvailableRoles = _usersRepository.GetRolesAsync().Result;
 			vm.UserRoles = _usersRepository.GetUserRolesAsync().Result;
 		}
 	}
