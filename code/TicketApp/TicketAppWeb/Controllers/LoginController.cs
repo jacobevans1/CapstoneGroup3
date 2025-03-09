@@ -5,7 +5,7 @@ using TicketAppWeb.Models.DomainModels;
 
 namespace TicketAppWeb.Controllers
 {
-	[AllowAnonymous] // Allows anyone to access login without being signed in
+	[AllowAnonymous]
 
 	public class LoginController : Controller
 	{
@@ -23,7 +23,7 @@ namespace TicketAppWeb.Controllers
 		[HttpGet]
 		public IActionResult Index()
 		{
-			return View();
+			return View("Index");
 		}
 
 		[HttpPost]
@@ -32,14 +32,14 @@ namespace TicketAppWeb.Controllers
 			if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
 			{
 				ViewBag.Error = "Username and password are required.";
-				return View();
+				return View("Index");
 			}
 
 			var user = await _userManager.FindByNameAsync(username);
 			if (user == null)
 			{
 				ViewBag.Error = "Invalid username or password.";
-				return View();
+				return View("Index");
 			}
 
 			var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: false);
@@ -52,7 +52,7 @@ namespace TicketAppWeb.Controllers
 			else
 			{
 				ViewBag.Error = "Invalid username or password.";
-				return View();
+				return View("Index");
 			}
 		}
 

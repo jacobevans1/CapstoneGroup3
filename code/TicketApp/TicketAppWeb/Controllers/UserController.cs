@@ -71,7 +71,7 @@ namespace TicketAppWeb.Controllers
 				}
 				catch (Exception e)
 				{
-					TempData["ErrorMessage"] = $"Sorry, {e.Message}";
+					TempData["ErrorMessage"] = $"Sorry, user update failed.";
 					return RedirectToAction("Index", "User");
 				}
 
@@ -129,11 +129,10 @@ namespace TicketAppWeb.Controllers
 					vm.User.Id = selectedUserId;
 					vm.User.UserName = selectedUsername;
 					await _usersRepository.UpdateUser(vm.User, vm.SelectedRoleName);
-
 				}
 				catch (Exception e)
 				{
-					TempData["ErrorMessage"] = $"Sorry, {e.Message}";
+					TempData["ErrorMessage"] = $"Sorry, user update failed.";
 					return RedirectToAction("Index", "User");
 				}
 
@@ -160,11 +159,6 @@ namespace TicketAppWeb.Controllers
 			}
 
 			var user = _usersRepository.Get(id);
-
-			if (user == null)
-			{
-				return NotFound(new { message = "User not found." });
-			}
 
 			var userData = new
 			{
@@ -203,7 +197,7 @@ namespace TicketAppWeb.Controllers
 				}
 				catch (Exception e)
 				{
-					TempData["ErrorMessage"] = $"Error deleting user: {e.Message}";
+					TempData["ErrorMessage"] = $"Sorry, deleting user failed.";
 				}
 			}
 
