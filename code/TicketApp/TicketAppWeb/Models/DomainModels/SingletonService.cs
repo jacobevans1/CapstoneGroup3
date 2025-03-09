@@ -25,6 +25,6 @@ namespace TicketAppWeb.Models.DomainModels
 		/// <summary>
 		///	Gets or sets the current user role.
 		/// </summary>
-		public string? CurrentUserRole { get; set; }
+		public virtual string? CurrentUserRole { get; set; }
 	}
 }
