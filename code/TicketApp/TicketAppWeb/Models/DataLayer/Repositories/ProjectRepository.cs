@@ -138,8 +138,6 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
                     .ToList();
             }
 
-            // Update the existing project's groups
-            // Add newly selected groups if not already present
             foreach (var group in groupsToAddDirectly)
             {
                 if (!existingProject.Groups.Contains(group))
@@ -148,7 +146,6 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
                 }
             }
 
-            // Remove groups that are no longer selected
             foreach (var group in existingProject.Groups.ToList())
             {
                 if (!selectedGroupIds.Contains(group.Id!))
@@ -159,7 +156,6 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
 
             await context.SaveChangesAsync();
 
-            // Handle group approval requests for groups needing approval
             foreach (var groupId in groupsNeedingApproval)
             {
                 await AddGroupApprovalRequestAsync(project.Id!, groupId);

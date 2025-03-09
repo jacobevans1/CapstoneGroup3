@@ -4,6 +4,11 @@ using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.DataLayer;
 using TicketAppWeb.Models.DataLayer.Reposetories;
 
+/// <summary>
+/// Tests the project repository
+/// Jabesi Abwe
+/// 03/08/2025
+/// </summary>
 public class ProjectRepositoryTests
 {
     private Mock<DbSet<T>> CreateMockDbSet<T>(List<T> elements) where T : class
