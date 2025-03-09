@@ -24,131 +24,155 @@
         <input type="hidden" asp-for="GroupId" />
 
         <div class="form-group">
-            <label asp-for="GroupName" class="form-label">Group Name</label>
+            <label asp-for="GroupName" class="form-label">Group Name <span class="text-danger">*</span></label>
             <input asp-for="GroupName" class="form-control" required />
             <span asp-validation-for="GroupName" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label asp-for="Description" class="form-label">Description</label>
+            <label asp-for="Description" class="form-label">Description <span class="text-danger">*</span></label>
             <textarea asp-for="Description" class="form-control" required></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
         <div class="row">
+            <!-- Available Users -->
             <div class="col-md-5">
-                <h5>All Users</h5>
-                <select id="allUsersList" class="form-control" size="10" multiple>
-                    @foreach (var user in Model.AllUsers.Where(u => !Model.SelectedUserIds.Contains(u.Id)))
+                <h6>Available Users</h6>
+                <ul id="availableUsers" class="list-group">
+                    @foreach (var user in Model.AllUsers)
                     {
-                        <option value="@user.Id">
-                            @user.UserName (@user.Email)
-                        </option>
+                        if (!Model.SelectedUserIds.Contains(user.Id))
+                        {
+                            <li class="list-group-item">
+                                <input type="checkbox" class="user-checkbox form-check-input mt-0" value="@user.Id" />
+                                @user.UserName (@user.Email)
+                            </li>
+                        }
                     }
-                </select>
-
+                </ul>
             </div>
 
             <div class="col-md-2 text-center align-self-center">
-                <button type="button" class="btn btn-primary" onclick="addUser()">Add →</button>
+                <button type="button" class="btn btn-primary mb-2" id="addUsersBtn">Add →</button>
                 <br /><br />
-                <button type="button" class="btn btn-danger" onclick="removeUser()">← Remove</button>
+                <button type="button" class="btn btn-danger" id="removeUsersBtn">← Remove</button>
             </div>
 
+            <!-- Selected Members -->
             <div class="col-md-5">
-                <h5>Potential Group Members</h5>
-                <select id="selectedUsersList" class="form-control" size="10" multiple name="SelectedUserIds">
-                    @foreach (var userId in Model.SelectedUserIds)
+                <h6>Selected Members <span class="text-danger">*</span></h6>
+                <ul id="selectedUsers" class="list-group">
+                    @foreach (var user in Model.AllUsers)
                     {
-                        var user = Model.AllUsers.FirstOrDefault(u => u.Id == userId);
-                        if (user != null)
+                        if (Model.SelectedUserIds.Contains(user.Id))
                         {
-                            <option value="@user.Id" selected>@user.UserName (@user.Email)</option>
+                            <li class="list-group-item">
+                                <input type="checkbox" class="assigned-user-checkbox form-check-input mt-0" name="SelectedUserIds" value="@user.Id" checked />
+                                @user.UserName (@user.Email)
+                            </li>
                         }
                     }
-                </select>
-
+                </ul>
             </div>
         </div>
+        <span asp-validation-for="SelectedUserIds" class="text-danger"></span>
+        <br />
 
+        <!-- Group Lead Selection -->
         <div class="form-group mt-3">
-            <label class="form-label">Group Lead (must be in the group)</label>
-            <select asp-for="GroupLeadId" class="form-control" id="groupLeadDropdown">
-                <option value="">Select Group Lead</option>
-                @foreach (var userId in Model.SelectedUserIds)
+            <label class="form-label">Group Lead <span class="text-danger">*</span></label>
+            <select id="groupLead" asp-for="GroupLeadId" class="form-select">
+                <option value="">Select a Lead</option>
+                @foreach (var user in Model.AllUsers.Where(u => Model.SelectedUserIds.Contains(u.Id)))
                 {
-                    var user = Model.AllUsers.FirstOrDefault(u => u.Id == userId);
-                    if (user != null)
-                    {
-                        var isSelected = Model.GroupLeadId == user.Id ? "selected" : null;
-                        <option value="@user.Id" selected="@isSelected">@user.UserName</option>
-                    }
+                    <option value="@user.Id" selected="@(Model.GroupLeadId == user.Id ? "selected" : null)">
+                        @user.UserName (@user.Email)
+                    </option>
                 }
             </select>
+            <input type="hidden" id="hiddenGroupLeadId" name="GroupLeadId" value="@Model.GroupLeadId" />
             <span asp-validation-for="GroupLeadId" class="text-danger"></span>
         </div>
 
-        <div class="mt-3 text-center">
-            <button type="submit" class="btn btn-success">Update Group</button>
-            <a asp-action="Index" asp-controller="Group" class="btn btn-secondary">Cancel</a>
+        <br />
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Update Group</button>
+            </div>
+            <div class="col-auto">
+                <a asp-action="Index" asp-controller="Group" class="btn btn-secondary">Cancel</a>
+            </div>
         </div>
     </form>
 </div>
 
 @section scripts {
     <script>
-        function addUser() {
-            $('#allUsersList option:selected').each(function () {
-                let option = $(this);
-                $('#selectedUsersList').append(option);
-            });
-            $('#allUsersList option').prop('selected', false); // Deselect after moving
-            updateGroupLeadDropdown();
-        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const availableUsers = document.getElementById("availableUsers");
+            const selectedUsers = document.getElementById("selectedUsers");
+            const groupLeadSelect = document.getElementById("groupLead");
 
-        function removeUser() {
-            $('#selectedUsersList option:selected').each(function () {
-                let option = $(this);
-                $('#allUsersList').append(option);
-            });
-            $('#selectedUsersList option').prop('selected', false); // Deselect after moving
-            updateGroupLeadDropdown();
-        }
-
-        function updateGroupLeadDropdown() {
-            let groupLeadDropdown = $('#groupLeadDropdown');
-            let selectedLead = groupLeadDropdown.val(); // Preserve selected Group Lead
-
-            groupLeadDropdown.empty();
-            groupLeadDropdown.append('<option value="">Select Group Lead</option>');
-
-            $('#selectedUsersList option').each(function () {
-                let userId = $(this).val();
-                let userName = $(this).text();
-                let isSelected = selectedLead === userId ? 'selected' : '';
-                groupLeadDropdown.append('<option value="' + userId + '" ' + isSelected + '>' + userName + '</option>');
-            });
-        }
-
-        function selectAllMembersBeforeSubmit() {
-            $('#selectedUsersList option').prop('selected', true);
-        }
-
-        $(document).ready(function () {
-            // Ensure all users in the Potential Group Members list are selected before submitting
-            $('form').on('submit', function () {
-                selectAllMembersBeforeSubmit();
+            document.getElementById("addUsersBtn").addEventListener("click", function () {
+                moveSelectedUsers(availableUsers, selectedUsers, true);
             });
 
-            // Click anywhere on the page to deselect users, but NOT the Group Lead selection
-            $(document).on('click', function (event) {
-                if (!$(event.target).is('option') && !$(event.target).closest('#groupLeadDropdown').length) {
-                    $('#allUsersList option, #selectedUsersList option').prop('selected', false);
+            document.getElementById("removeUsersBtn").addEventListener("click", function () {
+                moveSelectedUsers(selectedUsers, availableUsers, false);
+            });
+
+            function moveSelectedUsers(sourceList, targetList, isAdding) {
+                const selectedItems = sourceList.querySelectorAll("input:checked");
+                selectedItems.forEach(item => {
+                    let listItem = item.closest("li");
+                    item.checked = false; // Reset checked state in new list
+
+                    if (isAdding) {
+                        item.classList.add("assigned-user-checkbox");
+                        item.name = "SelectedUserIds";
+                        item.checked = true; // Ensure it's marked as selected for form submission
+                    } else {
+                        item.classList.remove("assigned-user-checkbox");
+                        item.removeAttribute("name"); // Remove from submission
+                    }
+
+                    targetList.appendChild(listItem);
+                });
+
+                updateGroupLeads();
+            }
+
+            function updateGroupLeads() {
+                groupLeadSelect.innerHTML = '<option value="">Select a Lead</option>';
+                let selectedUserIds = Array.from(selectedUsers.querySelectorAll(".assigned-user-checkbox"))
+                    .map(item => item.value);
+
+                if (selectedUserIds.length === 0) {
+                    return;
                 }
+
+                selectedUserIds.forEach(userId => {
+                    let userText = document.querySelector(`input[value="${userId}"]`).parentNode.textContent.trim();
+                    let option = document.createElement("option");
+                    option.value = userId;
+                    option.textContent = userText;
+                    groupLeadSelect.appendChild(option);
+                });
+
+                if (document.getElementById("hiddenGroupLeadId").value) {
+                    let selectedOption = groupLeadSelect.querySelector(`option[value='${document.getElementById("hiddenGroupLeadId").value}']`);
+                    if (selectedOption) {
+                        selectedOption.selected = true;
+                    }
+                }
+            }
+
+            document.getElementById("groupLead").addEventListener("change", function () {
+                document.getElementById("hiddenGroupLeadId").value = this.value;
             });
+
+            updateGroupLeads();
         });
     </script>
-
-
-
 }
