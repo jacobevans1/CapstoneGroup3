@@ -56,13 +56,13 @@ namespace TicketAppWeb.Models.DataLayer
                 .HasMany(g => g.Members)
                 .WithMany(u => u.Groups)
                 .UsingEntity<Dictionary<string, object>>(
-                    "UserGroups", 
-                    j => j.HasOne<TicketAppUser>().WithMany().HasForeignKey("MembersId"),
-                    j => j.HasOne<Group>().WithMany().HasForeignKey("GroupsId"),
+                    "GroupUser", 
+                    j => j.HasOne<TicketAppUser>().WithMany().HasForeignKey("MemberId"),
+                    j => j.HasOne<Group>().WithMany().HasForeignKey("GroupId"),
                     j =>
                     {
-                        j.HasKey("GroupsId", "MembersId"); 
-                        j.ToTable("UserGroups"); 
+                        j.HasKey("GroupId", "MemberId"); 
+                        j.ToTable("GroupUser"); 
                     }
                 );
 

@@ -36,5 +36,5 @@ INSERT INTO [dbo].[Groups] ([Id], [GroupName], [Description], [ManagerId], [Crea
 
 INSERT INTO [dbo].[Projects] ([Id], [ProjectName], [Description], [LeadId], [CreatedById], [CreatedAt]) VALUES (N'7c49a8d5-9e1c-4f91-8df4-2a0aafbfc6e8', N'National League', N'The National League', N'bc4642cd-fada-486b-9275-4cbcc581fcf0', N'da0e26e5-59a0-48d7-94dc-2e2977b25ade', '2025-02-23 14:30:00')
 
-INSERT INTO [dbo].[ProjectGroups] ([ProjectId], [GroupId]) VALUES (N'7c49a8d5-9e1c-4f91-8df4-2a0aafbfc6e8', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3')
-INSERT INTO [dbo].[ProjectGroups] ([ProjectId], [GroupId]) VALUES (N'7c49a8d5-9e1c-4f91-8df4-2a0aafbfc6e8', N'a15d2e37-5b66-4034-8a9a-71b5b6f6a9df')
+INSERT INTO [dbo].[GroupProject] ([ProjectsId], [GroupsId]) VALUES (N'7c49a8d5-9e1c-4f91-8df4-2a0aafbfc6e8', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3')
+INSERT INTO [dbo].[GroupProject] ([ProjectsId], [GroupsId]) VALUES (N'7c49a8d5-9e1c-4f91-8df4-2a0aafbfc6e8', N'a15d2e37-5b66-4034-8a9a-71b5b6f6a9df')
