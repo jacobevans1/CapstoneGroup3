@@ -82,9 +82,11 @@
                             <td>
                                 @if (group.Manager != null)
                                 {
-                                    <a href="@Url.Action("Details", "User", new { id = group.Manager.Id })">
-                                        @group.Manager.FirstName @group.Manager.LastName
-                                    </a>
+                                    @* <a href="@Url.Action("Details", "User", new { id = group.Manager.Id })"> *@
+                                    @*     @group.Manager.FirstName @group.Manager.LastName *@
+                                    @* </a> *@
+
+                                    <span class="badge bg-success text-dark text-decoration-none d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@group.Manager.FirstName @group.Manager.LastName</span>
                                 }
                             </td>
 	                        <td>
