@@ -19,20 +19,18 @@ namespace TestTicketAppWeb.Models.DataLayer
 
         public TestGroupRepository()
         {
-            // ✅ Ensure unique DB name to avoid conflicts
             var dbName = Guid.NewGuid().ToString();
 
             var options = new DbContextOptionsBuilder<TicketAppContext>()
-                .UseInMemoryDatabase(dbName) // Unique database per test run
+                .UseInMemoryDatabase(dbName) 
                 .Options;
 
             _context = new TicketAppContext(options);
-            _context.Database.EnsureDeleted(); // Clear database before running tests
-            _context.Database.EnsureCreated(); // Recreate schema
+            _context.Database.EnsureDeleted(); 
+            _context.Database.EnsureCreated(); 
 
             _repository = new GroupRepository(_context);
 
-            // ✅ Seed initial test data
             SeedDatabase();
         }
 
@@ -57,7 +55,6 @@ namespace TestTicketAppWeb.Models.DataLayer
             _context.SaveChanges();
         }
 
-        // ✅ Test GetAllAsync
         [Fact]
         public async Task GetAllAsync_ShouldReturnGroups_WithMembersAndManager()
         {
@@ -73,7 +70,6 @@ namespace TestTicketAppWeb.Models.DataLayer
             Assert.Equal("Manager", groups.First().Manager.UserName);
         }
 
-        // ✅ Test GetAsync (Valid ID)
         [Fact]
         public async Task GetAsync_ShouldReturnGroup_WhenIdIsValid()
         {
@@ -87,7 +83,6 @@ namespace TestTicketAppWeb.Models.DataLayer
             Assert.Equal("Manager", group.Manager.UserName);
         }
 
-        // ✅ Test GetAsync (Invalid ID)
         [Fact]
         public async Task GetAsync_ShouldReturnNull_WhenIdIsInvalid()
         {
@@ -98,7 +93,6 @@ namespace TestTicketAppWeb.Models.DataLayer
             Assert.Null(group);
         }
 
-        // ✅ Test InsertAsync
         [Fact]
         public async Task InsertAsync_ShouldAddGroupToDatabase()
         {
@@ -122,7 +116,6 @@ namespace TestTicketAppWeb.Models.DataLayer
             Assert.Equal("New Group", addedGroup.GroupName);
         }
 
-        // ✅ Test DeleteGroupAsync
         [Fact]
         public async Task DeleteGroupAsync_ShouldRemoveGroupFromDatabase()
         {
@@ -138,7 +131,6 @@ namespace TestTicketAppWeb.Models.DataLayer
             Assert.Null(deletedGroup);
         }
 
-        // ✅ Test DeleteGroupAsync (Remove from Projects)
         [Fact]
         public async Task DeleteGroupAsync_ShouldRemoveGroupFromProjects()
         {
@@ -163,10 +155,9 @@ namespace TestTicketAppWeb.Models.DataLayer
 
             // Assert
             Assert.NotNull(updatedProject);
-            Assert.Empty(updatedProject.Groups); // Group should be removed from project
+            Assert.Empty(updatedProject.Groups); 
         }
 
-        // ✅ Test AddNewGroupMembers
         [Fact]
         public void AddNewGroupMembers_ShouldAddMembersToGroup()
         {
@@ -187,7 +178,6 @@ namespace TestTicketAppWeb.Models.DataLayer
             Assert.Contains(group.Members, u => u.Id == "4");
         }
 
-        // ✅ Ensure database cleanup
         public void Cleanup()
         {
             _context.Database.EnsureDeleted();
