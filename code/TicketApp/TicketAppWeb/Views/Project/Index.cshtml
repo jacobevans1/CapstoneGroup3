@@ -52,15 +52,12 @@
 						</div>
 					}
 
+					<!-- Filter Inputs and Buttons -->
 					<div class="d-flex gap-2">
-						<input type="text" id="projectSearch" class="form-control" placeholder="Search by project name">
-						<select id="groupFilter" class="form-select">
-							<option value="">Filter by Group</option>
-							@foreach (var group in Model.AvailableGroups)
-							{
-								<option value="@group.Id">@group.GroupName</option>
-							}
-						</select>
+						<input type="text" id="projectSearch" class="form-control" placeholder="Search by project name" value="@Model.SearchProjectName">
+						<input type="text" id="leadSearch" class="form-control" placeholder="Search by project lead name" value="@Model.SearchProjectLead">
+						<button type="button" class="btn btn-primary" id="filterBtn">Filter</button>
+						<button type="button" class="btn btn-secondary" id="clearFilterBtn">Clear</button>
 					</div>
 				</div>
 

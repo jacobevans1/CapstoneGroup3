@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
 
@@ -16,11 +17,13 @@ public class ProjectViewModel
 	/// <summary>
 	/// The currently logged in user
 	/// </summary>
+	[ValidateNever]
 	public TicketAppUser CurrentUser { get; set; }
 
 	/// <summary>
 	/// The currently logged in user's role.
 	/// </summary>
+	[ValidateNever]
 	public string? CurrentUserRole { get; set; }
 
 	/// <summary>

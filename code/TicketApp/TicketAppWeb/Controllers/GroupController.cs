@@ -38,7 +38,7 @@ public class GroupController : Controller
 	}
 
 	[HttpGet]
-	public async Task<IActionResult> AddGroup()
+	public async Task<IActionResult> CreateGroup()
 	{
 		var users = await _userRepository.GetAllUsersAsync();
 
@@ -52,7 +52,7 @@ public class GroupController : Controller
 	}
 
 	[HttpPost]
-	public async Task<IActionResult> AddGroup(AddGroupViewModel model)
+	public async Task<IActionResult> CreateGroup(AddGroupViewModel model)
 	{
 		if (!ModelState.IsValid)
 		{
