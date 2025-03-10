@@ -72,16 +72,5 @@ namespace TicketAppWeb.Models.Configuration
 				}
 			}
 		}
-
-		/// <summary>
-		///	Adds users to the database.
-		/// </summary>
-		/// <param name="serviceProvider"></param>
-		/// <param name="userManager"></param>
-		/// <param name="roleManager"></param>
-		/// <returns></returns>
-		public static async Task AddUsers(IServiceProvider serviceProvider, UserManager<TicketAppUser> userManager, RoleManager<IdentityRole> roleManager)
-		{
-		}
 	}
 }

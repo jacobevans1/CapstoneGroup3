@@ -55,7 +55,7 @@ namespace TicketAppWeb.Models.ViewModels
 		/// <summary>
 		/// Gets or sets the current route.
 		/// </summary>
-		public ProjectGridData CurrentRoute { get; set; } = new ProjectGridData();
+		public UserGridData CurrentRoute { get; set; } = new UserGridData();
 	}
 
 }

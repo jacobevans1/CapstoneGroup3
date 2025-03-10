@@ -4,6 +4,8 @@ using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
 
+namespace TicketAppWeb.Controllers;
+
 [Authorize]
 public class GroupController : Controller
 {
