@@ -42,8 +42,8 @@ public class TestsRepository
 		// Arrange
 		var data = new List<Project>
 		{
-			new Project { Id = "project1Id", ProjectName = "Project 1", Description = "Description 1" },
-			new Project { Id = "project2Id", ProjectName = "Project 2", Description = "Description 2" }
+			new Project { Id = "project1Id", ProjectName = "Project 1", LeadId = "user1_Id", Description = "Description 1" },
+			new Project { Id = "project2Id", ProjectName = "Project 2", LeadId = "user2_Id", Description = "Description 2" }
 		};
 		var context = CreateMockContext(data, "TestDatabase_Count");
 		var repository = new Repository<Project>(context);
@@ -207,7 +207,7 @@ public class TestsRepository
 		var data = new List<Project>();
 		var context = CreateMockContext(data, "TestDatabase_Insert");
 		var repository = new Repository<Project>(context);
-		var entity = new Project { Id = "project1Id", ProjectName = "New Project", Description = "Project Description" };
+		var entity = new Project { Id = "project1Id", ProjectName = "New Project", LeadId = "user1_Id", Description = "Project Description" };
 
 		// Act
 		repository.Insert(entity);

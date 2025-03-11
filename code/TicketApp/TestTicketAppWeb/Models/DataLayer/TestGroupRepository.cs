@@ -139,6 +139,7 @@ namespace TestTicketAppWeb.Models.DataLayer
             {
                 Id = "P1",
                 ProjectName = "Test Project",
+                LeadId = "user1_Id",
                 Groups = new List<Group> { await _repository.GetAsync("G1") }
             };
 
