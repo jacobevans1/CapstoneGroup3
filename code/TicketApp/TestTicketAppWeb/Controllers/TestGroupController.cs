@@ -80,7 +80,7 @@ namespace TestTicketAppWeb.Controllers
             _mockUserRepository.Setup(repo => repo.GetAllUsersAsync()).ReturnsAsync(users);
 
             // Act
-            var result = await _controller.AddGroup();
+            var result = await _controller.CreateGroup();
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
@@ -107,7 +107,7 @@ namespace TestTicketAppWeb.Controllers
             _mockGroupRepository.Setup(repo => repo.SaveAsync()).Returns(Task.CompletedTask);
 
             // Act
-            var result = await _controller.AddGroup(model);
+            var result = await _controller.CreateGroup(model);
 
             // Assert
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
@@ -123,7 +123,7 @@ namespace TestTicketAppWeb.Controllers
             var model = new AddGroupViewModel();
 
             // Act
-            var result = await _controller.AddGroup(model);
+            var result = await _controller.CreateGroup(model);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
