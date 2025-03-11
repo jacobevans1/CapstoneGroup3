@@ -12,7 +12,7 @@ using TicketAppWeb.Models.DataLayer;
 namespace TicketAppWeb.Migrations
 {
     [DbContext(typeof(TicketAppContext))]
-    [Migration("20250310133052_FixGroupUser")]
+    [Migration("20250311185910_FixGroupUser")]
     partial class FixGroupUser
     {
         /// <inheritdoc />
@@ -38,6 +38,21 @@ namespace TicketAppWeb.Migrations
                     b.HasIndex("ProjectsId");
 
                     b.ToTable("GroupProject");
+                });
+
+            modelBuilder.Entity("GroupUser", b =>
+                {
+                    b.Property<string>("GroupId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MemberId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("GroupId", "MemberId");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("GroupUser", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -329,21 +344,6 @@ namespace TicketAppWeb.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("UserGroups", b =>
-                {
-                    b.Property<string>("GroupsId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("MembersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("GroupsId", "MembersId");
-
-                    b.HasIndex("MembersId");
-
-                    b.ToTable("UserGroups", (string)null);
-                });
-
             modelBuilder.Entity("GroupProject", b =>
                 {
                     b.HasOne("TicketAppWeb.Models.DomainModels.Group", null)
@@ -355,6 +355,21 @@ namespace TicketAppWeb.Migrations
                     b.HasOne("TicketAppWeb.Models.DomainModels.Project", null)
                         .WithMany()
                         .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GroupUser", b =>
+                {
+                    b.HasOne("TicketAppWeb.Models.DomainModels.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TicketAppWeb.Models.DomainModels.TicketAppUser", null)
+                        .WithMany()
+                        .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -451,21 +466,6 @@ namespace TicketAppWeb.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("Lead");
-                });
-
-            modelBuilder.Entity("UserGroups", b =>
-                {
-                    b.HasOne("TicketAppWeb.Models.DomainModels.Group", null)
-                        .WithMany()
-                        .HasForeignKey("GroupsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TicketAppWeb.Models.DomainModels.TicketAppUser", null)
-                        .WithMany()
-                        .HasForeignKey("MembersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
