@@ -35,14 +35,14 @@ namespace TestTicketAppWeb.Controllers
 			var vm = new UserViewModel();
 			_mockSingletonService.Setup(s => s.CurrentUserRole).Returns("Admin");
 			_mockUserRepository.Setup(r => r.List(It.IsAny<QueryOptions<TicketAppUser>>())).Returns(new List<TicketAppUser>());
-			_mockUserRepository.Setup(r => r.GetRolesAsync())
+			_mockUserRepository.Setup(r => r.GetDbRoles())
 				.ReturnsAsync(new List<IdentityRole>
 				{
 					new IdentityRole { Name = "Admin" },
 					new IdentityRole { Name = "User" }
 				}.AsEnumerable());
 
-			_mockUserRepository.Setup(r => r.GetUserRolesAsync()).ReturnsAsync(new Dictionary<TicketAppUser, string>());
+			_mockUserRepository.Setup(r => r.GetUserRoles()).ReturnsAsync(new Dictionary<TicketAppUser, string>());
 
 			// Act
 			var result = _controller.Index(null);
@@ -114,7 +114,7 @@ namespace TestTicketAppWeb.Controllers
 			var user = new TicketAppUser { FirstName = "John", LastName = "Doe", Email = "john.doe@example.com", PhoneNumber = "123-456-7890" };
 
 			_mockUserRepository.Setup(r => r.Get(It.IsAny<string>())).Returns(user);
-			_mockUserRepository.Setup(r => r.GetUserRolesAsync()).ReturnsAsync(new Dictionary<TicketAppUser, string> { { user, "Admin" } });
+			_mockUserRepository.Setup(r => r.GetUserRoles()).ReturnsAsync(new Dictionary<TicketAppUser, string> { { user, "Admin" } });
 
 			// Act
 			var result = _controller.GetUserData(userId);

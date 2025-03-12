@@ -23,7 +23,7 @@ public class GroupController : Controller
 	[HttpGet]
 	public async Task<IActionResult> Index(string? groupName, string? groupLead)
 	{
-		var groups = await _groupRepository.GetAllAsync();
+		var groups = await _groupRepository.GetAllGroups();
 
 		var model = new GroupViewModel
 		{
@@ -40,7 +40,7 @@ public class GroupController : Controller
 	[HttpGet]
 	public async Task<IActionResult> CreateGroup()
 	{
-		var users = await _userRepository.GetAllUsersAsync();
+		var users = await _userRepository.GetAllUsers();
 
 		var model = new AddGroupViewModel
 		{
@@ -56,7 +56,7 @@ public class GroupController : Controller
 	{
 		if (!ModelState.IsValid)
 		{
-			model.AllUsers = (await _userRepository.GetAllUsersAsync()).ToList();
+			model.AllUsers = (await _userRepository.GetAllUsers()).ToList();
 			return View(model);
 		}
 
@@ -72,7 +72,7 @@ public class GroupController : Controller
 		{
 			foreach (var userId in model.SelectedUserIds)
 			{
-				var user = await _userRepository.GetAsync(userId);
+				var user = await _userRepository.GetUserById(userId);
 				if (user != null)
 				{
 					newGroup.Members.Add(user);
@@ -80,8 +80,8 @@ public class GroupController : Controller
 			}
 		}
 
-		await _groupRepository.InsertAsync(newGroup);
-		await _groupRepository.SaveAsync();
+		await _groupRepository.InsertGroup(newGroup);
+		await _groupRepository.SaveChanges();
 
 		TempData["SuccessMessage"] = $"Group '{newGroup.GroupName}' created successfully!";
 
@@ -99,13 +99,13 @@ public class GroupController : Controller
 			return NotFound();
 		}
 
-		var group = await _groupRepository.GetAsync(id);
+		var group = await _groupRepository.GetGroupById(id);
 		if (group == null)
 		{
 			return NotFound();
 		}
 
-		var users = await _userRepository.GetAllUsersAsync();
+		var users = await _userRepository.GetAllUsers();
 
 		var model = new AddGroupViewModel
 		{
@@ -126,12 +126,12 @@ public class GroupController : Controller
 	{
 		if (!ModelState.IsValid)
 		{
-			var users = await _userRepository.GetAllUsersAsync();
+			var users = await _userRepository.GetAllUsers();
 			model.AllUsers = users.ToList();
 			return View("EditGroup", model);
 		}
 
-		var group = await _groupRepository.GetAsync(model.GroupId);
+		var group = await _groupRepository.GetGroupById(model.GroupId);
 		if (group == null)
 		{
 			return NotFound();
@@ -160,14 +160,14 @@ public class GroupController : Controller
 		var membersToAdd = model.SelectedUserIds.Except(existingMemberIds).ToList();
 		foreach (var userId in membersToAdd)
 		{
-			var user = await _userRepository.GetAsync(userId);
+			var user = await _userRepository.GetUserById(userId);
 			if (user != null)
 			{
 				group.Members.Add(user); // Add newly selected members
 			}
 		}
 
-		await _groupRepository.SaveAsync();
+		await _groupRepository.SaveChanges();
 
 		TempData["SuccessMessage"] = $"Group '{group.GroupName}' updated successfully!";
 
@@ -186,7 +186,7 @@ public class GroupController : Controller
 			return NotFound();
 		}
 
-		var group = await _groupRepository.GetAsync(id);
+		var group = await _groupRepository.GetGroupById(id);
 		if (group == null)
 		{
 			return NotFound();
@@ -203,7 +203,7 @@ public class GroupController : Controller
 			return NotFound();
 		}
 
-		var group = await _groupRepository.GetAsync(id);
+		var group = await _groupRepository.GetGroupById(id);
 		if (group == null)
 		{
 			return NotFound();
@@ -211,7 +211,7 @@ public class GroupController : Controller
 
 		try
 		{
-			await _groupRepository.DeleteGroupAsync(group);
+			await _groupRepository.DeleteGroup(group);
 
 			TempData["SuccessMessage"] = $"Group '{group.GroupName}' deleted successfully!";
 

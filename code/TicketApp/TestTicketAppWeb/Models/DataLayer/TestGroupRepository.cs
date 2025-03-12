@@ -59,7 +59,7 @@ namespace TestTicketAppWeb.Models.DataLayer
         public async Task GetAllAsync_ShouldReturnGroups_WithMembersAndManager()
         {
             // Act
-            var groups = await _repository.GetAllAsync();
+            var groups = await _repository.GetAllGroups();
 
             // Assert
             Assert.NotNull(groups);
@@ -74,7 +74,7 @@ namespace TestTicketAppWeb.Models.DataLayer
         public async Task GetAsync_ShouldReturnGroup_WhenIdIsValid()
         {
             // Act
-            var group = await _repository.GetAsync("G1");
+            var group = await _repository.GetGroupById("G1");
 
             // Assert
             Assert.NotNull(group);
@@ -87,7 +87,7 @@ namespace TestTicketAppWeb.Models.DataLayer
         public async Task GetAsync_ShouldReturnNull_WhenIdIsInvalid()
         {
             // Act
-            var group = await _repository.GetAsync("InvalidID");
+            var group = await _repository.GetGroupById("InvalidID");
 
             // Assert
             Assert.Null(group);
@@ -107,11 +107,11 @@ namespace TestTicketAppWeb.Models.DataLayer
             };
 
             // Act
-            await _repository.InsertAsync(newGroup);
-            await _repository.SaveAsync();
+            await _repository.InsertGroup(newGroup);
+            await _repository.SaveChanges();
 
             // Assert
-            var addedGroup = await _repository.GetAsync("G2");
+            var addedGroup = await _repository.GetGroupById("G2");
             Assert.NotNull(addedGroup);
             Assert.Equal("New Group", addedGroup.GroupName);
         }
@@ -120,12 +120,12 @@ namespace TestTicketAppWeb.Models.DataLayer
         public async Task DeleteGroupAsync_ShouldRemoveGroupFromDatabase()
         {
             // Arrange
-            var group = await _repository.GetAsync("G1");
+            var group = await _repository.GetGroupById("G1");
             Assert.NotNull(group);
 
             // Act
-            await _repository.DeleteGroupAsync(group);
-            var deletedGroup = await _repository.GetAsync("G1");
+            await _repository.DeleteGroup(group);
+            var deletedGroup = await _repository.GetGroupById("G1");
 
             // Assert
             Assert.Null(deletedGroup);
@@ -140,18 +140,18 @@ namespace TestTicketAppWeb.Models.DataLayer
                 Id = "P1",
                 ProjectName = "Test Project",
                 LeadId = "user1_Id",
-                Groups = new List<Group> { await _repository.GetAsync("G1") }
+                Groups = new List<Group> { await _repository.GetGroupById("G1") }
             };
 
             _context.Projects.Add(project);
             await _context.SaveChangesAsync();
 
-            var group = await _repository.GetAsync("G1");
+            var group = await _repository.GetGroupById("G1");
             Assert.NotNull(group);
             Assert.Single(project.Groups);
 
             // Act
-            await _repository.DeleteGroupAsync(group);
+            await _repository.DeleteGroup(group);
             var updatedProject = await _context.Projects.FirstOrDefaultAsync(p => p.Id == "P1");
 
             // Assert

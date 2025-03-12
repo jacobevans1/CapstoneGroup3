@@ -15,33 +15,57 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// </summary>
 		/// <param name="user">The user to be created.</param>
 		/// <param name="roleName">The name of the role to assign to the user.</param>
-		new Task CreateUser(TicketAppUser user, string roleName);
+		Task CreateUser(TicketAppUser user, string roleName);
 
 		/// <summary>
 		/// Updates an existing user's details and their assigned role.
 		/// </summary>
 		/// <param name="user">The user with updated details.</param>
 		/// <param name="roleName">The name of the new role to assign to the user.</param>
-		new Task UpdateUser(TicketAppUser user, string roleName);
+		Task UpdateUser(TicketAppUser user, string roleName);
 
 		/// <summary>
 		/// Retrieves all roles from the database.
 		/// </summary>
-		Task<IEnumerable<IdentityRole>> GetRolesAsync();
+		Task<IEnumerable<IdentityRole>> GetDbRoles();
 
 		/// <summary>
 		/// Retrieves all users along with their assigned roles.
 		/// </summary>
-		Task<Dictionary<TicketAppUser, string>> GetUserRolesAsync();
+		Task<Dictionary<TicketAppUser, string>> GetUserRoles();
 
-        /// <summary>
-        /// Retrieves all users from the database.
-        /// </summary>
-        Task<IEnumerable<TicketAppUser>> GetAllUsersAsync();
+		/// <summary>
+		/// Retrieves all users from the database.
+		/// </summary>
+		Task<IEnumerable<TicketAppUser>> GetAllUsers();
 
-        Task<TicketAppUser> GetAsync(string userId);
+		/// <summary>
+		/// Retrieves a user by their ID.
+		/// </summary>
+		Task<TicketAppUser> GetUserById(string userId);
+
+		/// <summary>
+		/// Checks if a user is the manager of a specific group.
+		/// </summary>
+		bool IsUserManagerOfGroup(TicketAppUser user, Group group);
 
 
-    }
+		/// <summary>
+		/// Checks if a user is the manager of multiple groups.
+		/// </summary>
+		Task<IEnumerable<Group>> IsUserManagerOfMultipleGroups(TicketAppUser user);
+
+
+		/// <summary>
+		/// Checks if a user is the lead of a project.
+		/// </summary>
+		bool IsUserLeadOfProject(TicketAppUser user, Project project);
+
+
+		/// <summary>
+		/// Checks if a user is the lead of multiple projects.
+		/// </summary>
+		Task<IEnumerable<Project>> IsUserLeadOfMultipleProjects(TicketAppUser user);
+	}
 
 }

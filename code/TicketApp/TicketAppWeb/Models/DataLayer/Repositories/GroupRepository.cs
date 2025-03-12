@@ -6,75 +6,70 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 {
 	public class GroupRepository(TicketAppContext ctx) : Repository<Group>(ctx), IGroupRepository
 	{
-        public async Task<IEnumerable<Group>> GetAllAsync()
-        {
-            return await context.Groups
-                .Include(g => g.Members)  // Ensure members are loaded
-                .Include(g => g.Manager)  // Include manager info
-                .ToListAsync();
-        }
+		public async Task<IEnumerable<Group>> GetAllGroups()
+		{
+			return await context.Groups
+				.Include(g => g.Members)
+				.Include(g => g.Manager)
+				.ToListAsync();
+		}
 
-        public async Task<Group?> GetAsync(string id)
-        {
-            return await context.Groups
-                .Include(g => g.Members)
-                .Include(g => g.Manager)
-                .FirstOrDefaultAsync(g => g.Id == id);
-        }
+		public async Task<Group?> GetGroupById(string id)
+		{
+			return await context.Groups
+				.Include(g => g.Members)
+				.Include(g => g.Manager)
+				.FirstOrDefaultAsync(g => g.Id == id);
+		}
 
-        public void AddNewGroupMembers(Group? group, string[] userIds, IRepository<TicketAppUser> memberData)
-        {
-            if (group == null) return;
+		public void AddNewGroupMembers(Group? group, string[] userIds, IRepository<TicketAppUser> memberData)
+		{
+			if (group == null) return;
 
-            var currentMemberIds = group.Members.Select(m => m.Id).ToList();
+			var currentMemberIds = group.Members.Select(m => m.Id).ToList();
 
-            foreach (string id in userIds)
-            {
-                if (!currentMemberIds.Contains(id)) // Prevent duplicate members
-                {
-                    var member = memberData.Get(id);
-                    if (member != null)
-                    {
-                        group.Members.Add(member);
-                    }
-                }
-            }
-        }
+			foreach (string id in userIds)
+			{
+				if (!currentMemberIds.Contains(id))
+				{
+					var member = memberData.Get(id);
+					if (member != null)
+					{
+						group.Members.Add(member);
+					}
+				}
+			}
+		}
 
+		public async Task InsertGroup(Group group)
+		{
+			await context.Groups.AddAsync(group);
+		}
 
+		public async Task SaveChanges()
+		{
+			await context.SaveChangesAsync();
+		}
 
+		public async Task DeleteGroup(Group group)
+		{
+			if (group == null) return;
 
-        public async Task InsertAsync(Group group)
-        {
-            await context.Groups.AddAsync(group);
-        }
+			// Step 1: Remove group from projects (junction table)
+			var projectsWithGroup = await context.Projects
+				.Where(p => p.Groups.Any(g => g.Id == group.Id))
+				.ToListAsync();
 
-        public async Task SaveAsync()
-        {
-            await context.SaveChangesAsync();
-        }
+			foreach (var project in projectsWithGroup)
+			{
+				project.Groups.Remove(group);
+			}
 
-        public async Task DeleteGroupAsync(Group group)
-        {
-            if (group == null) return;
+			await context.SaveChangesAsync();
 
-            // Step 1: Remove group from projects (junction table)
-            var projectsWithGroup = await context.Projects
-                .Where(p => p.Groups.Any(g => g.Id == group.Id))
-                .ToListAsync();
-
-            foreach (var project in projectsWithGroup)
-            {
-                project.Groups.Remove(group);
-            }
-
-            await context.SaveChangesAsync();
-
-            // Step 2: Remove the group itself
-            context.Groups.Remove(group);
-            await context.SaveChangesAsync();
-        }
-
-
-    }
+			// Step 2: Remove the group itself
+			context.Groups.Remove(group);
+			await context.SaveChangesAsync();
+		}
+	}
 }

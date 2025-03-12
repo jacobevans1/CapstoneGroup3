@@ -53,7 +53,7 @@ namespace TestTicketAppWeb.Controllers
         new Group { Id = "2", GroupName = "Group B" }
     };
 
-            _mockGroupRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(groups);
+            _mockGroupRepository.Setup(repo => repo.GetAllGroups()).ReturnsAsync(groups);
 
 
             // Act
@@ -77,7 +77,7 @@ namespace TestTicketAppWeb.Controllers
                 new TicketAppUser { Id = "2", UserName = "User2" }
             };
 
-            _mockUserRepository.Setup(repo => repo.GetAllUsersAsync()).ReturnsAsync(users);
+            _mockUserRepository.Setup(repo => repo.GetAllUsers()).ReturnsAsync(users);
 
             // Act
             var result = await _controller.CreateGroup();
@@ -100,11 +100,11 @@ namespace TestTicketAppWeb.Controllers
                 SelectedUserIds = new List<string> { "2", "3" }
             };
 
-            _mockUserRepository.Setup(repo => repo.GetAsync(It.IsAny<string>()))
+            _mockUserRepository.Setup(repo => repo.GetUserById(It.IsAny<string>()))
                 .ReturnsAsync((string id) => new TicketAppUser { Id = id });
 
-            _mockGroupRepository.Setup(repo => repo.InsertAsync(It.IsAny<Group>())).Returns(Task.CompletedTask);
-            _mockGroupRepository.Setup(repo => repo.SaveAsync()).Returns(Task.CompletedTask);
+            _mockGroupRepository.Setup(repo => repo.InsertGroup(It.IsAny<Group>())).Returns(Task.CompletedTask);
+            _mockGroupRepository.Setup(repo => repo.SaveChanges()).Returns(Task.CompletedTask);
 
             // Act
             var result = await _controller.CreateGroup(model);
@@ -135,7 +135,7 @@ namespace TestTicketAppWeb.Controllers
         {
             // Arrange
             var group = new Group { Id = "1", GroupName = "Test Group" };
-            _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync(group);
+            _mockGroupRepository.Setup(repo => repo.GetGroupById("1")).ReturnsAsync(group);
 
             // Act
             var result = await _controller.DeleteGroup("1");
@@ -149,7 +149,7 @@ namespace TestTicketAppWeb.Controllers
         public async Task DeleteGroup_ShouldReturnNotFound_WhenGroupDoesNotExist()
         {
             // Arrange
-            _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync((Group)null);
+            _mockGroupRepository.Setup(repo => repo.GetGroupById("1")).ReturnsAsync((Group)null);
 
             // Act
             var result = await _controller.DeleteGroup("1");
@@ -163,8 +163,8 @@ namespace TestTicketAppWeb.Controllers
         {
             // Arrange
             var group = new Group { Id = "1", GroupName = "Test Group" };
-            _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync(group);
-            _mockGroupRepository.Setup(repo => repo.DeleteGroupAsync(group)).Returns(Task.CompletedTask);
+            _mockGroupRepository.Setup(repo => repo.GetGroupById("1")).ReturnsAsync(group);
+            _mockGroupRepository.Setup(repo => repo.DeleteGroup(group)).Returns(Task.CompletedTask);
 
             // Act
             var result = await _controller.ConfirmDeleteGroup("1");
@@ -178,7 +178,7 @@ namespace TestTicketAppWeb.Controllers
         public async Task ConfirmDeleteGroup_ShouldReturnNotFound_WhenGroupDoesNotExist()
         {
             // Arrange
-            _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync((Group)null);
+            _mockGroupRepository.Setup(repo => repo.GetGroupById("1")).ReturnsAsync((Group)null);
 
             // Act
             var result = await _controller.ConfirmDeleteGroup("1");
@@ -192,8 +192,8 @@ namespace TestTicketAppWeb.Controllers
         {
             // Arrange
             var group = new Group { Id = "1", GroupName = "Test Group" };
-            _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync(group);
-            _mockGroupRepository.Setup(repo => repo.DeleteGroupAsync(It.IsAny<Group>()))
+            _mockGroupRepository.Setup(repo => repo.GetGroupById("1")).ReturnsAsync(group);
+            _mockGroupRepository.Setup(repo => repo.DeleteGroup(It.IsAny<Group>()))
                 .ThrowsAsync(new Exception("Database error"));
 
             // Act

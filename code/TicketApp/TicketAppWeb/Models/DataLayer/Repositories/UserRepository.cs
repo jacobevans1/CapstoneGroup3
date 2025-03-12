@@ -14,6 +14,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 	{
 		private readonly UserManager<TicketAppUser> _userManager;
 
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserRepository"/> class.
 		/// </summary>
@@ -24,6 +25,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			_userManager = userManager;
 		}
 
+
 		/// <summary>
 		/// Creates a new user and assigns them a specified role.
 		/// </summary>
@@ -31,7 +33,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <param name="roleName">The name of the role to assign to the user.</param>
 		public async Task CreateUser(TicketAppUser user, string roleName)
 		{
-			if (checkIfUserExists(user))
+			if (DoesUserExist(user))
 			{
 				throw new Exception("User already exists.");
 			}
@@ -54,6 +56,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			}
 		}
 
+
 		/// <summary>
 		/// Updates an existing user's details and their assigned role.
 		/// </summary>
@@ -61,7 +64,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <param name="roleName">The name of the new role to assign to the user.</param>
 		public async Task UpdateUser(TicketAppUser user, string roleName)
 		{
-			if (checkIfUserExists(user))
+			if (DoesUserExist(user))
 			{
 				var existingUser = await _userManager.FindByIdAsync(user.Id);
 
@@ -85,17 +88,16 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <summary>
 		/// Retrieves all roles from the database.
 		/// </summary>
-		/// <returns></returns>
-		public async Task<IEnumerable<IdentityRole>> GetRolesAsync()
+		public async Task<IEnumerable<IdentityRole>> GetDbRoles()
 		{
 			return await context.Roles.ToListAsync();
 		}
 
+
 		/// <summary>
 		/// Retrieves all users along with their assigned roles.
 		/// </summary>
-		/// <returns></returns>
-		public async Task<Dictionary<TicketAppUser, string>> GetUserRolesAsync()
+		public async Task<Dictionary<TicketAppUser, string>> GetUserRoles()
 		{
 			var users = context.Users.ToList();
 			var userRoleDictionary = new Dictionary<TicketAppUser, string>();
@@ -109,19 +111,66 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			return userRoleDictionary;
 		}
 
-		public async Task<IEnumerable<TicketAppUser>> GetAllUsersAsync()
+
+		/// <summary>
+		/// Retrieves all users from the database.
+		/// </summary>
+		public async Task<IEnumerable<TicketAppUser>> GetAllUsers()
 		{
 			return await context.Users.ToListAsync();
 		}
 
-		public async Task<TicketAppUser> GetAsync(string userId)
+
+		/// <summary>
+		/// Gets a user by their ID.
+		/// </summary>
+		public async Task<TicketAppUser> GetUserById(string userId)
 		{
 			return await context.Users.FindAsync(userId);
 		}
 
 
+		/// <summary>
+		/// Checks if a user is the manager of a specific group.
+		/// </summary>
+		public bool IsUserManagerOfGroup(TicketAppUser user, Group group)
+		{
+			var managerId = context.Groups.FirstOrDefault(g => g.Id == group.Id)?.ManagerId;
+			return managerId == user.Id;
+		}
 
-		private bool checkIfUserExists(TicketAppUser user)
+
+		/// <summary>
+		/// Checks if a user is the manager of multiple groups.
+		/// </summary>
+		public Task<IEnumerable<Group>> IsUserManagerOfMultipleGroups(TicketAppUser user)
+		{
+			var groups = context.Groups.Where(g => g.ManagerId == user.Id).ToList();
+			return Task.FromResult(groups.AsEnumerable());
+		}
+
+
+		/// <summary>
+		/// Checks if a user is the lead of a project.
+		/// </summary>
+		public bool IsUserLeadOfProject(TicketAppUser user, Project project)
+		{
+			var leadId = context.Projects.FirstOrDefault(p => p.Id == project.Id)?.LeadId;
+			return leadId == user.Id;
+		}
+
+
+		/// <summary>
+		/// Checks if a user is the lead of multiple projects.
+		/// </summary>
+		public Task<IEnumerable<Project>> IsUserLeadOfMultipleProjects(TicketAppUser user)
+		{
+			var projects = context.Projects.Where(p => p.LeadId == user.Id).ToList();
+			return Task.FromResult(projects.AsEnumerable());
+		}
+
+
+		private bool DoesUserExist(TicketAppUser user)
 		{
 			return context.Users.Any(u => u.UserName == user.UserName);
 		}

@@ -20,6 +20,7 @@ namespace TicketAppWeb.Controllers
 		private static string selectedUserId;
 		private static string selectedUsername;
 
+
 		/// <summary>
 		/// Initializes a new instance of the UserController class.
 		/// </summary>
@@ -29,6 +30,7 @@ namespace TicketAppWeb.Controllers
 			_singletonService = singletonService;
 			_usersRepository = usersRepository;
 		}
+
 
 		/// <summary>
 		/// Displays the user management index view.
@@ -46,6 +48,7 @@ namespace TicketAppWeb.Controllers
 			return View(viewModel);
 		}
 
+
 		/// <summary>
 		/// Displays the user creation view.
 		/// </summary>
@@ -54,6 +57,7 @@ namespace TicketAppWeb.Controllers
 		{
 			return View();
 		}
+
 
 		/// <summary>
 		/// Creates a new user.
@@ -85,6 +89,7 @@ namespace TicketAppWeb.Controllers
 			return RedirectToAction("Index", "User");
 		}
 
+
 		/// <summary>
 		/// Retrieves the user data for editing.
 		/// </summary>
@@ -109,11 +114,12 @@ namespace TicketAppWeb.Controllers
 				lastName = user.LastName,
 				email = user.Email,
 				phoneNumber = user.PhoneNumber,
-				roleId = _usersRepository.GetUserRolesAsync().Result[user]
+				roleId = _usersRepository.GetUserRoles().Result[user]
 			};
 
 			return Json(userData);
 		}
+
 
 		/// <summary>
 		/// Displays the user edit view.
@@ -146,6 +152,7 @@ namespace TicketAppWeb.Controllers
 			return RedirectToAction("Index", "User");
 		}
 
+
 		/// <summary>
 		/// Retrieves the user data for deletion.
 		/// </summary>
@@ -167,6 +174,7 @@ namespace TicketAppWeb.Controllers
 
 			return Json(userData);
 		}
+
 
 		/// <summary>
 		/// Deletes a user.
@@ -204,6 +212,7 @@ namespace TicketAppWeb.Controllers
 			return RedirectToAction("Index", "User");
 		}
 
+
 		/// <summary>
 		/// Filters the user grid by search term.
 		/// </summary>
@@ -214,6 +223,7 @@ namespace TicketAppWeb.Controllers
 			return RedirectToAction("Index", currentRoute.ToDictionary());
 		}
 
+
 		private void LoadIndexViewData(UserViewModel vm)
 		{
 			vm.Users = _usersRepository.List(new QueryOptions<TicketAppUser>
@@ -221,8 +231,8 @@ namespace TicketAppWeb.Controllers
 				OrderBy = u => u.LastName ?? string.Empty
 			});
 
-			vm.AvailableRoles = _usersRepository.GetRolesAsync().Result;
-			vm.UserRoles = _usersRepository.GetUserRolesAsync().Result;
+			vm.AvailableRoles = _usersRepository.GetDbRoles().Result;
+			vm.UserRoles = _usersRepository.GetUserRoles().Result;
 		}
 	}
 }
