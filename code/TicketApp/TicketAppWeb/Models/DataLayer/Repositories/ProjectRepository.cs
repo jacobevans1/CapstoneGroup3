@@ -403,4 +403,11 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
             .Include(r => r.Group)
             .ToListAsync();
     }
+
+    public async Task<List<Project>> GetProjectsByLeadAsync(string leadId)
+    {
+        return await context.Projects.Where(p => p.LeadId == leadId).ToListAsync();
+    }
+
+
 }

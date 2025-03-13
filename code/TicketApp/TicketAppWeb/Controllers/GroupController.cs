@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TicketAppWeb.Models.DataLayer.Reposetories;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
@@ -12,13 +13,16 @@ public class GroupController : Controller
 	private readonly SingletonService _singletonService;
 	private readonly IUserRepository _userRepository;
 	private readonly IGroupRepository _groupRepository;
+    private readonly IProjectRepository _projectRepository;
 
-	public GroupController(SingletonService singletonService, IUserRepository userRepository, IGroupRepository groupRepository)
+    public GroupController(SingletonService singletonService, IUserRepository userRepository, IGroupRepository groupRepository, IProjectRepository projectRepository)
 	{
 		_singletonService = singletonService;
 		_userRepository = userRepository;
 		_groupRepository = groupRepository;
-	}
+		_projectRepository = projectRepository;
+
+    }
 
 	[HttpGet]
 	public async Task<IActionResult> Index(string? groupName, string? groupLead)
@@ -137,33 +141,29 @@ public class GroupController : Controller
 			return NotFound();
 		}
 
-		// Update group details
 		group.GroupName = model.GroupName;
 		group.Description = model.Description;
 		group.ManagerId = model.GroupLeadId;
 
-		// Get current members of the group
 		var existingMemberIds = group.Members.Select(m => m.Id).ToList();
 
-		// Find members to **remove** (they are in the DB but not in the new selection)
 		var membersToRemove = existingMemberIds.Except(model.SelectedUserIds).ToList();
 		foreach (var userId in membersToRemove)
 		{
 			var user = group.Members.FirstOrDefault(m => m.Id == userId);
 			if (user != null)
 			{
-				group.Members.Remove(user); // Remove deselected members
+				group.Members.Remove(user); 
 			}
 		}
 
-		// Find members to **add** (they are newly selected but were not in the group before)
 		var membersToAdd = model.SelectedUserIds.Except(existingMemberIds).ToList();
 		foreach (var userId in membersToAdd)
 		{
 			var user = await _userRepository.GetAsync(userId);
 			if (user != null)
 			{
-				group.Members.Add(user); // Add newly selected members
+				group.Members.Add(user); 
 			}
 		}
 
@@ -178,54 +178,80 @@ public class GroupController : Controller
 
 
 
-	[HttpGet]
-	public async Task<IActionResult> DeleteGroup(string id)
-	{
-		if (string.IsNullOrEmpty(id))
-		{
-			return NotFound();
-		}
+    [HttpGet]
+    public async Task<IActionResult> DeleteGroup(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
 
-		var group = await _groupRepository.GetAsync(id);
-		if (group == null)
-		{
-			return NotFound();
-		}
+        var group = await _groupRepository.GetAsync(id);
+        if (group == null)
+        {
+            return NotFound();
+        }
 
-		return View(group);
-	}
+        var affectedProjects = await _projectRepository.GetProjectsByLeadAsync(group.ManagerId);
+        var managerName = group.Manager?.FullName ?? "Unknown";
 
-	[HttpPost]
-	public async Task<IActionResult> ConfirmDeleteGroup(string id)
-	{
-		if (string.IsNullOrEmpty(id))
-		{
-			return NotFound();
-		}
+        var model = new DeleteGroupViewModel
+        {
+            GroupId = group.Id,
+            GroupName = group.GroupName,
+            ManagerId = group.ManagerId,
+            ManagerName = managerName,
+            AffectedProjects = affectedProjects
+        };
 
-		var group = await _groupRepository.GetAsync(id);
-		if (group == null)
-		{
-			return NotFound();
-		}
+        if (affectedProjects.Any())
+        {
+            TempData["ErrorMessage"] = $"Cannot delete group '{group.GroupName}' because the manager: {managerName} is still assigned to the project(s): {string.Join(", ", affectedProjects.Select(p => p.ProjectName))}. Please reassign project leads before deleting.";
+            return RedirectToAction("Index");  
+        }
 
-		try
-		{
-			await _groupRepository.DeleteGroupAsync(group);
+        return View(model);
+    }
 
-			TempData["SuccessMessage"] = $"Group '{group.GroupName}' deleted successfully!";
 
-			return RedirectToAction("Index");
-		}
-		catch (Exception ex)
-		{
-			ModelState.AddModelError("", "Error deleting group: " + ex.Message);
 
-			TempData["ErrorMessage"] = $"Error deleting group: {ex.Message}";
+    [HttpPost]
+    public async Task<IActionResult> ConfirmDeleteGroup(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
 
-			return View("DeleteGroup", group);
-		}
-	}
+        var group = await _groupRepository.GetAsync(id);
+        if (group == null)
+        {
+            return NotFound();
+        }
+
+        var affectedProjects = await _projectRepository.GetProjectsByLeadAsync(group.ManagerId);
+        var managerName = group.Manager?.FullName ?? "Unknown";
+
+        if (affectedProjects.Any())
+        {
+            TempData["ErrorMessage"] = $"Cannot delete group '{group.GroupName}' because the manager: {managerName} is still assigned to projects: {string.Join(", ", affectedProjects.Select(p => p.ProjectName))}. Please reassign project leads before deleting.";
+            return RedirectToAction("Index");
+        }
+
+        try
+        {
+            await _groupRepository.DeleteGroupAsync(group);
+            TempData["SuccessMessage"] = $"Group '{group.GroupName}' deleted successfully!";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error deleting group: {ex.Message}";
+            return View("DeleteGroup", group);
+        }
+    }
+
+
 
 
 

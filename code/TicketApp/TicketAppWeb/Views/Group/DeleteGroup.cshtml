@@ -1,4 +1,4 @@
-﻿@model Group
+﻿@model DeleteGroupViewModel
 @{
     ViewData["Title"] = "Delete Group";
 }
@@ -10,22 +10,40 @@
     <div class="card shadow-lg p-5" style="width: 500px;">
         <div class="card-body text-center">
             <h5 class="card-title text-danger">Delete Group</h5>
-            <p class="card-text">
-                Are you sure you want to delete the group: <strong>@Model.GroupName</strong>?
-                This action can't be undone.
-            </p>
-            <form asp-action="ConfirmDeleteGroup" asp-route-id="@Model.Id" method="post">
-                <div class="row justify-content-center">
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                    </div>
-                    <div class="col-auto">
-                        <div style="width: 150px">
-                            <a asp-action="Index" asp-controller="Group" class="btn btn-secondary" style="width: 100%">Cancel</a>
+
+            @if (Model.AffectedProjects.Any())
+            {
+                <div class="alert alert-warning">
+                    <strong>Warning:</strong> The manager of this group is still assigned as the project lead for the following projects:
+                    <ul class="list-unstyled">
+                        @foreach (var project in Model.AffectedProjects)
+                        {
+                            <li>📌 @project.ProjectName</li>
+                        }
+                    </ul>
+                    <p>Please reassign project leads before deleting this group.</p>
+                    <a asp-action="Index" class="btn btn-secondary">Go Back</a>
+                </div>
+            }
+            else
+            {
+                <p class="card-text">
+                    Are you sure you want to delete the group: <strong>@Model.GroupName</strong>?
+                    This action <strong>cannot</strong> be undone.
+                </p>
+                <form asp-action="ConfirmDeleteGroup" asp-route-id="@Model.GroupId" method="post">
+                    <div class="row justify-content-center">
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                        </div>
+                        <div class="col-auto">
+                            <div style="width: 150px">
+                             <a asp-action="Index" asp-controller="Group" class="btn btn-secondary" style="width: 100%">Cancel</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            }
         </div>
     </div>
 </div>

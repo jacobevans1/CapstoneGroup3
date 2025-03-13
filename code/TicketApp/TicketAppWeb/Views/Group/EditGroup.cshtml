@@ -113,6 +113,7 @@
             const availableUsers = document.getElementById("availableUsers");
             const selectedUsers = document.getElementById("selectedUsers");
             const groupLeadSelect = document.getElementById("groupLead");
+            const form = document.querySelector(".styled-form"); 
 
             document.getElementById("addUsersBtn").addEventListener("click", function () {
                 moveSelectedUsers(availableUsers, selectedUsers, true);
@@ -126,15 +127,15 @@
                 const selectedItems = sourceList.querySelectorAll("input:checked");
                 selectedItems.forEach(item => {
                     let listItem = item.closest("li");
-                    item.checked = false; // Reset checked state in new list
+                    item.checked = false; 
 
                     if (isAdding) {
                         item.classList.add("assigned-user-checkbox");
                         item.name = "SelectedUserIds";
-                        item.checked = true; // Ensure it's marked as selected for form submission
+                        item.checked = true; 
                     } else {
                         item.classList.remove("assigned-user-checkbox");
-                        item.removeAttribute("name"); // Remove from submission
+                        item.removeAttribute("name"); 
                     }
 
                     targetList.appendChild(listItem);
@@ -173,6 +174,13 @@
             });
 
             updateGroupLeads();
+
+            form.addEventListener("submit", function () {
+                document.querySelectorAll(".assigned-user-checkbox").forEach(input => {
+                    input.checked = true; 
+                });
+            });
         });
+
     </script>
 }
