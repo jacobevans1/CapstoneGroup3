@@ -17,12 +17,14 @@ namespace TestTicketAppWeb.Controllers;
 public class TestHomeController
 {
     private readonly Mock<IProjectRepository> _mockProjectRepository;
+    private readonly Mock<IGroupRepository> _mockGroupRepository;
     private readonly HomeController _controller;
 
     public TestHomeController()
     {
         _mockProjectRepository = new Mock<IProjectRepository>();
-        _controller = new HomeController(_mockProjectRepository.Object);
+        _mockGroupRepository = new Mock<IGroupRepository>();
+        _controller = new HomeController(_mockProjectRepository.Object, _mockGroupRepository.Object);
 
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
@@ -59,7 +61,7 @@ public class TestHomeController
     public async Task GetPendingApprovalsViewModel_UserIdIsNull_ShouldReturnEmptyPendingRequests()
     {
         // Arrange
-        var controller = new HomeController(_mockProjectRepository.Object);
+        var controller = new HomeController(_mockProjectRepository.Object, _mockGroupRepository.Object);
         controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity()) }

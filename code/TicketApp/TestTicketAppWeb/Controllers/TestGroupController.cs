@@ -19,12 +19,14 @@ namespace TestTicketAppWeb.Controllers
         private readonly Mock<IUserRepository> _mockUserRepository;
         private readonly Mock<IGroupRepository> _mockGroupRepository;
         private readonly Mock<SingletonService> _mockSingletonService;
+        private readonly Mock<IProjectRepository> _mockProjectRepository;
         private readonly GroupController _controller;
 
         public TestGroupController()
         {
             _mockUserRepository = new Mock<IUserRepository>();
             _mockGroupRepository = new Mock<IGroupRepository>();
+            _mockProjectRepository = new Mock<IProjectRepository>();
 
             var singletonService = new SingletonService
             {
@@ -33,9 +35,10 @@ namespace TestTicketAppWeb.Controllers
             };
 
             _controller = new GroupController(
-                singletonService,  
+                singletonService,
                 _mockUserRepository.Object,
-                _mockGroupRepository.Object
+                _mockGroupRepository.Object,
+                _mockProjectRepository.Object
             );
 
             _controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
