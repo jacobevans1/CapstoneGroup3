@@ -13,6 +13,28 @@
 <link href="~/css/projectmanagement.css" rel="stylesheet" />
 
 <div class="container mt-4">
+    <div class="col-md-12">
+        <!-- TempData variables -->
+        @{
+            var successMessage = TempData["SuccessMessage"] as string;
+            var errorMessage = TempData["ErrorMessage"] as string;
+        }
+
+        <!-- Display success messages if any -->
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success">
+                @successMessage
+            </div>
+        }
+
+        <!-- Display error messages if any -->
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">
+                @errorMessage
+            </div>
+        }
     <div class="row">
         <div class="col-md-12">
             <h2 class="text-center">Dashboard</h2>
@@ -36,8 +58,16 @@
                                 Group: <strong>@request.Group!.GroupName</strong>
                             </p>
                             <div class="d-flex justify-content-center gap-3">
-                                <button class="btn btn-success approve-btn" data-project-id="@request.ProjectId" data-group-id="@request.GroupId">Approve</button>
-                                <button class="btn btn-danger reject-btn" data-project-id="@request.ProjectId" data-group-id="@request.GroupId">Reject</button>
+                                <form method="post" action="@Url.Action("ApproveGroupForProject", "Home")">
+                                    <input type="hidden" name="projectId" value="@request.ProjectId" />
+                                    <input type="hidden" name="groupId" value="@request.GroupId" />
+                                    <button type="submit" class="btn btn-success">Approve</button>
+                                </form>
+                                <form method="post" action="@Url.Action("RejectGroupForProject", "Home")">
+                                    <input type="hidden" name="projectId" value="@request.ProjectId" />
+                                    <input type="hidden" name="groupId" value="@request.GroupId" />
+                                    <button type="submit" class="btn btn-danger">Reject</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -56,49 +86,3 @@
         </div>
     </div>
 </div>
-
-@section scripts {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            function handleApproval(action, projectId, groupId) {
-                fetch(`/Home/${action}GroupForProject?projectId=${projectId}&groupId=${groupId}`, {
-                    method: "POST"
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            updateApprovals();
-                        } else {
-                            alert("Error processing request.");
-                        }
-                    })
-                    .catch(error => console.error("Error:", error));
-            }
-
-            function updateApprovals() {
-                fetch("/Home/GetPendingApprovals")
-                    .then(response => response.text())
-                    .then(html => {
-                        document.getElementById("approvalContainer").innerHTML = html;
-                        attachEventListeners();
-                    });
-            }
-
-            function attachEventListeners() {
-                document.querySelectorAll(".approve-btn").forEach(btn => {
-                    btn.addEventListener("click", function () {
-                        handleApproval("Approve", this.dataset.projectId, this.dataset.groupId);
-                    });
-                });
-
-                document.querySelectorAll(".reject-btn").forEach(btn => {
-                    btn.addEventListener("click", function () {
-                        handleApproval("Reject", this.dataset.projectId, this.dataset.groupId);
-                    });
-                });
-            }
-
-            attachEventListeners();
-        });
-    </script>
-}

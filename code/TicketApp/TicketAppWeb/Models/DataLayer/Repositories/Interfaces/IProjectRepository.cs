@@ -79,5 +79,4 @@ public interface IProjectRepository : IRepository<Project>
     Task<List<GroupApprovalRequest>> GetPendingGroupApprovalRequestsAsync(string projectId);
 
     Task<List<Project>> GetProjectsByLeadAsync(string leadId);
-
 }

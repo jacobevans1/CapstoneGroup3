@@ -110,7 +110,7 @@
 							<td>
 								<div class="d-flex justify-content-center gap-2">
 
-									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject(project) || Model.IsCurrentUserAGroupManagerInProject(project))
+									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject(project))
 									{
 										<div class="col-auto" style="width: 150px;">
 											<a type="button" asp-action="EditProject" asp-route-id="@project.Id" class="btn btn-warning" style="width: 100%;">Edit</a>
