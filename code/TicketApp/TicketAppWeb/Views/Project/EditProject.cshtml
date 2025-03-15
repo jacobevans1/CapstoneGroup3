@@ -1,4 +1,9 @@
-﻿@model ProjectViewModel
+﻿@*
+    The edit project functionality
+    Jabesi Abwe
+    03/?/2025
+*@
+@model ProjectViewModel
 @{
     ViewData["Title"] = "Edit Project";
 }
@@ -19,7 +24,14 @@
         </div>
     </div>
 
-    <form asp-action="EditProject" method="post" class="styled-form">
+    @if (Model.LeadChangeRequired)
+    {
+        <div class="alert alert-warning">
+            <strong>Action Required:</strong> You must select a new project lead before proceeding.
+        </div>
+    }
+
+    <form asp-action="EditProject" method="post" class="styled-form" id="projectForm">
         <input type="hidden" name="id" value="@ViewContext.RouteData.Values["id"]" />
 
         <div class="form-group">
@@ -90,8 +102,9 @@
             <input type="hidden" id="hiddenProjectLeadId" name="ProjectLeadId" value="@Model.ProjectLeadId" />
             <span asp-validation-for="ProjectLeadId" class="text-danger"></span>
         </div>
-        <br />
+        <input type="hidden" id="LeadChangeRequired" name="LeadChangeRequired" value="@Model.LeadChangeRequired.ToString().ToLower()" />
 
+        <br />
         <div class="row justify-content-center">
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary">Update Project</button>
@@ -124,15 +137,15 @@
                 const selectedItems = sourceList.querySelectorAll("input:checked");
                 selectedItems.forEach(item => {
                     let listItem = item.closest("li");
-                    item.checked = false; // Reset checked state in new list
+                    item.checked = false;
 
                     if (isAdding) {
                         item.classList.add("assigned-group-checkbox");
                         item.name = "SelectedGroupIds";
-                        item.checked = true; // Ensure it's marked as selected for form submission
+                        item.checked = true;
                     } else {
                         item.classList.remove("assigned-group-checkbox");
-                        item.removeAttribute("name"); // Remove from submission
+                        item.removeAttribute("name");
                     }
 
                     targetList.appendChild(listItem);
@@ -174,6 +187,31 @@
             });
 
             updateProjectLeads();
+
+            document.querySelector("form").addEventListener("submit", function (e) {
+                const projectLeadId = document.getElementById("projectLead").value;
+                const hiddenLeadId = document.getElementById("hiddenProjectLeadId").value;
+
+                if (projectLeadId !== hiddenLeadId) {
+                    document.getElementById("LeadChangeRequired").value = "true";
+                }
+            });
+
+            document.getElementById("projectForm").addEventListener("submit", function () {
+                document.querySelectorAll("#assignedGroups li").forEach(li => {
+                    let checkbox = li.querySelector("input[type='checkbox']");
+                    if (!checkbox) return;
+
+                    if (!checkbox.checked) {
+                        let hiddenInput = document.createElement("input");
+                        hiddenInput.type = "hidden";
+                        hiddenInput.name = "SelectedGroupIds";
+                        hiddenInput.value = checkbox.value;
+                        this.appendChild(hiddenInput);
+                    }
+                });
+            });
+
         });
     </script>
 }

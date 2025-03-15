@@ -96,7 +96,7 @@ public class ProjectController : Controller
 	/// Gets the project to edit by Id of the project.
 	/// </summary>
 	[HttpGet]
-	public async Task<IActionResult> EditProject(string id)
+	public async Task<IActionResult> EditProject(string id, bool? leadChangeRequired = null)
 	{
 		var project = await _projectRepository.GetProjectByIdAsync(id);
 		if (project == null)
@@ -111,54 +111,65 @@ public class ProjectController : Controller
 			ProjectLeadId = project.LeadId,
 			SelectedGroupIds = project.Groups.Select(g => g.Id).ToList(),
 			AvailableGroups = await _projectRepository.GetAvailableGroupsAsync(),
-			AssignedGroups = project.Groups.ToList()
-		};
+			AssignedGroups = project.Groups.ToList(),
+			LeadChangeRequired = leadChangeRequired ?? false
+
+        };
 
 		return View(model);
 	}
 
-	/// <summary>
-	/// Edits the project.
-	/// </summary>
-	[HttpPost]
-	public async Task<IActionResult> EditProject(ProjectViewModel model, string id)
-	{
-		if (!ModelState.IsValid)
-		{
-			model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
-			return View(model);
-		}
+    /// <summary>
+    /// Edits the project.
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> EditProject(ProjectViewModel model, string id)
+    {
+        if (!ModelState.IsValid)
+        {
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View(model);
+        }
 
-		var project = await _projectRepository.GetProjectByIdAsync(id);
-		if (project == null)
-		{
-			return NotFound();
-		}
+        var project = await _projectRepository.GetProjectByIdAsync(id);
+        if (project == null)
+        {
+            return NotFound();
+        }
 
-		project.ProjectName = model.ProjectName;
-		project.Description = model.Description;
-		project.LeadId = model.ProjectLeadId;
+        project.ProjectName = model.ProjectName;
+        project.Description = model.Description;
+        project.LeadId = model.ProjectLeadId;
 
-		var isAdmin = User.IsInRole("Admin");
+        var isAdmin = User.IsInRole("Admin");
 
-		try
-		{
-			await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds, isAdmin);
-			TempData["SuccessMessage"] = $"Project {project.ProjectName} updated successfully";
-			return RedirectToAction("Index");
-		}
-		catch (Exception ex)
-		{
-			ModelState.AddModelError("", ex.Message);
-			model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
-			return View(model);
-		}
-	}
+        try
+        {
 
-	/// <summary>
-	/// Gets the projet to be deleted by Id.
-	/// </summary>
-	[HttpGet]
+            if (model.LeadChangeRequired)
+            {
+                await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds, isAdmin);
+                TempData["SuccessMessage"] = $"Project Lead updated successfully. Proced with The privous action ";
+                return RedirectToAction("Index", "Home");
+            }
+            await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds, isAdmin);
+            TempData["SuccessMessage"] = $"Project {project.ProjectName} updated successfully.";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+			TempData["ErrorMessage"] += $"Unable to update project beacuse of " + ex.Message;
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View(model);
+        }
+    }
+
+
+    /// <summary>
+    /// Gets the projet to be deleted by Id.
+    /// </summary>
+    [HttpGet]
 	public async Task<IActionResult> DeleteProject(string id)
 	{
 		var project = await _projectRepository.GetProjectByIdAsync(id);

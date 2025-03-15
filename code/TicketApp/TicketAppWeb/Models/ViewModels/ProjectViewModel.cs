@@ -108,10 +108,18 @@ public class ProjectViewModel
 	/// </summary>
 	public readonly int[] PageSizes = { 5, 10, 20, 50 };
 
-	/// <summary>
-	/// Gets or sets the size of the selected page.
-	/// </summary>
-	public int SelectedPageSize { get; set; } = 10;
+    /// <summary>
+    /// Gets or sets a value indicating whether [lead change required].
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if [lead change required]; otherwise, <c>false</c>.
+    /// </value>
+    public bool LeadChangeRequired { get; set; }
+
+    /// <summary>
+    /// Gets or sets the size of the selected page.
+    /// </summary>
+    public int SelectedPageSize { get; set; } = 10;
 
 	/// <summary>
 	/// Checks if the current user is the project lead for the project.
