@@ -1,4 +1,9 @@
-﻿@model ProjectViewModel
+﻿@*
+    The add project functionality UI
+    Jabesi Abwe
+    03/?/2025
+*@
+@model ProjectViewModel
 @{
     ViewData["Title"] = "Add New Project";
 }
@@ -19,7 +24,7 @@
         </div>
     </div>
 
-    <form asp-action="CreateProject" method="post" class="styled-form">
+    <form asp-action="CreateProject" method="post" class="styled-form" id="projectForm">
         <div class="form-group">
             <label asp-for="ProjectName" class="form-label">Project Name <span class="text-danger">*</span></label>
             <input asp-for="ProjectName" class="form-control" />
@@ -97,7 +102,7 @@
             const availableGroups = document.getElementById("availableGroups");
             const assignedGroups = document.getElementById("assignedGroups");
             const projectLeadSelect = document.getElementById("projectLead");
-            let previousLeadId = document.getElementById("hiddenProjectLeadId").value; // Store the previous lead ID
+            let previousLeadId = document.getElementById("hiddenProjectLeadId").value;
 
             document.getElementById("addGroupsBtn").addEventListener("click", function () {
                 moveSelectedGroups(availableGroups, assignedGroups, true);
@@ -111,15 +116,15 @@
                 const selectedItems = sourceList.querySelectorAll("input:checked");
                 selectedItems.forEach(item => {
                     let listItem = item.closest("li");
-                    item.checked = false; // Reset checked state in new list
+                    item.checked = false;
 
                     if (isAdding) {
                         item.classList.add("assigned-group-checkbox");
                         item.name = "SelectedGroupIds";
-                        item.checked = true; // Ensure it's marked as selected for form submission
+                        item.checked = true;
                     } else {
                         item.classList.remove("assigned-group-checkbox");
-                        item.removeAttribute("name"); // Remove from submission
+                        item.removeAttribute("name");
                     }
 
                     targetList.appendChild(listItem);
@@ -151,7 +156,6 @@
                             projectLeadSelect.appendChild(option);
                         });
 
-                        // Set the previously selected lead as the selected option
                         if (previousLeadId) {
                             let selectedOption = projectLeadSelect.querySelector(`option[value='${previousLeadId}']`);
                             if (selectedOption) {
@@ -168,6 +172,21 @@
             });
 
             updateProjectLeads();
+
+            document.getElementById("projectForm").addEventListener("submit", function () {
+                document.querySelectorAll("#assignedGroups li").forEach(li => {
+                    let checkbox = li.querySelector("input[type='checkbox']");
+                    if (!checkbox) return;
+
+                    if (!checkbox.checked) {
+                        let hiddenInput = document.createElement("input");
+                        hiddenInput.type = "hidden";
+                        hiddenInput.name = "SelectedGroupIds";
+                        hiddenInput.value = checkbox.value;
+                        this.appendChild(hiddenInput);
+                    }
+                });
+            });
         });
     </script>
 }
