@@ -80,7 +80,10 @@
 					@foreach (var project in Model.FilteredProjects)
 					{
 						<tr>
-							<td>@project.ProjectName</td>
+							 <a href="@Url.Action("Index", "Board")" class="badge bg-info text-dark text-decoration-none me-1 d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+								 @project.ProjectName
+							 </a>
+
 							<td>
 								@foreach (var group in Model.ProjectGroups[project])
 								{
@@ -88,9 +91,9 @@
 									@* 	@group.GroupName *@
 									@* </a> *@
 
-										<span class="badge bg-info text-dark text-decoration-none me-1 d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-											@group.GroupName
-										</span>
+									<span class="badge bg-info text-dark text-decoration-none me-1 d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+										@group.GroupName
+									</span>
 								}
 							</td>
 							<td>
