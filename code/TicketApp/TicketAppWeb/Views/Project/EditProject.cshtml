@@ -1,4 +1,9 @@
-﻿@model ProjectViewModel
+﻿@*
+    The edit project functionality
+    Jabesi Abwe
+    03/?/2025
+*@
+@model ProjectViewModel
 @{
     ViewData["Title"] = "Edit Project";
 }
@@ -26,7 +31,7 @@
         </div>
     }
 
-    <form asp-action="EditProject" method="post" class="styled-form">
+    <form asp-action="EditProject" method="post" class="styled-form" id="projectForm">
         <input type="hidden" name="id" value="@ViewContext.RouteData.Values["id"]" />
 
         <div class="form-group">
@@ -190,6 +195,21 @@
                 if (projectLeadId !== hiddenLeadId) {
                     document.getElementById("LeadChangeRequired").value = "true";
                 }
+            });
+
+            document.getElementById("projectForm").addEventListener("submit", function () {
+                document.querySelectorAll("#assignedGroups li").forEach(li => {
+                    let checkbox = li.querySelector("input[type='checkbox']");
+                    if (!checkbox) return;
+
+                    if (!checkbox.checked) {
+                        let hiddenInput = document.createElement("input");
+                        hiddenInput.type = "hidden";
+                        hiddenInput.name = "SelectedGroupIds";
+                        hiddenInput.value = checkbox.value;
+                        this.appendChild(hiddenInput);
+                    }
+                });
             });
 
         });
