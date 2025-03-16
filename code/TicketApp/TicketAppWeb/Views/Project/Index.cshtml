@@ -81,7 +81,7 @@
 					{
 						<tr>
 							<td>
-								<a href="@Url.Action("Index", "Board")" class="text-dark text-decoration-none me-1 d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+								<a href="@Url.Action("Index", "Board", new { projectId = project.Id })" class="text-dark text-decoration-none me-1 d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 									@project.ProjectName
 								</a>
 							</td>

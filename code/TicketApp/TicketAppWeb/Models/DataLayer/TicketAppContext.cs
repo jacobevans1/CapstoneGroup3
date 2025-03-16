@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.DomainModels;
+using TicketAppWeb.Models.DomainModels.MiddleTableModels;
 
 // Capstone Group 3
 // Spring 2025
@@ -52,6 +53,26 @@ namespace TicketAppWeb.Models.DataLayer
 		/// Gets or sets the DbSet representing the Tickets table in the database.
 		/// </summary>
 		public DbSet<Ticket> Tickets { get; set; }
+
+		/// <summary>
+		/// Gets or sets the DbSet representing the TicketComments table in the database.
+		/// </summary>
+		public DbSet<Status> Statuses { get; set; }
+
+		///// <summary>
+		///// Gets or sets the DbSet representing the ProjectBoards table in the database.
+		///// </summary>
+		//public DbSet<ProjectBoard> ProjectBoards { get; set; }
+
+		///// <summary>
+		///// Gets or sets the DbSet representing the TicketAssignees table in the database.
+		///// </summary>
+		//public DbSet<TicketAssignee> TicketAssignees { get; set; }
+
+		///// <summary>
+		///// Gets or sets the DbSet representing the BoardStatus table in the database.
+		///// </summary>
+		//public DbSet<BoardStatus> BoardStatus { get; set; }
 
 		/// <summary>
 		/// Configures the model for the context.

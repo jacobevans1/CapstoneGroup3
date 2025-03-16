@@ -2,6 +2,7 @@
 using TicketAppWeb.Models.DataLayer.Repositories;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
+using TicketAppWeb.Models.DomainModels.MiddleTableModels;
 namespace TicketAppWeb.Models.DataLayer.Reposetories;
 
 /// <summary>

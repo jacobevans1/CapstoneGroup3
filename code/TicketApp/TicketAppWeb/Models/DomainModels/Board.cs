@@ -21,5 +21,15 @@ namespace TicketAppWeb.Models.DomainModels
 		/// Gets or sets the description of the board.
 		/// </summary>
 		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or sets the list of statuses associated with the board.
+		/// </summary>
+		public List<Status> Statuses { get; set; }
+
+		/// <summary>
+		/// Gets or sets the list of tickets associated with the board.
+		/// </summary>
+		public List<Ticket> Tickets { get; set; }
 	}
 }
