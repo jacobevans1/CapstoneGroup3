@@ -59,20 +59,20 @@ namespace TicketAppWeb.Models.DataLayer
 		/// </summary>
 		public DbSet<Status> Statuses { get; set; }
 
-		///// <summary>
-		///// Gets or sets the DbSet representing the ProjectBoards table in the database.
-		///// </summary>
-		//public DbSet<ProjectBoard> ProjectBoards { get; set; }
+		/// <summary>
+		/// Gets or sets the DbSet representing the ProjectBoards table in the database.
+		/// </summary>
+		public DbSet<ProjectBoard> ProjectBoards { get; set; }
 
-		///// <summary>
-		///// Gets or sets the DbSet representing the TicketAssignees table in the database.
-		///// </summary>
-		//public DbSet<TicketAssignee> TicketAssignees { get; set; }
+		/// <summary>
+		/// Gets or sets the DbSet representing the TicketAssignees table in the database.
+		/// </summary>
+		public DbSet<TicketAssignee> TicketAssignees { get; set; }
 
-		///// <summary>
-		///// Gets or sets the DbSet representing the BoardStatus table in the database.
-		///// </summary>
-		//public DbSet<BoardStatus> BoardStatus { get; set; }
+		/// <summary>
+		/// Gets or sets the DbSet representing the BoardStatus table in the database.
+		/// </summary>
+		public DbSet<BoardStatus> BoardStatus { get; set; }
 
 		/// <summary>
 		/// Configures the model for the context.
@@ -103,6 +103,62 @@ namespace TicketAppWeb.Models.DataLayer
 				.WithMany()
 				.HasForeignKey(g => g.ManagerId)
 				.OnDelete(DeleteBehavior.Restrict);
+
+
+
+
+			// BoardStatus Configuration
+			modelBuilder.Entity<BoardStatus>()
+				.HasKey(bs => new { bs.BoardId, bs.StatusId });
+
+			modelBuilder.Entity<BoardStatus>()
+				.HasOne(bs => bs.Board)
+				.WithMany()
+				.HasForeignKey(bs => bs.BoardId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<BoardStatus>()
+				.HasOne(bs => bs.Status)
+				.WithMany()
+				.HasForeignKey(bs => bs.StatusId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+			// TicketAssignee Configuration
+			modelBuilder.Entity<TicketAssignee>()
+				.HasKey(ta => new { ta.TicketId, ta.UserId });
+
+			modelBuilder.Entity<TicketAssignee>()
+				.HasOne(ta => ta.Ticket)
+				.WithMany()
+				.HasForeignKey(ta => ta.TicketId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<TicketAssignee>()
+				.HasOne(u => u.User)
+				.WithMany()
+				.HasForeignKey(u => u.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+
+
+			// ProjectBoard Configuration
+			modelBuilder.Entity<ProjectBoard>()
+				.HasKey(pb => new { pb.ProjectId, pb.BoardId });
+
+			modelBuilder.Entity<ProjectBoard>()
+				.HasOne(pb => pb.Project)
+				.WithMany()
+				.HasForeignKey(bs => bs.ProjectId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<ProjectBoard>()
+				.HasOne(bs => bs.Board)
+				.WithMany()
+				.HasForeignKey(bs => bs.BoardId)
+				.OnDelete(DeleteBehavior.Cascade);
 		}
 
 

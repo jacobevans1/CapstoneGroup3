@@ -18,6 +18,36 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		{
 		}
 
+		/// <summary>
+		/// Adds a new board for the specified project.
+		/// </summary>
+		/// <param name="project"></param>
+		public void AddBoard(Project project)
+		{
+			var board = createBoard(project);
+			Insert(board);
+			Save();
+		}
 
+		/// <summary>
+		/// Deletes a board for the specified project.
+		/// </summary>
+		/// <param name="project"></param>
+		//public void DeleteBoard(Project project)
+		//{
+		//	var board = context.ProjectBoards.
+		//	Insert(board);
+		//	Save();
+		//}
+
+		private Board createBoard(Project project)
+		{
+			var board = new Board();
+
+			board.Id = Guid.NewGuid().ToString();
+			board.BoardName = $"{project.ProjectName} Board";
+
+			return board;
+		}
 	}
 }

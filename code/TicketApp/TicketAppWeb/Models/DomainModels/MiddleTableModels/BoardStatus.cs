@@ -4,5 +4,8 @@
 	{
 		public string BoardId { get; set; }
 		public string StatusId { get; set; }
+
+		public Board Board { get; set; }
+		public Status Status { get; set; }
 	}
 }

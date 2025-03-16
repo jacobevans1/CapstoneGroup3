@@ -9,6 +9,10 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 	/// </summary>
 	public interface IBoardRepository : IRepository<Board>
 	{
-
+		/// <summary>
+		///	Adds a new board for the specified project.
+		/// </summary>
+		/// <param name="project"></param>
+		void AddBoard(Project project);
 	}
 }

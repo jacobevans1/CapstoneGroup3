@@ -2,7 +2,10 @@
 {
 	public class TicketAssignee
 	{
-		public int TicketId { get; set; }
+		public string TicketId { get; set; }
 		public string UserId { get; set; }
+
+		public Ticket Ticket { get; set; }
+		public TicketAppUser User { get; set; }
 	}
 }
