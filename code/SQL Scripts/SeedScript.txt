@@ -15,7 +15,7 @@ INSERT INTO [dbo].[AspNetUsers] ([Id], [FirstName], [LastName], [UserName], [Nor
 INSERT INTO [dbo].[AspNetUsers] ([Id], [FirstName], [LastName], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount], [GroupId]) VALUES (N'e603ca5e-848c-4413-a442-ee16b541bbcf', N'Ozzie', N'Albies', N'OzzieAlbies', N'OZZIEALBIES', N'ozzie.albies@domain.com', N'OZZIE.ALBIES@DOMAIN.COM', 1, N'AQAAAAIAAYagAAAAECnte6d77Yae7DMuZeCp2yjm9Z/QzfkwoBb6ZOl/4tk5QxBPVmI69EJ0WxMFVUOqCg==', N'S2YDKJLNV7RGTH23VI75L6OPROL3DTTO', N'5cf9c28a-5e15-4f43-9680-2e1fb187d99f', NULL, 0, 0, NULL, 1, 0, NULL)
 
 INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'27ca1bde-3baf-40cf-a040-51f240e9b675', N'User', N'USER', NULL)
-INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'626a5fd6-2a9f-4c43-86b6-9ea967f2e97f', N'Admin', N'ADMIN', NULL))
+INSERT INTO [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'626a5fd6-2a9f-4c43-86b6-9ea967f2e97f', N'Admin', N'ADMIN', NULL)
 
 INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'50dd14fa-af13-440b-8e5e-dcde6877ec9b', N'27ca1bde-3baf-40cf-a040-51f240e9b675')
 INSERT INTO [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'67bfc97d-1bf1-4319-9a05-2971a8d0917c', N'27ca1bde-3baf-40cf-a040-51f240e9b675')
@@ -38,3 +38,13 @@ INSERT INTO [dbo].[Projects] ([Id], [ProjectName], [Description], [LeadId], [Cre
 
 INSERT INTO [dbo].[GroupProject] ([ProjectsId], [GroupsId]) VALUES (N'7c49a8d5-9e1c-4f91-8df4-2a0aafbfc6e8', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3')
 INSERT INTO [dbo].[GroupProject] ([ProjectsId], [GroupsId]) VALUES (N'7c49a8d5-9e1c-4f91-8df4-2a0aafbfc6e8', N'a15d2e37-5b66-4034-8a9a-71b5b6f6a9df')
+
+INSERT INTO [dbo].[Boards] ([Id], [BoardName], [Description]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'National League Board', N'The National League Project Board')
+
+INSERT INTO [dbo].[Statuses] ([Id], [Name]) VALUES (N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'Todo')
+INSERT INTO [dbo].[Statuses] ([Id], [Name]) VALUES (N'8409c38a-5fab-4283-8957-1c5888d7716d', N'In Progress')
+INSERT INTO [dbo].[Statuses] ([Id], [Name]) VALUES (N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'Done')
+
+INSERT INTO [dbo].[BoardStatuses] ([BoardId], [StatusId]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'5de8ea48-a734-4b97-bc39-18070e4e25a9')
+INSERT INTO [dbo].[BoardStatuses] ([BoardId], [StatusId]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'8409c38a-5fab-4283-8957-1c5888d7716d')
+INSERT INTO [dbo].[BoardStatuses] ([BoardId], [StatusId]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390')

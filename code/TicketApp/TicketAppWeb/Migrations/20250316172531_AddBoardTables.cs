@@ -103,15 +103,33 @@ namespace TicketAppWeb.Migrations
 				{
 					Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
 					Name = table.Column<string>(type: "nvarchar(50)", nullable: false),
-					BoardId = table.Column<string>(type: "nvarchar(450)", nullable: false)
 				},
 				constraints: table =>
 				{
 					table.PrimaryKey("PK_Statuses", x => x.Id);
+				});
+
+			// Create BoardStatuses Table
+			migrationBuilder.CreateTable(
+				name: "BoardStatuses",
+				columns: table => new
+				{
+					BoardId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+					StatusId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+				},
+				constraints: table =>
+				{
+					table.PrimaryKey("PK_BoardStatuses", x => new { x.BoardId, x.StatusId });
 					table.ForeignKey(
-						name: "FK_Statuses_Boards",
+						name: "FK_BoardStatuses_Boards",
 						column: x => x.BoardId,
 						principalTable: "Boards",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Cascade);
+					table.ForeignKey(
+						name: "FK_BoardStatuses_Statuses",
+						column: x => x.StatusId,
+						principalTable: "Statuses",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Cascade);
 				});
@@ -131,16 +149,12 @@ namespace TicketAppWeb.Migrations
 				name: "IX_TicketAssignees_UserId",
 				table: "TicketAssignees",
 				column: "UserId");
-
-			migrationBuilder.CreateIndex(
-				name: "IX_Statuses_BoardId",
-				table: "Statuses",
-				column: "BoardId");
 		}
 
 		/// <inheritdoc />
 		protected override void Down(MigrationBuilder migrationBuilder)
 		{
+			migrationBuilder.DropTable(name: "BoardStatuses");
 			migrationBuilder.DropTable(name: "Statuses");
 			migrationBuilder.DropTable(name: "TicketAssignees");
 			migrationBuilder.DropTable(name: "ProjectBoards");
