@@ -198,14 +198,6 @@ namespace TicketAppWeb.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProjectId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.PrimitiveCollection<string>("StatusList")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("Boards");
@@ -301,7 +293,7 @@ namespace TicketAppWeb.Migrations
 
                     b.Property<string>("BoardId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -316,8 +308,6 @@ namespace TicketAppWeb.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BoardId");
 
                     b.ToTable("Tickets");
                 });
@@ -375,9 +365,6 @@ namespace TicketAppWeb.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TicketId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -394,8 +381,6 @@ namespace TicketAppWeb.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("TicketId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -522,32 +507,6 @@ namespace TicketAppWeb.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("Lead");
-                });
-
-            modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Ticket", b =>
-                {
-                    b.HasOne("TicketAppWeb.Models.DomainModels.Board", null)
-                        .WithMany("Tickets")
-                        .HasForeignKey("BoardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TicketAppWeb.Models.DomainModels.TicketAppUser", b =>
-                {
-                    b.HasOne("TicketAppWeb.Models.DomainModels.Ticket", null)
-                        .WithMany("Assignees")
-                        .HasForeignKey("TicketId");
-                });
-
-            modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Board", b =>
-                {
-                    b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Ticket", b =>
-                {
-                    b.Navigation("Assignees");
                 });
 #pragma warning restore 612, 618
         }

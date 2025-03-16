@@ -28,11 +28,6 @@ namespace TicketAppWeb.Models.DomainModels
 		public string Status { get; set; }
 
 		/// <summary>
-		/// Gets or sets the list of assignees for the ticket.
-		/// </summary>
-		public List<TicketAppUser> Assignees { get; set; }
-
-		/// <summary>
 		/// Gets or sets the board identifier.
 		/// </summary>
 		public string BoardId { get; set; }

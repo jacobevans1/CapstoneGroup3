@@ -21,20 +21,5 @@ namespace TicketAppWeb.Models.DomainModels
 		/// Gets or sets the description of the board.
 		/// </summary>
 		public string Description { get; set; }
-
-		/// <summary>
-		/// Gets or sets the project identifier.
-		/// </summary>
-		public List<Ticket> Tickets { get; set; }
-
-		/// <summary>
-		/// Gets or sets the list of statuses for tickets on the board.
-		/// </summary>
-		public List<string> StatusList { get; set; }
-
-		/// <summary>
-		/// Gets or sets the project identifier.
-		/// </summary>
-		public string ProjectId { get; set; }
 	}
 }
