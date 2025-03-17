@@ -10,6 +10,12 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 	public interface IBoardRepository : IRepository<Board>
 	{
 		/// <summary>
+		/// Gets the board for the specified project.
+		/// </summary>
+		/// <param name="projectId"></param>
+		Board GetBoardByProjectId(string projectId);
+
+		/// <summary>
 		///	Adds a new board for the specified project.
 		/// </summary>
 		/// <param name="project"></param>

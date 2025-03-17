@@ -29,6 +29,16 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		}
 
 		/// <summary>
+		/// Gets the board for the specified project.
+		/// </summary>
+		/// <param name="projectId"></param>
+		public Board GetBoardByProjectId(string projectId)
+		{
+			var boards = context.Boards.ToList();
+			return boards.FirstOrDefault(b => b.ProjectId == projectId);
+		}
+
+		/// <summary>
 		/// Adds a new board for the specified project.
 		/// </summary>
 		/// <param name="project"></param>

@@ -45,10 +45,10 @@ namespace TicketAppWeb.Controllers
 		private void LoadIndexViewData(BoardViewModel vm, string projectId)
 		{
 			var project = _projectRepository.GetProjectByIdAsync(projectId);
-			//var board = _boardRepository.GetBoardByProjectIdAsync(projectId);
+			var board = _boardRepository.GetBoardByProjectId(projectId);
 
 			vm.Project = project.Result;
-			//vm.Board =
+			vm.Board = board;
 		}
 	}
 }
