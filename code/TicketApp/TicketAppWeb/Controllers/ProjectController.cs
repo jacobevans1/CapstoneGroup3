@@ -187,7 +187,7 @@ public class ProjectController : Controller
 		try
 		{
 			await _projectRepository.DeleteProjectAsync(project);
-			//await _boardRepository.DeleteBoard(project.Id);
+			//_boardRepository.DeleteBoard(project);
 			TempData["SuccessMessage"] = $"Project {project.ProjectName} deleted successfully";
 			return RedirectToAction("Index");
 		}

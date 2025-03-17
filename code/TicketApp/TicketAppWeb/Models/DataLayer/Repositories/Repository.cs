@@ -35,7 +35,7 @@ public class Repository<T> : IRepository<T> where T : class
 	public virtual void Insert(T entity) => dbset.Add(entity);
 	public virtual void Update(T entity) => dbset.Update(entity);
 	public virtual void Delete(T entity) => dbset.Remove(entity);
-	public virtual void Save() => context.SaveChanges();
+	public virtual void Save() => context.SaveChangesAsync();
 
 	// private helper method to build query expression
 	private IQueryable<T> BuildQuery(QueryOptions<T> options)

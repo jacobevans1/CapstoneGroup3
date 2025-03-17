@@ -60,11 +60,6 @@ namespace TicketAppWeb.Models.DataLayer
 		public DbSet<Status> Statuses { get; set; }
 
 		/// <summary>
-		/// Gets or sets the DbSet representing the ProjectBoards table in the database.
-		/// </summary>
-		public DbSet<ProjectBoard> ProjectBoards { get; set; }
-
-		/// <summary>
 		/// Gets or sets the DbSet representing the TicketAssignees table in the database.
 		/// </summary>
 		public DbSet<TicketAssignee> TicketAssignees { get; set; }
@@ -140,24 +135,6 @@ namespace TicketAppWeb.Models.DataLayer
 				.HasOne(u => u.User)
 				.WithMany()
 				.HasForeignKey(u => u.UserId)
-				.OnDelete(DeleteBehavior.Cascade);
-
-
-
-			// ProjectBoard Configuration
-			modelBuilder.Entity<ProjectBoard>()
-				.HasKey(pb => new { pb.ProjectId, pb.BoardId });
-
-			modelBuilder.Entity<ProjectBoard>()
-				.HasOne(pb => pb.Project)
-				.WithMany()
-				.HasForeignKey(bs => bs.ProjectId)
-				.OnDelete(DeleteBehavior.Cascade);
-
-			modelBuilder.Entity<ProjectBoard>()
-				.HasOne(bs => bs.Board)
-				.WithMany()
-				.HasForeignKey(bs => bs.BoardId)
 				.OnDelete(DeleteBehavior.Cascade);
 		}
 

@@ -23,6 +23,16 @@ namespace TicketAppWeb.Models.DomainModels
 		public string Description { get; set; }
 
 		/// <summary>
+		/// Gets or sets the project identifier associated with the board's project.
+		/// </summary>
+		public string ProjectId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the project associated with the board's project.
+		/// </summary>
+		public Project Project { get; set; }
+
+		/// <summary>
 		/// Gets or sets the list of statuses associated with the board.
 		/// </summary>
 		public List<Status> Statuses { get; set; }

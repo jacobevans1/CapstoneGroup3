@@ -14,5 +14,11 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// </summary>
 		/// <param name="project"></param>
 		void AddBoard(Project project);
+
+		/// <summary>
+		/// Deletes a board for the specified project.
+		/// </summary>
+		/// <param name="project"></param>
+		void DeleteBoard(Project project);
 	}
 }
