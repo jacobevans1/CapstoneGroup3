@@ -3,6 +3,7 @@
 
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
+using TicketAppWeb.Models.DomainModels.MiddleTableModels;
 
 namespace TicketAppWeb.Models.DataLayer.Repositories
 {
@@ -11,12 +12,20 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 	/// </summary>
 	public class BoardRepository : Repository<Board>, IBoardRepository
 	{
+		private readonly List<Status> _defaultStatuses;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BoardRepository"/> class.
 		/// </summary>
 		/// <param name="ctx"></param>
 		public BoardRepository(TicketAppContext ctx) : base(ctx)
 		{
+			_defaultStatuses = new List<Status>
+			{
+				new Status { Id = "5de8ea48-a734-4b97-bc39-18070e4e25a9", Name = "Todo" },
+				new Status { Id = "8409c38a-5fab-4283-8957-1c5888d7716d", Name = "In Progress" },
+				new Status { Id = "bd0ccc84-e3bd-4417-85ae-15ac2457e390", Name = "Done" }
+			};
 		}
 
 		/// <summary>
@@ -27,6 +36,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		{
 			var board = CreateBoard(project);
 			Insert(board);
+			AddBoardStatuses(board);
 			Save();
 		}
 
@@ -50,6 +60,20 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			board.Project = project;
 
 			return board;
+		}
+
+		private void AddBoardStatuses(Board board)
+		{
+			foreach (var status in _defaultStatuses)
+			{
+				var boardStatus = new BoardStatus
+				{
+					BoardId = board.Id,
+					StatusId = status.Id,
+				};
+				context.BoardStatuses.Add(boardStatus);
+			}
+			context.SaveChanges();
 		}
 	}
 }

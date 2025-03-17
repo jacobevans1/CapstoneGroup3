@@ -67,7 +67,7 @@ namespace TicketAppWeb.Models.DataLayer
 		/// <summary>
 		/// Gets or sets the DbSet representing the BoardStatus table in the database.
 		/// </summary>
-		public DbSet<BoardStatus> BoardStatus { get; set; }
+		public DbSet<BoardStatus> BoardStatuses { get; set; }
 
 		/// <summary>
 		/// Configures the model for the context.

@@ -41,5 +41,11 @@ namespace TicketAppWeb.Models.DomainModels
 		/// Gets or sets the list of tickets associated with the board.
 		/// </summary>
 		public List<Ticket> Tickets { get; set; }
+
+		public Board()
+		{
+			Statuses = new List<Status>();
+			Tickets = new List<Ticket>();
+		}
 	}
 }
