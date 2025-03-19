@@ -1,4 +1,9 @@
-﻿@model DeleteGroupViewModel
+﻿@*
+    The front end for deleting a group
+    Emma
+    03/?/2025
+*@
+@model DeleteGroupViewModel
 @{
     ViewData["Title"] = "Delete Group";
 }
@@ -18,7 +23,7 @@
                     <ul class="list-unstyled">
                         @foreach (var project in Model.AffectedProjects)
                         {
-                            <li>📌 @project.ProjectName</li>
+                            <li>@project.ProjectName</li>
                         }
                     </ul>
                     <p>Please reassign project leads before deleting this group.</p>

@@ -31,14 +31,14 @@ public class TempMessageTagHelper : TagHelper
 
         output.TagName = "h4";
 
-        if (td.ContainsKey("message"))
+        if (td.ContainsKey("SuccessMessage"))
         {
-            output.BuildTag("h4", "bg-info text-center text-white p-2");
-            output.Content.SetContent(td["message"]?.ToString());
+            output.BuildTag("h4", "bg-success bg-opacity-25 text-center text-success p-2");
+            output.Content.SetContent(td["SuccessMessage"]?.ToString());
         }
         else if (td.ContainsKey("ErrorMessage"))
         {
-            output.BuildTag("h4", "bg-danger text-center text-white p-2");
+            output.BuildTag("h4", "bg-danger bg-opacity-25 text-center text-danger p-2");
             output.Content.SetContent(td["ErrorMessage"]?.ToString());
         }
         else

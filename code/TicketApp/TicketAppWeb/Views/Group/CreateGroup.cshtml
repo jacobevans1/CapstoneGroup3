@@ -1,5 +1,9 @@
-﻿@model TicketAppWeb.Models.ViewModels.AddGroupViewModel
-
+﻿@*
+    The front end for adding a new group
+    Emma
+    03/?/2025
+*@
+@model AddGroupViewModel
 @{
     ViewData["Title"] = "Add New Group";
 }
@@ -19,9 +23,6 @@
             <div class="title-divider"></div>
         </div>
     </div>
-
-    <!-- Validation Errors -->
-    <div asp-validation-summary="All" class="text-danger text-center"></div>
 
     <form asp-action="CreateGroup" method="post" class="styled-form">
         <div class="form-group">
@@ -127,15 +128,15 @@
                 const selectedItems = sourceList.querySelectorAll("input:checked");
                 selectedItems.forEach(item => {
                     let listItem = item.closest("li");
-                    item.checked = false; // Reset checked state in new list
+                    item.checked = false;
 
                     if (isAdding) {
                         item.classList.add("assigned-user-checkbox");
                         item.name = "SelectedUserIds";
-                        item.checked = true; // Ensure it's marked as selected for form submission
+                        item.checked = true;
                     } else {
                         item.classList.remove("assigned-user-checkbox");
-                        item.removeAttribute("name"); // Remove from submission
+                        item.removeAttribute("name");
                     }
 
                     targetList.appendChild(listItem);
