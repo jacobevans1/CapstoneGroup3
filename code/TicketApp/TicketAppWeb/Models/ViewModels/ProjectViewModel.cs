@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using TicketAppWeb.Models.DomainModels;
-using TicketAppWeb.Models.Grid;
 
 // Capstone Group 3
 // Spring 2025
@@ -18,7 +17,7 @@ public class ProjectViewModel
 	/// The currently logged in user
 	/// </summary>
 	[ValidateNever]
-	public TicketAppUser CurrentUser { get; set; }
+	public TicketAppUser? CurrentUser { get; set; }
 
 	/// <summary>
 	/// The currently logged in user's role.
@@ -93,21 +92,6 @@ public class ProjectViewModel
 	/// </summary>
 	public Dictionary<Project, List<Group>> ProjectGroups { get; set; } = new Dictionary<Project, List<Group>>();
 
-	/// <summary>
-	/// Gets or sets the current route.
-	/// </summary>
-	public ProjectGridData CurrentRoute { get; set; } = new ProjectGridData();
-
-	/// <summary>
-	/// Gets or sets the total pages.
-	/// </summary>
-	public int TotalPages { get; set; }
-
-	/// <summary>
-	/// The page sizes
-	/// </summary>
-	public readonly int[] PageSizes = { 5, 10, 20, 50 };
-
     /// <summary>
     /// Gets or sets a value indicating whether [lead change required].
     /// </summary>
@@ -116,18 +100,13 @@ public class ProjectViewModel
     /// </value>
     public bool LeadChangeRequired { get; set; }
 
-    /// <summary>
-    /// Gets or sets the size of the selected page.
-    /// </summary>
-    public int SelectedPageSize { get; set; } = 10;
-
 	/// <summary>
 	/// Checks if the current user is the project lead for the project.
 	/// </summary>
 	/// <param name="project"></param>
 	public bool IsCurrentUserProjectLeadForProject(Project project)
 	{
-		return project.LeadId == CurrentUser.Id;
+		return project.LeadId == CurrentUser?.Id;
 	}
 
 	/// <summary>
@@ -138,7 +117,7 @@ public class ProjectViewModel
 	{
 		foreach (var group in ProjectGroups[project])
 		{
-			if (group.ManagerId == CurrentUser.Id)
+			if (group.ManagerId == CurrentUser?.Id)
 			{
 				return true;
 			}
@@ -154,7 +133,7 @@ public class ProjectViewModel
 	{
 		foreach (var group in AvailableGroups)
 		{
-			if (group.ManagerId == CurrentUser.Id)
+			if (group.ManagerId == CurrentUser?.Id)
 			{
 				return true;
 			}

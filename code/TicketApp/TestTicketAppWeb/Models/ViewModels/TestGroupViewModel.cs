@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using TicketAppWeb.Models.DomainModels;
-using TicketAppWeb.Models.Grid;
+﻿using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
-using Xunit;
 
 namespace TestTicketAppWeb.Models.ViewModels
 {
@@ -28,7 +23,6 @@ namespace TestTicketAppWeb.Models.ViewModels
             Assert.Null(viewModel.SearchGroupName);
             Assert.Null(viewModel.SearchGroupLead);
             Assert.Empty(viewModel.Groups);
-            Assert.NotNull(viewModel.CurrentRoute);
             Assert.Equal(10, viewModel.SelectedPageSize);
             Assert.Null(viewModel.SearchTerm);
         }
@@ -42,7 +36,6 @@ namespace TestTicketAppWeb.Models.ViewModels
             var users = new List<TicketAppUser> { user };
             var group = new Group { Id = "G1", GroupName = "Test Group" };
             var groups = new List<Group> { group };
-            var route = new GroupGridData { PageNumber = 2 };
 
             // Act
             viewModel.CurrentUser = user;
@@ -56,7 +49,6 @@ namespace TestTicketAppWeb.Models.ViewModels
             viewModel.SearchGroupName = "Test";
             viewModel.SearchGroupLead = "Lead";
             viewModel.Groups = groups;
-            viewModel.CurrentRoute = route;
             viewModel.SelectedPageSize = 20;
             viewModel.SearchTerm = "Example";
 
@@ -72,7 +64,6 @@ namespace TestTicketAppWeb.Models.ViewModels
             Assert.Equal("Test", viewModel.SearchGroupName);
             Assert.Equal("Lead", viewModel.SearchGroupLead);
             Assert.Single(viewModel.Groups);
-            Assert.Equal(route, viewModel.CurrentRoute);
             Assert.Equal(20, viewModel.SelectedPageSize);
             Assert.Equal("Example", viewModel.SearchTerm);
         }
