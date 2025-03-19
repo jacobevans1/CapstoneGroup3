@@ -49,18 +49,20 @@
         <div class="row">
             <div class="col-md-5">
                 <h6>Available Groups</h6>
-                <ul id="availableGroups" class="list-group">
-                    @foreach (var group in Model.AvailableGroups)
-                    {
-                        if (!Model.SelectedGroupIds.Contains(group.Id))
+                <div class="scrollable-list">
+                    <ul id="availableGroups" class="list-group">
+                        @foreach (var group in Model.AvailableGroups)
                         {
-                            <li class="list-group-item">
-                                <input type="checkbox" class="group-checkbox form-check-input mt-0" value="@group.Id" />
-                                @group.GroupName
-                            </li>
+                            if (!Model.SelectedGroupIds.Contains(group.Id))
+                            {
+                                <li class="list-group-item">
+                                    <input type="checkbox" class="group-checkbox form-check-input mt-0" value="@group.Id" />
+                                    @group.GroupName
+                                </li>
+                            }
                         }
-                    }
-                </ul>
+                    </ul>
+                </div>
             </div>
 
             <div class="col-md-2 text-center align-self-center">
@@ -71,18 +73,20 @@
 
             <div class="col-md-5">
                 <h6>Assigned Groups <span class="text-danger">*</span></h6>
-                <ul id="assignedGroups" class="list-group">
-                    @foreach (var group in Model.AvailableGroups)
-                    {
-                        if (Model.SelectedGroupIds.Contains(group.Id))
+                <div class="scrollable-list">
+                    <ul id="assignedGroups" class="list-group">
+                        @foreach (var group in Model.AvailableGroups)
                         {
-                            <li class="list-group-item">
-                                <input type="checkbox" class="assigned-group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="@group.Id" checked />
-                                @group.GroupName
-                            </li>
+                            if (Model.SelectedGroupIds.Contains(group.Id))
+                            {
+                                <li class="list-group-item">
+                                    <input type="checkbox" class="assigned-group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="@group.Id" checked />
+                                    @group.GroupName
+                                </li>
+                            }
                         }
-                    }
-                </ul>
+                    </ul>
+                </div>
             </div>
         </div>
         <span asp-validation-for="SelectedGroupIds" class="text-danger"></span>
