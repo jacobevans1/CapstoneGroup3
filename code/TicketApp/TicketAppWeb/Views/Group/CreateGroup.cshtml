@@ -41,20 +41,18 @@
             <!-- Available Users -->
             <div class="col-md-5">
                 <h6>Available Users</h6>
-                <div class="scrollable-list">
-                    <ul id="availableUsers" class="list-group">
-                        @foreach (var user in Model.AllUsers)
+                <ul id="availableUsers" class="list-group">
+                    @foreach (var user in Model.AllUsers)
+                    {
+                        if (!Model.SelectedUserIds.Contains(user.Id))
                         {
-                            if (!Model.SelectedUserIds.Contains(user.Id))
-                            {
-                                <li class="list-group-item">
-                                    <input type="checkbox" class="user-checkbox form-check-input mt-0" value="@user.Id" />
-                                    @user.UserName (@user.Email)
-                                </li>
-                            }
+                            <li class="list-group-item">
+                                <input type="checkbox" class="user-checkbox form-check-input mt-0" value="@user.Id" />
+                                @user.UserName (@user.Email)
+                            </li>
                         }
-                    </ul>
-                </div>
+                    }
+                </ul>
             </div>
 
             <div class="col-md-2 text-center align-self-center">
@@ -66,20 +64,18 @@
             <!-- Selected Members -->
             <div class="col-md-5">
                 <h6>Selected Members <span class="text-danger">*</span></h6>
-                <div class="scrollable-list">
-                    <ul id="selectedUsers" class="list-group">
-                        @foreach (var user in Model.AllUsers)
+                <ul id="selectedUsers" class="list-group">
+                    @foreach (var user in Model.AllUsers)
+                    {
+                        if (Model.SelectedUserIds.Contains(user.Id))
                         {
-                            if (Model.SelectedUserIds.Contains(user.Id))
-                            {
-                                <li class="list-group-item">
-                                    <input type="checkbox" class="assigned-user-checkbox form-check-input mt-0" name="SelectedUserIds" value="@user.Id" checked />
-                                    @user.UserName (@user.Email)
-                                </li>
-                            }
+                            <li class="list-group-item">
+                                <input type="checkbox" class="assigned-user-checkbox form-check-input mt-0" name="SelectedUserIds" value="@user.Id" checked />
+                                @user.UserName (@user.Email)
+                            </li>
                         }
-                    </ul>
-                </div>
+                    }
+                </ul>
             </div>
         </div>
         <span asp-validation-for="SelectedUserIds" class="text-danger"></span>
