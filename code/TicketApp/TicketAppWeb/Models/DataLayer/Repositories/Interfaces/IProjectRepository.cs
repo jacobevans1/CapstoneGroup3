@@ -9,15 +9,19 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 /// </summary>
 public interface IProjectRepository : IRepository<Project>
 {
-    /// <summary>
-    /// Gets the projects and groups.
-    /// </summary>
-    Task<Dictionary<Project, List<Group>>> GetFilteredProjectsAndGroups(string? projectName, string? projectLead);
+	/// <summary>
+	/// Gets the filtered projects and thier assigned groups.
+	/// </summary>
+	/// <param name="projectName">Name of the project.</param>
+	/// <param name="projectLead">The project lead.</param>
+	/// <returns>The Dictionary of porjects and their assigned groups</returns>
+	Task<Dictionary<Project, List<Group>>> GetFilteredProjectsAndGroups(string? projectName, string? projectLead);
 
-    /// <summary>
-    /// Gets the available groups asynchronous.
-    /// </summary>
-    Task<List<Group>> GetAvailableGroupsAsync();
+	/// <summary>
+	/// Gets the available groups asynchronous.
+	/// </summary>
+	/// <returns></returns>
+	Task<List<Group>> GetAvailableGroupsAsync();
 
     /// <summary>
     /// Gets the project by identifier asynchronous.
@@ -78,5 +82,10 @@ public interface IProjectRepository : IRepository<Project>
     /// </summary>
     Task<List<GroupApprovalRequest>> GetPendingGroupApprovalRequestsAsync(string projectId);
 
-    Task<List<Project>> GetProjectsByLeadAsync(string leadId);
+	/// <summary>
+	/// Gets the projects by lead asynchronous.
+	/// </summary>
+	/// <param name="leadId">The lead identifier.</param>
+	/// <returns></returns>
+	Task<List<Project>> GetProjectsByLeadAsync(string leadId);
 }
