@@ -13,31 +13,74 @@ public class Repository<T> : IRepository<T> where T : class
 	protected TicketAppContext context { get; set; }
 	private DbSet<T> dbset { get; set; }
 
+	/// <summary>
+	/// Initializes a new instance of the Repository{T} class.
+	/// </summary>
+	/// <param name="ctx">The CTX.</param>
 	public Repository(TicketAppContext ctx)
 	{
 		context = ctx;
 		dbset = context.Set<T>();
 	}
 
+	/// <summary>
+	/// Gets the count of x entity from the database
+	/// </summary>
 	public int Count => dbset.Count();
 
-	// retrieve a list of entities
+	/// <summary>
+	/// Returns the lists of x entity specified by options.
+	/// </summary>
+	/// <param name="options">The options.</param>
 	public virtual IEnumerable<T> List(QueryOptions<T> options) =>
 		BuildQuery(options).ToList();
 
-	// retrieve a single entity (3 overloads)
+	/// <summary>
+	/// Gets the entity by specified identifier (int type).
+	/// </summary>
+	/// <param name="id">The identifier.</param>
 	public virtual T? Get(int id) => dbset.Find(id);
+
+	/// <summary>
+	/// Gets the entity by specified identifier (string type).
+	/// </summary>
+	/// <param name="id">The identifier.</param>
 	public virtual T? Get(string id) => dbset.Find(id);
+
+	/// <summary>
+	/// Gets the entiy with specified options.
+	/// </summary>
+	/// <param name="options">The options.</param>
 	public virtual T? Get(QueryOptions<T> options) =>
 		BuildQuery(options).FirstOrDefault();
 
-	// insert, update, delete, save
+	/// <summary>
+	/// Inserts the specified entity in the database.
+	/// </summary>
+	/// <param name="entity">The entity.</param>
 	public virtual void Insert(T entity) => dbset.Add(entity);
+
+	/// <summary>
+	/// Updates the specified entity in the database.
+	/// </summary>
+	/// <param name="entity">The entity.</param>
 	public virtual void Update(T entity) => dbset.Update(entity);
+
+	/// <summary>
+	/// Deletes the specified entity from the database
+	/// </summary>
+	/// <param name="entity">The entity.</param>
 	public virtual void Delete(T entity) => dbset.Remove(entity);
+
+	/// <summary>
+	/// Saves the changes made to the database
+	/// </summary>
 	public virtual void Save() => context.SaveChanges();
 
-	// private helper method to build query expression
+	/// <summary>
+	/// private helper method to build query expression
+	/// </summary>
+	/// <param name="options">The options.</param>
 	private IQueryable<T> BuildQuery(QueryOptions<T> options)
 	{
 		IQueryable<T> query = dbset;

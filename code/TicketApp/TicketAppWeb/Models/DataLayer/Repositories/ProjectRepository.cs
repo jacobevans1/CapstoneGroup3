@@ -21,7 +21,6 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     {
         try
         {
-            // Check if the project already exists
             var existingProject = await GetProjectByNameAndLeadAsync(project.ProjectName!, project.LeadId!);
             var userId = project.CreatedById;
 
@@ -413,6 +412,4 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     {
         return await context.Projects.Where(p => p.LeadId == leadId).ToListAsync();
     }
-
-
 }

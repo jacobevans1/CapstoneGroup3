@@ -43,5 +43,5 @@ public interface IUserRepository : IRepository<TicketAppUser>
 	/// Gets the asynchronous.
 	/// </summary>
 	/// <param name="userId">The user identifier.</param>
-	Task<TicketAppUser> GetAsync(string userId);
+	Task<TicketAppUser?> GetAsync(string userId);
 }
