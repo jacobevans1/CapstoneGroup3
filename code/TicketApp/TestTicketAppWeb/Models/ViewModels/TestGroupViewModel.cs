@@ -23,7 +23,6 @@ namespace TestTicketAppWeb.Models.ViewModels
             Assert.Null(viewModel.SearchGroupName);
             Assert.Null(viewModel.SearchGroupLead);
             Assert.Empty(viewModel.Groups);
-            Assert.Equal(10, viewModel.SelectedPageSize);
             Assert.Null(viewModel.SearchTerm);
         }
 
@@ -49,7 +48,6 @@ namespace TestTicketAppWeb.Models.ViewModels
             viewModel.SearchGroupName = "Test";
             viewModel.SearchGroupLead = "Lead";
             viewModel.Groups = groups;
-            viewModel.SelectedPageSize = 20;
             viewModel.SearchTerm = "Example";
 
             // Assert
@@ -64,7 +62,6 @@ namespace TestTicketAppWeb.Models.ViewModels
             Assert.Equal("Test", viewModel.SearchGroupName);
             Assert.Equal("Lead", viewModel.SearchGroupLead);
             Assert.Single(viewModel.Groups);
-            Assert.Equal(20, viewModel.SelectedPageSize);
             Assert.Equal("Example", viewModel.SearchTerm);
         }
 

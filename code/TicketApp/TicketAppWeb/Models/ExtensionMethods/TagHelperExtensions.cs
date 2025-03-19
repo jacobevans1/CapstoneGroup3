@@ -10,8 +10,12 @@ namespace TicketAppWeb.Models.ExtensionMethods;
 public static class TagHelperExtensions
 {
 
-    // Appends the CSS class.
-    public static void AppendCssClass(this TagHelperAttributeList list,
+	/// <summary>
+	/// Appends the CSS class.
+	/// </summary>
+	/// <param name="list">The list.</param>
+	/// <param name="newCssClasses">The new CSS classes.</param>
+	public static void AppendCssClass(this TagHelperAttributeList list,
         string newCssClasses)
     {
         string oldCssClasses = list["class"]?.Value.ToString() ?? "";
@@ -20,8 +24,13 @@ public static class TagHelperExtensions
         list.SetAttribute("class", cssClasses);
     }
 
-    // Builds the tag.
-    public static void BuildTag(this TagHelperOutput output, string tagName,
+	/// <summary>
+	/// Builds the tag.
+	/// </summary>
+	/// <param name="output">The output.</param>
+	/// <param name="tagName">Name of the tag.</param>
+	/// <param name="classNames">The class names.</param>
+	public static void BuildTag(this TagHelperOutput output, string tagName,
         string classNames)
     {
         output.TagName = tagName;
@@ -29,8 +38,13 @@ public static class TagHelperExtensions
         output.Attributes.AppendCssClass(classNames);
     }
 
-    // Builds the link.
-    public static void BuildLink(this TagHelperOutput output, string url,
+	/// <summary>
+	/// Builds the link.
+	/// </summary>
+	/// <param name="output">The output.</param>
+	/// <param name="url">The URL.</param>
+	/// <param name="classNames">The class names.</param>
+	public static void BuildLink(this TagHelperOutput output, string url,
         string classNames)
     {
         output.BuildTag("a", classNames);
