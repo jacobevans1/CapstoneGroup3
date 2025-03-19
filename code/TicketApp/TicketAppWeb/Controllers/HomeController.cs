@@ -6,13 +6,23 @@ using System.Security.Claims;
 
 namespace TicketAppWeb.Controllers;
 
+/// <summary>
+/// The home controller is responsible for managing anything that goes on the dashboard page
+/// Jabesi Abwe
+/// 03/?/2025
+/// </summary>
 [Authorize]
 public class HomeController : Controller
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IGroupRepository _groupRepository;
 
-    public HomeController(IProjectRepository projectRepository, IGroupRepository groupRepository)
+	/// <summary>
+	/// Initializes a new instance of the Home Controller class.
+	/// </summary>
+	/// <param name="projectRepository">The project repository.</param>
+	/// <param name="groupRepository">The group repository.</param>
+	public HomeController(IProjectRepository projectRepository, IGroupRepository groupRepository)
     {
         _projectRepository = projectRepository;
         _groupRepository = groupRepository;

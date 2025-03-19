@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TicketAppWeb.Models.DataLayer.Reposetories;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
 
 namespace TicketAppWeb.Controllers;
 
+
+/// <summary>
+/// The class represents the controller of group management funtcionality (add, edit delete...)
+/// Emma
+/// 03/?/2025
+/// </summary>
 [Authorize]
 public class GroupController : Controller
 {
@@ -15,7 +20,14 @@ public class GroupController : Controller
 	private readonly IGroupRepository _groupRepository;
     private readonly IProjectRepository _projectRepository;
 
-    public GroupController(SingletonService singletonService, IUserRepository userRepository, IGroupRepository groupRepository, IProjectRepository projectRepository)
+	/// <summary>
+	/// Initializes a new instance of the Group Controller class.
+	/// </summary>
+	/// <param name="singletonService">The singleton service.</param>
+	/// <param name="userRepository">The user repository.</param>
+	/// <param name="groupRepository">The group repository.</param>
+	/// <param name="projectRepository">The project repository.</param>
+	public GroupController(SingletonService singletonService, IUserRepository userRepository, IGroupRepository groupRepository, IProjectRepository projectRepository)
 	{
 		_singletonService = singletonService;
 		_userRepository = userRepository;
@@ -24,6 +36,11 @@ public class GroupController : Controller
 
     }
 
+	/// <summary>
+	/// The index action method for the index page of group management page
+	/// </summary>
+	/// <param name="groupName">Name of the group.</param>
+	/// <param name="groupLead">The group lead.</param>
 	[HttpGet]
 	public async Task<IActionResult> Index(string? groupName, string? groupLead)
 	{
@@ -41,6 +58,9 @@ public class GroupController : Controller
 		return View(model);
 	}
 
+	/// <summary>
+	/// Gets the group info ready before creating a new group and saving it to the database
+	/// </summary>
 	[HttpGet]
 	public async Task<IActionResult> CreateGroup()
 	{
@@ -55,6 +75,10 @@ public class GroupController : Controller
 		return View(model);
 	}
 
+	/// <summary>
+	/// Creates the group and saves it to the database
+	/// </summary>
+	/// <param name="model">The model.</param>
 	[HttpPost]
 	public async Task<IActionResult> CreateGroup(AddGroupViewModel model)
 	{
@@ -92,9 +116,10 @@ public class GroupController : Controller
 		return RedirectToAction("Index");
 	}
 
-
-
-
+	/// <summary>
+	///  Gets group info ready before editing the group and saving it to the database.
+	/// </summary>
+	/// <param name="id">The identifier.</param>
 	[HttpGet]
 	public async Task<IActionResult> EditGroup(string id)
 	{
@@ -124,7 +149,10 @@ public class GroupController : Controller
 		return View(model);
 	}
 
-
+	/// <summary>
+	/// Edits the group's info and saves the changes to the database.
+	/// </summary>
+	/// <param name="model">The model.</param>
 	[HttpPost]
 	public async Task<IActionResult> UpdateGroup(AddGroupViewModel model)
 	{
@@ -174,11 +202,11 @@ public class GroupController : Controller
 		return RedirectToAction("Index");
 	}
 
-
-
-
-
-    [HttpGet]
+	/// <summary>
+	/// Gets the group's info ready for deletion.
+	/// </summary>
+	/// <param name="id">The identifier.</param>
+	[HttpGet]
     public async Task<IActionResult> DeleteGroup(string id)
     {
         if (string.IsNullOrEmpty(id))
@@ -213,9 +241,11 @@ public class GroupController : Controller
         return View(model);
     }
 
-
-
-    [HttpPost]
+	/// <summary>
+	/// Confirms the groups deletion and removes it from the database.
+	/// </summary>
+	/// <param name="id">The identifier.</param>
+	[HttpPost]
     public async Task<IActionResult> ConfirmDeleteGroup(string id)
     {
         if (string.IsNullOrEmpty(id))
@@ -250,9 +280,4 @@ public class GroupController : Controller
             return View("DeleteGroup", group);
         }
     }
-
-
-
-
-
 }

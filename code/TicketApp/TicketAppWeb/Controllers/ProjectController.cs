@@ -17,8 +17,10 @@ public class ProjectController : Controller
 	private readonly IProjectRepository _projectRepository;
 
 	/// <summary>
-	/// Initializes a new instance of the ProjectController class.
+	/// Initializes a new instance of the Project Controller class.
 	/// </summary>
+	/// <param name="singletonService">The singleton service.</param>
+	/// <param name="projectRepository">The project repository.</param>
 	public ProjectController(SingletonService singletonService, IProjectRepository projectRepository)
 	{
 		_singletonService = singletonService;
@@ -26,8 +28,10 @@ public class ProjectController : Controller
 	}
 
 	/// <summary>
-	/// The start of the project management page.
+	/// The start of project management page
 	/// </summary>
+	/// <param name="projectName">Name of the project.</param>
+	/// <param name="projectLead">The project lead.</param>
 	public IActionResult Index(string? projectName, string? projectLead)
 	{
 		var viewModel = new ProjectViewModel();
@@ -57,6 +61,7 @@ public class ProjectController : Controller
 	/// <summary>
 	/// Creates the project and saves it to the database.
 	/// </summary>
+	/// <param name="model">The projetc management view model.</param>
 	[HttpPost]
 	public async Task<IActionResult> CreateProject(ProjectViewModel model)
 	{
@@ -95,6 +100,8 @@ public class ProjectController : Controller
 	/// <summary>
 	/// Gets the project to edit by Id of the project.
 	/// </summary>
+	/// <param name="id">The project identifier.</param>
+	/// <param name="leadChangeRequired">The lead change required, the flag used to check the why the edit is performed.</param>
 	[HttpGet]
 	public async Task<IActionResult> EditProject(string id, bool? leadChangeRequired = null)
 	{
@@ -119,10 +126,12 @@ public class ProjectController : Controller
 		return View(model);
 	}
 
-    /// <summary>
-    /// Edits the project.
-    /// </summary>
-    [HttpPost]
+	/// <summary>
+	/// Edits the project and saves the changes to the database
+	/// </summary>
+	/// <param name="model">The model.</param>
+	/// <param name="id">The identifier.</param>
+	[HttpPost]
     public async Task<IActionResult> EditProject(ProjectViewModel model, string id)
     {
         if (!ModelState.IsValid)
@@ -165,11 +174,11 @@ public class ProjectController : Controller
         }
     }
 
-
-    /// <summary>
-    /// Gets the projet to be deleted by Id.
-    /// </summary>
-    [HttpGet]
+	/// <summary>
+	/// Gets the projet to be deleted by Id.
+	/// </summary>
+	/// <param name="id">The identifier.</param>
+	[HttpGet]
 	public async Task<IActionResult> DeleteProject(string id)
 	{
 		var project = await _projectRepository.GetProjectByIdAsync(id);
@@ -181,8 +190,9 @@ public class ProjectController : Controller
 	}
 
 	/// <summary>
-	/// Confirms the project delete action.
+	/// Confirms the project delete action and remove the project from the database
 	/// </summary>
+	/// <param name="id">The project identifier.</param>
 	[HttpPost]
 	public async Task<IActionResult> ConfirmDelete(string id)
 	{
@@ -206,8 +216,9 @@ public class ProjectController : Controller
 	}
 
 	/// <summary>
-	/// Gets the group leads based on selected groups
+	/// Gets the group leads based on selected groups (the managers of the selected groups)
 	/// </summary>
+	/// <param name="groupIds">The group ids.</param>
 	[HttpGet]
 	public async Task<JsonResult> GetGroupLeads(string groupIds)
 	{

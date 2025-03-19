@@ -17,8 +17,8 @@ namespace TicketAppWeb.Controllers
 		private readonly SingletonService _singletonService;
 		private readonly IUserRepository _usersRepository;
 
-		private static string selectedUserId;
-		private static string selectedUsername;
+		private static string? selectedUserId;
+		private static string? selectedUsername;
 
 		/// <summary>
 		/// Initializes a new instance of the UserController class.
@@ -66,10 +66,10 @@ namespace TicketAppWeb.Controllers
 			{
 				try
 				{
-					await _usersRepository.CreateUser(vm.User, vm.SelectedRoleName);
+					await _usersRepository.CreateUser(vm.User, vm.SelectedRoleName!);
 					_usersRepository.Save();
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					TempData["ErrorMessage"] = $"Sorry, user update failed.";
 					return RedirectToAction("Index", "User");
@@ -126,11 +126,11 @@ namespace TicketAppWeb.Controllers
 			{
 				try
 				{
-					vm.User.Id = selectedUserId;
+					vm.User.Id = selectedUserId!;
 					vm.User.UserName = selectedUsername;
-					await _usersRepository.UpdateUser(vm.User, vm.SelectedRoleName);
+					await _usersRepository.UpdateUser(vm.User, vm.SelectedRoleName!);
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					TempData["ErrorMessage"] = $"Sorry, user update failed.";
 					return RedirectToAction("Index", "User");
@@ -162,7 +162,7 @@ namespace TicketAppWeb.Controllers
 
 			var userData = new
 			{
-				fullName = user.FullName
+				fullName = user?.FullName
 			};
 
 			return Json(userData);
@@ -195,7 +195,7 @@ namespace TicketAppWeb.Controllers
 					_usersRepository.Save();
 					TempData["SuccessMessage"] = "User deleted successfully.";
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					TempData["ErrorMessage"] = $"Sorry, deleting user failed.";
 				}
