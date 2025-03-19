@@ -13,28 +13,7 @@
 <link href="~/css/projectmanagement.css" rel="stylesheet" />
 
 <div class="container mt-4">
-    <div class="col-md-12">
-        <!-- TempData variables -->
-        @{
-            var successMessage = TempData["SuccessMessage"] as string;
-            var errorMessage = TempData["ErrorMessage"] as string;
-        }
-
-        <!-- Display success messages if any -->
-        @if (!string.IsNullOrEmpty(successMessage))
-        {
-            <div class="alert alert-success">
-                @successMessage
-            </div>
-        }
-
-        <!-- Display error messages if any -->
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert alert-danger">
-                @errorMessage
-            </div>
-        }
+    <my-temp-message class="alert"/>
     <div class="row">
         <div class="col-md-12">
             <h2 class="text-center">Dashboard</h2>
@@ -86,3 +65,11 @@
         </div>
     </div>
 </div>
+
+@section scripts {
+    <script>
+        setTimeout(function () {
+            document.querySelectorAll('.alert').forEach(alert => alert.style.display = 'none');
+        }, 5000);
+    </script>
+}

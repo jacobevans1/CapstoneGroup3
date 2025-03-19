@@ -16,26 +16,7 @@
 	<div class="row">
 		<div class="col-md-12">
 			<!-- TempData variables -->
-			@{
-				var successMessage = TempData["SuccessMessage"] as string;
-				var errorMessage = TempData["ErrorMessage"] as string;
-			}
-
-			<!-- Display success messages if any -->
-			@if (!string.IsNullOrEmpty(successMessage))
-			{
-				<div class="alert alert-success">
-					@successMessage
-				</div>
-			}
-
-			<!-- Display error messages if any -->
-			@if (!string.IsNullOrEmpty(errorMessage))
-			{
-				<div class="alert alert-danger">
-					@errorMessage
-				</div>
-			}
+			<my-temp-message class="alert"/>
 
 			<h2 class="text-center">Project Management</h2>
 			<div class="title-divider"></div>
@@ -153,6 +134,10 @@
                 url.searchParams.delete("projectLead");
                 window.location.href = url.toString();
             });
+
+			setTimeout(function () {
+				document.querySelectorAll('.alert').forEach(alert => alert.style.display = 'none');
+			}, 5000);
         });
     </script>
 }
