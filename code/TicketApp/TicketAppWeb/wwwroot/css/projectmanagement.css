@@ -81,4 +81,20 @@ h5 {
     margin-bottom: 10px;
 }
 
+/* Adds a scrollbar to the list of selectable data*/
+.scrollable-container {
+    max-height: 300px;
+    min-height: 300px; 
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    border: 1px solid #ddd;
+    padding: 5px;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+
 
