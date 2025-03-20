@@ -176,4 +176,58 @@ public class TestHomeController
         Assert.Equal("Home", redirectResult.ControllerName);
         Assert.Equal(null!, _controller.TempData["ErrorMessage"]);
     }
+
+    [Fact]
+    public async Task RejectGroupForProject_ProjectIsNull_ShouldReturnRedirectToActionResult()
+    {
+        // Arrange
+        _mockProjectRepository.Setup(repo => repo.GetProjectByIdAsync("projectId1")).ReturnsAsync((Project)null!);
+
+        // Act
+        var result = await _controller.RejectGroupForProject("projectId1", "groupId1");
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        Assert.Equal("Home", redirectResult.ControllerName);
+    }
+
+    [Fact]
+    public async Task RejectGroupForProject_GroupIsNull_ShouldReturnRedirectToActionResult()
+    {
+        // Arrange
+        var project = new Project { Id = "projectId1", LeadId = "leadId1" };
+        _mockProjectRepository.Setup(repo => repo.GetProjectByIdAsync("projectId1")).ReturnsAsync(project);
+        _mockGroupRepository.Setup(repo => repo.GetAsync("groupId1")).ReturnsAsync((Group)null!);
+
+        // Act
+        var result = await _controller.RejectGroupForProject("projectId1", "groupId1");
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        Assert.Equal("Home", redirectResult.ControllerName);
+    }
+
+    [Fact]
+    public async Task RejectGroupForProject_LeadChangeRequired_ShouldReturnRedirectToActionResult()
+    {
+        // Arrange
+        var project = new Project { Id = "projectId1", LeadId = "managerId1" };
+        var group = new Group { Id = "groupId1", ManagerId = "managerId1" };
+        _mockProjectRepository.Setup(repo => repo.GetProjectByIdAsync("projectId1")).ReturnsAsync(project);
+        _mockGroupRepository.Setup(repo => repo.GetAsync("groupId1")).ReturnsAsync(group);
+
+        // Act
+        var result = await _controller.RejectGroupForProject("projectId1", "groupId1");
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("EditProject", redirectResult.ActionName);
+        Assert.Equal("Project", redirectResult.ControllerName);
+        Assert.True((bool?)redirectResult?.RouteValues!["leadChangeRequired"]);
+    }
 }
+
+
+
