@@ -317,24 +317,60 @@ public class TestUserController
 		_mockUserRepository.Verify(r => r.Save(), Times.Once);
 	}
 
-	[Fact]
-	public async Task EditUser_ShouldReturnError_WhenExceptionIsThrown()
-	{
-		// Arrange
-		var userViewModel = new UserViewModel { User = new TicketAppUser { FirstName = "John", LastName = "Doe" } };
-		_mockUserRepository.Setup(r => r.UpdateUser(It.IsAny<TicketAppUser>(), It.IsAny<string>())).Throws(new Exception("Database error"));
+    [Fact]
+    public async Task EditUser_ShouldReturnError_WhenModelStateIsInvalid()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("User", "Required");
+        var userViewModel = new UserViewModel { User = new TicketAppUser() };
 
-		// Act
-		var result = await _controller.EditUser(userViewModel);
+        // Act
+        var result = await _controller.EditUser(userViewModel);
 
-		// Assert
-		var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-		Assert.Equal("Index", redirectResult.ActionName);
-		Assert.Equal("User", redirectResult.ControllerName);
-		Assert.Equal("Sorry, user update failed.", _controller.TempData["ErrorMessage"]);
-	}
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        Assert.Equal("User", redirectResult.ControllerName);
+        Assert.Equal("Sorry, user update failed.", _controller.TempData["ErrorMessage"]);
+    }
 
-	[Fact]
+    [Fact]
+    public async Task EditUser_ShouldReturnError_WhenExceptionIsThrown()
+    {
+        // Arrange
+        var userViewModel = new UserViewModel { User = new TicketAppUser { Id = "123", UserName = "testuser" } };
+        _mockUserRepository.Setup(r => r.UpdateUser(It.IsAny<TicketAppUser>(), It.IsAny<string>())).ThrowsAsync(new Exception());
+
+        // Act
+        var result = await _controller.EditUser(userViewModel);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        Assert.Equal("User", redirectResult.ControllerName);
+        Assert.Equal("Sorry, user update failed.", _controller.TempData["ErrorMessage"]);
+    }
+
+    [Fact]
+    public void DeleteUser_ShouldReturnJson_WhenUserIsNull()
+    {
+        // Arrange
+        var userId = "123";
+        _mockUserRepository.Setup(r => r.Get(It.IsAny<string>())).Returns((TicketAppUser)null!);
+
+        // Act
+        var result = _controller.DeleteUser(userId);
+
+        // Assert
+        var jsonResult = Assert.IsType<JsonResult>(result);
+        var value = jsonResult.Value;
+
+        var properties = value!.GetType().GetProperties();
+        Assert.Contains(properties, p => p.Name == "fullName");
+        Assert.Null(properties.Single(p => p.Name == "fullName").GetValue(value));
+    }
+
+    [Fact]
 	public void DeleteConfirmed_ShouldRedirectToIndex_WhenUserIdIsNullOrEmpty()
 	{
 		// Act
