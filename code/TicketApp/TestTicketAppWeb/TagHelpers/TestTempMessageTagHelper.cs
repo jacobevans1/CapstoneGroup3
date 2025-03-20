@@ -29,12 +29,11 @@ public class TestTempMessageTagHelper
 	}
 
 	[Theory]
-	[InlineData("message", "Success!", "bg-info text-center text-white p-2")]
-	[InlineData("message", "", "bg-info text-center text-white p-2")]
-	[InlineData("message", null, "bg-info text-center text-white p-2")]
-	[InlineData("ErrorMessage", "Error occurred", "bg-danger text-center text-white p-2")]
-	[InlineData("ErrorMessage", "", "bg-danger text-center text-white p-2")]
-	[InlineData("ErrorMessage", null, "bg-danger text-center text-white p-2")]
+	[InlineData("SuccessMessage", "Success!", "bg-success bg-opacity-25 text-center text-success p-2")]
+	[InlineData("SuccessMessage", "", "bg-success bg-opacity-25 text-center text-success p-2")]
+	[InlineData("ErrorMessage", "Error occurred", "bg-danger bg-opacity-25 text-center text-danger p-2")]
+	[InlineData("ErrorMessage", "", "bg-danger bg-opacity-25 text-center text-danger p-2")]
+	[InlineData("ErrorMessage", null, "bg-danger bg-opacity-25 text-center text-danger p-2")]
 	[InlineData("", null, "")]
 	public void Process_ShouldSetCorrectMessageAndClasses(string key, string? message, string expectedClass)
 	{
