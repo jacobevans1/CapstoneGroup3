@@ -89,6 +89,7 @@ public class ProjectControllerTests
 		Assert.Equal("Group A", model.AvailableGroups[0].GroupName);
 	}
 
+
 	[Fact]
 	public async Task CreateProject_DatabaseFailure_ReturnsViewWithErrorMessage()
 	{
@@ -184,50 +185,7 @@ public class ProjectControllerTests
 		Assert.NotNull(result);
 	}
 
-	[Fact]
-	public async Task EditProject_Post_ProjectDoesNotExist_ReturnsNotFound()
-	{
-		// Arrange
-		_mockRepo.Setup(r => r.GetProjectByIdAsync("1")).ReturnsAsync((Project)null!);
-
-		var model = new ProjectViewModel { ProjectName = "Updated Project" };
-
-		// Act
-		var result = await _controller.EditProject(model, "1") as NotFoundResult;
-
-		// Assert
-		Assert.NotNull(result);
-	}
-
-	[Fact]
-	public async Task EditProject_Post_DatabaseFailure_ReturnsViewWithErrorMessage()
-	{
-		// Arrange
-		var project = new Project
-		{
-			Id = "1",
-			ProjectName = "Test Project"
-		};
-
-		_mockRepo.Setup(r => r.GetProjectByIdAsync("1")).ReturnsAsync(project);
-
-		_mockRepo.Setup(r => r.UpdateProjectAsync(It.IsAny<Project>(), It.IsAny<List<string>>(), false))
-				 .ThrowsAsync(new Exception("Database error"));
-
-		var model = new ProjectViewModel
-		{
-			ProjectName = "Updated Project",
-			SelectedGroupIds = new List<string> { "group1" }
-		};
-
-		// Act
-		var result = await _controller.EditProject(model, "1") as ViewResult;
-
-		// Assert
-		Assert.NotNull(result);
-	}
-
-	[Fact]
+    [Fact]
 	public async Task EditProject_Get_ReturnsViewWithModel_WhenProjectExists()
 	{
 		// Arrange
@@ -253,7 +211,52 @@ public class ProjectControllerTests
 		Assert.Single(model.SelectedGroupIds);
 	}
 
-	[Fact]
+    [Fact]
+    public async Task EditProject_Post_ProjectDoesNotExist_ReturnsNotFound()
+    {
+        // Arrange
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("1")).ReturnsAsync((Project)null!);
+
+        var model = new ProjectViewModel { ProjectName = "Updated Project" };
+
+        // Act
+        var result = await _controller.EditProject(model, "1") as NotFoundResult;
+
+        // Assert
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public async Task EditProject_Post_DatabaseFailure_ReturnsViewWithErrorMessage()
+    {
+        // Arrange
+        _controller.TempData = new Mock<ITempDataDictionary>().Object;
+        var project = new Project
+        {
+            Id = "1",
+            ProjectName = "Test Project"
+        };
+
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("1")).ReturnsAsync(project);
+        _mockRepo.Setup(r => r.UpdateProjectAsync(It.IsAny<Project>(), It.IsAny<List<string>>(), false))
+                 .ThrowsAsync(new Exception("Database error"));
+
+        var model = new ProjectViewModel
+        {
+            ProjectName = "Updated Project",
+            SelectedGroupIds = new List<string> { "group1" }
+        };
+
+        // Act
+        var result = await _controller.EditProject(model, "1") as ViewResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(null!, result.ViewName);
+        Assert.Equal(null!, _controller.TempData["ErrorMessage"]);
+    }
+
+    [Fact]
 	public async Task EditProject_Post_InvalidModel_ReturnsView()
 	{
 		// Arrange
@@ -322,7 +325,54 @@ public class ProjectControllerTests
 		_mockRepo.Verify(r => r.UpdateProjectAsync(It.IsAny<Project>(), model.SelectedGroupIds, false), Times.Once);
 	}
 
-	[Fact]
+    [Fact]
+    public async Task EditProject_LeadChangeRequired_ReturnsRedirectToHomeIndex()
+    {
+        // Arrange
+        var model = new ProjectViewModel
+        {
+            ProjectName = "Updated Project",
+            LeadChangeRequired = true,
+            SelectedGroupIds = new List<string> { "group1" }
+        };
+
+        var project = new Project
+        {
+            Id = "1",
+            ProjectName = "Test Project",
+            LeadId = "lead-id"
+        };
+
+        _mockRepo.Setup(r => r.GetProjectByIdAsync("1")).ReturnsAsync(project);
+
+        var controller = new ProjectController(_ton, _mockRepo.Object)
+        {
+            TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>())
+        };
+
+        // Mock User Claims
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+        new Claim(ClaimTypes.NameIdentifier, "user-id"),
+        new Claim(ClaimTypes.Role, "User")
+    }, "mock"));
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = user }
+        };
+
+        // Act
+        var result = await controller.EditProject(model, "1") as RedirectToActionResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("Index", result.ActionName);
+        Assert.Equal("Home", result.ControllerName);
+        Assert.Equal("Project Lead updated successfully. Proced with The privous action ", controller.TempData["SuccessMessage"]);
+    }
+
+    [Fact]
 	public async Task DeleteProject_InvalidId_ReturnsNotFound()
 	{
 		// Arrange

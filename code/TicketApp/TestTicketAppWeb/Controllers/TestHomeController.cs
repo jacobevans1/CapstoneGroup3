@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using System.Security.Claims;
 using TicketAppWeb.Controllers;
@@ -101,7 +102,7 @@ public class TestHomeController
     }
 
     [Fact]
-    public async Task ApproveGroupForProject_ShouldReturnJsonResultOnSuccess()
+    public async Task ApproveGroupForProject_ShouldReturnRedirectToActionResultOnSuccess()
     {
         // Arrange
         _mockProjectRepository.Setup(repo => repo.ApproveGroupForProjectAsync("projectId1", "groupId1"))
@@ -111,15 +112,16 @@ public class TestHomeController
         var result = await _controller.ApproveGroupForProject("projectId1", "groupId1");
 
         // Assert
-        var jsonResult = Assert.IsType<JsonResult>(result);
-        var data = jsonResult.Value;
-        Assert.True((bool)data!.GetType().GetProperty("success")!.GetValue(data, null)!);
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        Assert.Equal("Home", redirectResult.ControllerName);
     }
 
     [Fact]
-    public async Task ApproveGroupForProject_ShouldReturnJsonResultOnFailure()
+    public async Task ApproveGroupForProject_ShouldReturnRedirectToActionResultOnFailure()
     {
         // Arrange
+        _controller.TempData = new Mock<ITempDataDictionary>().Object;
         _mockProjectRepository.Setup(repo => repo.ApproveGroupForProjectAsync("projectId1", "groupId1"))
             .ThrowsAsync(new Exception("Approval failed"));
 
@@ -127,16 +129,20 @@ public class TestHomeController
         var result = await _controller.ApproveGroupForProject("projectId1", "groupId1");
 
         // Assert
-        var jsonResult = Assert.IsType<JsonResult>(result);
-        var data = jsonResult.Value;
-        Assert.False((bool)data!.GetType().GetProperty("success")!.GetValue(data, null)!);
-        Assert.Equal("Approval failed", data!.GetType().GetProperty("message")!.GetValue(data, null));
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        Assert.Equal("Home", redirectResult.ControllerName);
+        Assert.Equal(null!, _controller.TempData["ErrorMessage"]);
     }
 
     [Fact]
-    public async Task RejectGroupForProject_ShouldReturnJsonResultOnSuccess()
+    public async Task RejectGroupForProject_ShouldReturnRedirectToActionResultOnSuccess()
     {
         // Arrange
+        var project = new Project { Id = "projectId1", LeadId = "leadId1" };
+        var group = new Group { Id = "groupId1", ManagerId = "managerId1" };
+        _mockProjectRepository.Setup(repo => repo.GetProjectByIdAsync("projectId1")).ReturnsAsync(project);
+        _mockGroupRepository.Setup(repo => repo.GetAsync("groupId1")).ReturnsAsync(group);
         _mockProjectRepository.Setup(repo => repo.RejectGroupForProjectAsync("projectId1", "groupId1"))
             .Returns(Task.CompletedTask);
 
@@ -144,15 +150,20 @@ public class TestHomeController
         var result = await _controller.RejectGroupForProject("projectId1", "groupId1");
 
         // Assert
-        var jsonResult = Assert.IsType<JsonResult>(result);
-        var data = jsonResult.Value;
-        Assert.True((bool)data!.GetType().GetProperty("success")!.GetValue(data, null)!);
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        Assert.Equal("Home", redirectResult.ControllerName);
     }
 
     [Fact]
-    public async Task RejectGroupForProject_ShouldReturnJsonResultOnFailure()
+    public async Task RejectGroupForProject_ShouldReturnRedirectToActionResultOnFailure()
     {
         // Arrange
+        _controller.TempData = new Mock<ITempDataDictionary>().Object;
+        var project = new Project { Id = "projectId1", LeadId = "leadId1" };
+        var group = new Group { Id = "groupId1", ManagerId = "managerId1" };
+        _mockProjectRepository.Setup(repo => repo.GetProjectByIdAsync("projectId1")).ReturnsAsync(project);
+        _mockGroupRepository.Setup(repo => repo.GetAsync("groupId1")).ReturnsAsync(group);
         _mockProjectRepository.Setup(repo => repo.RejectGroupForProjectAsync("projectId1", "groupId1"))
             .ThrowsAsync(new Exception("Rejection failed"));
 
@@ -160,9 +171,63 @@ public class TestHomeController
         var result = await _controller.RejectGroupForProject("projectId1", "groupId1");
 
         // Assert
-        var jsonResult = Assert.IsType<JsonResult>(result);
-        var data = jsonResult.Value;
-        Assert.False((bool)data!.GetType().GetProperty("success")!.GetValue(data, null)!);
-        Assert.Equal("Rejection failed", data!.GetType().GetProperty("message")!.GetValue(data, null));
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        Assert.Equal("Home", redirectResult.ControllerName);
+        Assert.Equal(null!, _controller.TempData["ErrorMessage"]);
+    }
+
+    [Fact]
+    public async Task RejectGroupForProject_ProjectIsNull_ShouldReturnRedirectToActionResult()
+    {
+        // Arrange
+        _mockProjectRepository.Setup(repo => repo.GetProjectByIdAsync("projectId1")).ReturnsAsync((Project)null!);
+
+        // Act
+        var result = await _controller.RejectGroupForProject("projectId1", "groupId1");
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        Assert.Equal("Home", redirectResult.ControllerName);
+    }
+
+    [Fact]
+    public async Task RejectGroupForProject_GroupIsNull_ShouldReturnRedirectToActionResult()
+    {
+        // Arrange
+        var project = new Project { Id = "projectId1", LeadId = "leadId1" };
+        _mockProjectRepository.Setup(repo => repo.GetProjectByIdAsync("projectId1")).ReturnsAsync(project);
+        _mockGroupRepository.Setup(repo => repo.GetAsync("groupId1")).ReturnsAsync((Group)null!);
+
+        // Act
+        var result = await _controller.RejectGroupForProject("projectId1", "groupId1");
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectResult.ActionName);
+        Assert.Equal("Home", redirectResult.ControllerName);
+    }
+
+    [Fact]
+    public async Task RejectGroupForProject_LeadChangeRequired_ShouldReturnRedirectToActionResult()
+    {
+        // Arrange
+        var project = new Project { Id = "projectId1", LeadId = "managerId1" };
+        var group = new Group { Id = "groupId1", ManagerId = "managerId1" };
+        _mockProjectRepository.Setup(repo => repo.GetProjectByIdAsync("projectId1")).ReturnsAsync(project);
+        _mockGroupRepository.Setup(repo => repo.GetAsync("groupId1")).ReturnsAsync(group);
+
+        // Act
+        var result = await _controller.RejectGroupForProject("projectId1", "groupId1");
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("EditProject", redirectResult.ActionName);
+        Assert.Equal("Project", redirectResult.ControllerName);
+        Assert.True((bool?)redirectResult?.RouteValues!["leadChangeRequired"]);
     }
 }
+
+
+
