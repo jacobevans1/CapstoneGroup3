@@ -410,6 +410,10 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
     /// <returns></returns>
     public async Task<List<Project>> GetProjectsByLeadAsync(string leadId)
     {
-        return await context.Projects.Where(p => p.LeadId == leadId).ToListAsync();
+        return await context.Projects
+            .Where(p => p.LeadId == leadId)
+            .Include(p => p.Groups) 
+            .ToListAsync();
     }
+
 }

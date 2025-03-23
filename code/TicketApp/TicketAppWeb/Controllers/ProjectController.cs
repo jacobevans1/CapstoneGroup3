@@ -71,7 +71,7 @@ public class ProjectController : Controller
 			return View("AddProject", model);
 		}
 
-		var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+		var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 		var isAdmin = User.IsInRole("Admin");
 
 		var project = new Project
@@ -168,7 +168,7 @@ public class ProjectController : Controller
         catch (Exception ex)
         {
             ModelState.AddModelError("", ex.Message);
-			TempData["ErrorMessage"] = $"Unable to update project beacuse of " + ex.Message;
+			TempData["ErrorMessage"] += $"Unable to update project beacuse of " + ex.Message;
             model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
             return View(model);
         }

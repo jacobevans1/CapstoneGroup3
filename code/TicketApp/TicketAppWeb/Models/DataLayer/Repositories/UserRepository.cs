@@ -48,11 +48,10 @@ public class UserRepository : Repository<TicketAppUser>, IUserRepository
 		}
 		else
 		{
-            var errorMessages = string.Join(", ", result.Errors.Select(e => e.Description));
-            var exception = new Exception($"Failed: {errorMessages}");
-            exception.Data.Add("Errors", result.Errors);
-            throw exception;
-        }
+			var exception = new Exception(result.ToString());
+			exception.Data.Add("Errors", result.Errors);
+			throw exception;
+		}
 	}
 
 	/// <summary>
