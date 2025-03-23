@@ -37,17 +37,4 @@ public static class TagHelperExtensions
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Attributes.AppendCssClass(classNames);
     }
-
-	/// <summary>
-	/// Builds the link.
-	/// </summary>
-	/// <param name="output">The output.</param>
-	/// <param name="url">The URL.</param>
-	/// <param name="classNames">The class names.</param>
-	public static void BuildLink(this TagHelperOutput output, string url,
-        string classNames)
-    {
-        output.BuildTag("a", classNames);
-        output.Attributes.SetAttribute("href", url);
-    }
 }

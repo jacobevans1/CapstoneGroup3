@@ -2,15 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TicketAppWeb.Controllers;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
-using Xunit;
 
 namespace TestTicketAppWeb.Controllers
 {
@@ -18,7 +13,7 @@ namespace TestTicketAppWeb.Controllers
     {
         private readonly Mock<IUserRepository> _mockUserRepository;
         private readonly Mock<IGroupRepository> _mockGroupRepository;
-        private readonly Mock<SingletonService> _mockSingletonService;
+        private readonly Mock<SingletonService> _mockSingletonService = new();
         private readonly Mock<IProjectRepository> _mockProjectRepository;
         private readonly GroupController _controller;
 
@@ -137,22 +132,28 @@ namespace TestTicketAppWeb.Controllers
         public async Task DeleteGroup_ShouldReturnView_WhenGroupExists()
         {
             // Arrange
-            var group = new Group { Id = "1", GroupName = "Test Group" };
+            var group = new Group { Id = "1", GroupName = "Test Group", ManagerId = "123" };
+            var affectedProjects = new List<Project>();
             _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync(group);
+            _mockProjectRepository.Setup(repo => repo.GetProjectsByLeadAsync("123")).ReturnsAsync(affectedProjects);
 
             // Act
             var result = await _controller.DeleteGroup("1");
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal(group, viewResult.Model);
+            var model = Assert.IsType<DeleteGroupViewModel>(viewResult.Model);
+            Assert.Equal("1", model.GroupId);
+            Assert.Equal("Test Group", model.GroupName);
+            Assert.Equal("123", model.ManagerId);
+            Assert.Empty(model.AffectedProjects);
         }
 
         [Fact]
         public async Task DeleteGroup_ShouldReturnNotFound_WhenGroupDoesNotExist()
         {
             // Arrange
-            _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync((Group)null);
+            _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync((Group)null!);
 
             // Act
             var result = await _controller.DeleteGroup("1");
@@ -165,8 +166,10 @@ namespace TestTicketAppWeb.Controllers
         public async Task ConfirmDeleteGroup_ShouldRedirectToIndex_WhenGroupDeleted()
         {
             // Arrange
-            var group = new Group { Id = "1", GroupName = "Test Group" };
+            var group = new Group { Id = "1", GroupName = "Test Group", ManagerId = "123" };
+            var affectedProjects = new List<Project>(); 
             _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync(group);
+            _mockProjectRepository.Setup(repo => repo.GetProjectsByLeadAsync("123")).ReturnsAsync(affectedProjects);
             _mockGroupRepository.Setup(repo => repo.DeleteGroupAsync(group)).Returns(Task.CompletedTask);
 
             // Act
@@ -181,7 +184,7 @@ namespace TestTicketAppWeb.Controllers
         public async Task ConfirmDeleteGroup_ShouldReturnNotFound_WhenGroupDoesNotExist()
         {
             // Arrange
-            _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync((Group)null);
+            _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync((Group)null!);
 
             // Act
             var result = await _controller.ConfirmDeleteGroup("1");
@@ -194,8 +197,10 @@ namespace TestTicketAppWeb.Controllers
         public async Task ConfirmDeleteGroup_ShouldReturnView_WhenExceptionIsThrown()
         {
             // Arrange
-            var group = new Group { Id = "1", GroupName = "Test Group" };
+            var group = new Group { Id = "1", GroupName = "Test Group", ManagerId = "123" };
+            var affectedProjects = new List<Project>(); 
             _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync(group);
+            _mockProjectRepository.Setup(repo => repo.GetProjectsByLeadAsync("123")).ReturnsAsync(affectedProjects);
             _mockGroupRepository.Setup(repo => repo.DeleteGroupAsync(It.IsAny<Group>()))
                 .ThrowsAsync(new Exception("Database error"));
 
