@@ -1,5 +1,7 @@
 ﻿// Capstone Group 3
 // Spring 2025
+using TicketAppWeb.Models.DomainModels.MiddleTableModels;
+
 namespace TicketAppWeb.Models.DomainModels
 {
 	/// <summary>
@@ -33,14 +35,19 @@ namespace TicketAppWeb.Models.DomainModels
 		public Project Project { get; set; }
 
 		/// <summary>
+		/// Gets or sets the list of board statuses associated with the board.
+		/// </summary>
+		public ICollection<BoardStatus> BoardStatuses { get; set; }
+
+		/// <summary>
 		/// Gets or sets the list of statuses associated with the board.
 		/// </summary>
-		public List<Status> Statuses { get; set; }
+		public ICollection<Status> Statuses { get; set; }
 
 		/// <summary>
 		/// Gets or sets the list of tickets associated with the board.
 		/// </summary>
-		public List<Ticket> Tickets { get; set; }
+		public ICollection<Ticket> Tickets { get; set; }
 
 		public Board()
 		{

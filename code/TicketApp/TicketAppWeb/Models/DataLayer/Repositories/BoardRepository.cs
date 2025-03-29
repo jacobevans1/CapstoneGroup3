@@ -1,6 +1,7 @@
 ﻿// Capstone Group 3
 // Spring 2025
 
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
@@ -44,10 +45,16 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 
 			var newBoard = result?.Board;
 			newBoard.Project = result?.Project;
-			newBoard.Statuses = await (from bs in context.BoardStatuses
-									   join s in context.Statuses on bs.StatusId equals s.Id
-									   where bs.BoardId == newBoard.Id
-									   select s).ToListAsync();
+
+			var query = @"
+		    SELECT bs.BoardId, bs.StatusId, s.*
+		    FROM BoardStatuses bs
+		    JOIN Statuses s ON bs.StatusId = s.Id
+		    WHERE bs.BoardId = @BoardId";
+
+			var statuses = await context.Statuses
+				.FromSqlRaw(query, new SqlParameter("@BoardId", newBoard.Id))
+				.ToListAsync();
 
 			return newBoard;
 		}
@@ -97,6 +104,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 				};
 				context.BoardStatuses.Add(boardStatus);
 			}
+
 			context.SaveChanges();
 		}
 	}

@@ -108,13 +108,13 @@ namespace TicketAppWeb.Models.DataLayer
 
 			modelBuilder.Entity<BoardStatus>()
 				.HasOne(bs => bs.Board)
-				.WithMany()
+				.WithMany(b => b.BoardStatuses)
 				.HasForeignKey(bs => bs.BoardId)
 				.OnDelete(DeleteBehavior.Cascade);
 
 			modelBuilder.Entity<BoardStatus>()
 				.HasOne(bs => bs.Status)
-				.WithMany()
+				.WithMany(s => s.BoardStatuses)
 				.HasForeignKey(bs => bs.StatusId)
 				.OnDelete(DeleteBehavior.Cascade);
 
