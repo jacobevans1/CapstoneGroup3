@@ -13,7 +13,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// Gets the board for the specified project.
 		/// </summary>
 		/// <param name="projectId"></param>
-		Board GetBoardByProjectId(string projectId);
+		Task<Board?> GetBoardByProjectIdAsync(string projectId);
 
 		/// <summary>
 		///	Adds a new board for the specified project.

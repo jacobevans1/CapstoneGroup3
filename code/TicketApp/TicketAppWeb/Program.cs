@@ -24,8 +24,7 @@ builder.Services.AddRazorPages();
 
 // Configure the database context
 builder.Services.AddDbContext<TicketAppContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 
 builder.Services.AddIdentity<TicketAppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
 	.AddEntityFrameworkStores<TicketAppContext>()

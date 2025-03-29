@@ -44,11 +44,9 @@ namespace TicketAppWeb.Controllers
 
 		private void LoadIndexViewData(BoardViewModel vm, string projectId)
 		{
-			var project = _projectRepository.GetProjectByIdAsync(projectId);
-			var board = _boardRepository.GetBoardByProjectId(projectId);
-
-			vm.Project = project.Result;
+			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
 			vm.Board = board;
+			vm.Project = board.Project;
 		}
 	}
 }

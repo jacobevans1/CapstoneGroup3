@@ -1,6 +1,7 @@
 ﻿// Capstone Group 3
 // Spring 2025
 
+using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.DomainModels.MiddleTableModels;
@@ -32,10 +33,23 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// Gets the board for the specified project.
 		/// </summary>
 		/// <param name="projectId"></param>
-		public Board GetBoardByProjectId(string projectId)
+		public async Task<Board?> GetBoardByProjectIdAsync(string projectId)
 		{
-			var boards = context.Boards.ToList();
-			return boards.FirstOrDefault(b => b.ProjectId == projectId);
+			var result = await (from p in context.Projects
+								join b in context.Boards on p.Id equals b.ProjectId into boardGroup
+								from board in boardGroup.DefaultIfEmpty()
+								where p.Id == projectId
+								select new { Project = p, Board = board })
+				.FirstOrDefaultAsync();
+
+			var newBoard = result?.Board;
+			newBoard.Project = result?.Project;
+			newBoard.Statuses = await (from bs in context.BoardStatuses
+									   join s in context.Statuses on bs.StatusId equals s.Id
+									   where bs.BoardId == newBoard.Id
+									   select s).ToListAsync();
+
+			return newBoard;
 		}
 
 		/// <summary>
