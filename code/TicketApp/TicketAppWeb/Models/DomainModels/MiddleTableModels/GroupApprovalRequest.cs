@@ -1,4 +1,4 @@
-﻿namespace TicketAppWeb.Models.DomainModels;
+﻿namespace TicketAppWeb.Models.DomainModels.MiddleTableModels;
 
 public class GroupApprovalRequest
 {

@@ -1,4 +1,4 @@
-﻿using TicketAppWeb.Models.DomainModels;
+﻿using TicketAppWeb.Models.DomainModels.MiddleTableModels;
 
 namespace TicketAppWeb.Models.ViewModels;
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.Grid;
 
@@ -39,6 +40,7 @@ namespace TicketAppWeb.Models.ViewModels
 		/// <summary>
 		/// The name of the role selected in the dropdown. Used for creating a new user or editing an existing user.
 		/// </summary>
+		[Required(ErrorMessage = "Please select a role")]
 		public string? SelectedRoleName { get; set; }
 
 		/// <summary>

@@ -34,14 +34,12 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// </summary>
 		Task<Dictionary<TicketAppUser, string>> GetUserRolesAsync();
 
-        /// <summary>
-        /// Retrieves all users from the database.
-        /// </summary>
-        Task<IEnumerable<TicketAppUser>> GetAllUsersAsync();
+		/// <summary>
+		/// Retrieves all users from the database.
+		/// </summary>
+		Task<IEnumerable<TicketAppUser>> GetAllUsersAsync();
 
-        Task<TicketAppUser> GetAsync(string userId);
-
-
-    }
+		Task<TicketAppUser> GetAsync(string userId);
+	}
 
 }
