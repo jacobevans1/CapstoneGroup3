@@ -1,6 +1,6 @@
 ﻿@model TicketAppWeb.Models.ViewModels.BoardViewModel
 @{
-    ViewBag.Title = Model.Project.ProjectName;
+	ViewBag.Title = Model.Project.ProjectName;
 }
 
 <!-- TempData variables -->
@@ -39,28 +39,45 @@
 							<small class="text-white-50">@(Model.AssignedGroups?.GetValueOrDefault(stage.Id) ?? "Unassigned")</small>
 						</div>
 
-						<div class="dropdown" style="margin-left: auto;">
-							<button class="btn btn-link p-0" type="button" id="ellipsisButton-@stage.Id" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; color: white; padding: 0 15px;">
-								<i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
-							</button>
-							<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-								<li>
-									<a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#assignGroupModal" onclick="setAssignGroupData('@stage.Id')">
-										<i class="fas fa-users me-2"></i> Assign Group
-									</a>
-								</li>
-								<li>
-									<a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#renameStageModal" onclick="setRenameStageData('@stage.Id', '@stage.Name')">
-										<i class="fas fa-edit me-2"></i> Rename Stage
-									</a>
-								</li>
-								<li>
-									<a class="dropdown-item d-flex align-items-center text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteStageModal" onclick="setDeleteStageData('@stage.Id')">
-										<i class="fas fa-trash-alt me-2"></i> Remove Stage
-									</a>
-								</li>
-							</ul>
-						</div>
+						@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
+						{
+							<div class="dropdown" style="margin-left: auto;">
+								<button class="btn btn-link p-0" type="button" id="ellipsisButton-@stage.Id" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; color: white; padding: 0 15px;">
+									<i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
+								</button>
+								<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject())
+									{
+										<li>
+											<a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#assignGroupModal" onclick="setAssignGroupData('@stage.Id')">
+												<i class="fas fa-users me-2"></i> Assign Group
+											</a>
+										</li>
+									}
+
+									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
+									{
+										<li>
+											<a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#renameStageModal" onclick="setRenameStageData('@stage.Id', '@stage.Name')">
+												<i class="fas fa-edit me-2"></i> Rename Stage
+											</a>
+										</li>
+									}
+
+									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
+									{
+										<li>
+											<a class="dropdown-item d-flex align-items-center text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteStageModal" onclick="setDeleteStageData('@stage.Id')">
+												<i class="fas fa-trash-alt me-2"></i> Remove Stage
+											</a>
+										</li>
+									}
+
+								</ul>
+							</div>
+						}
+
 					</div>
 
 					<div class="card-body">
@@ -77,21 +94,29 @@
 							<input type="hidden" id="moveDirection_@stage.Id" name="SelectedDirection" value="" />
 
 							<div class="card-footer d-flex justify-content-between">
-								<button type="submit" class="btn btn-sm"
-										onclick="setMoveStageData('@stage.Id', 'left');">
-									<i class="fas fa-arrow-left"></i>
-								</button>
+
+								@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
+								{
+									<button type="submit" class="btn btn-sm"
+									        onclick="setMoveStageData('@stage.Id', 'left');">
+										<i class="fas fa-arrow-left"></i>
+									</button>
+								}
 
 								<button class="btn btn-sm btn-success d-flex align-items-center gap-1"
-										data-bs-toggle="modal"
-										data-bs-target="#addTaskModal">
+								data-bs-toggle="modal"
+								data-bs-target="#addTaskModal">
 									<i class="fas fa-plus" style="font-size: 1rem;"></i> <span style="font-size: 1rem;">Add Item</span>
 								</button>
 
-								<button type="submit" class="btn btn-sm"
-										onclick="setMoveStageData('@stage.Id', 'right');">
-									<i class="fas fa-arrow-right"></i>
-								</button>
+								@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
+								{
+									<button type="submit" class="btn btn-sm"
+									        onclick="setMoveStageData('@stage.Id', 'right');">
+										<i class="fas fa-arrow-right"></i>
+									</button>
+								}
+
 							</div>
 						</form>
 					</div>
@@ -99,15 +124,18 @@
 			</div>
 		}
 
-		<div class="col-auto">
-			<div class="d-flex align-items-center justify-content-center h-100">
-				<button class="btn btn-primary d-flex align-items-center gap-1"
-						data-bs-toggle="modal"
-						data-bs-target="#addStageModal">
-					<i class="fas fa-plus" style="font-size: 1rem;"></i> <span style="font-size: 1rem;">Add Stage</span>
-				</button>
+		@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
+		{
+			<div class="col-auto">
+				<div class="d-flex align-items-center justify-content-center h-100">
+					<button class="btn btn-primary d-flex align-items-center gap-1"
+					        data-bs-toggle="modal"
+					        data-bs-target="#addStageModal">
+						<i class="fas fa-plus" style="font-size: 1rem;"></i> <span style="font-size: 1rem;">Add Stage</span>
+					</button>
+				</div>
 			</div>
-		</div>
+		}
 
 	</div>
 </div>

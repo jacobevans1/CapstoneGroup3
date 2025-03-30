@@ -76,5 +76,29 @@ namespace TicketAppWeb.Models.ViewModels
 			Board = new Board();
 			Project = new Project();
 		}
+
+		/// <summary>
+		/// Checks if the current user is the project lead for the project.
+		/// </summary>
+		public bool IsCurrentUserProjectLeadForProject()
+		{
+			return Project.LeadId == CurrentUser.Id;
+		}
+
+		/// <summary>
+		/// Checks if the current user is a group manager in the project.
+		/// </summary>
+		public bool IsCurrentUserAGroupManagerInProject()
+		{
+			foreach (var group in Project.Groups)
+			{
+				if (group.ManagerId == CurrentUser.Id)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 }

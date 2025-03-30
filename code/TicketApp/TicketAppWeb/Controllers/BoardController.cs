@@ -200,9 +200,10 @@ namespace TicketAppWeb.Controllers
 			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
 			var stages = _boardRepository.GetStages(board.Id);
 			var assignedGroups = _boardRepository.GetAllAssignedGroupsForStages(board.Id);
+			var project = _projectRepository.GetProjectByNameAndLeadAsync(board.Project.ProjectName, board.Project.LeadId).Result;
 
 			vm.Board = board;
-			vm.Project = board.Project;
+			vm.Project = project;
 			vm.Stages = stages;
 			vm.AssignedGroups = assignedGroups;
 		}
