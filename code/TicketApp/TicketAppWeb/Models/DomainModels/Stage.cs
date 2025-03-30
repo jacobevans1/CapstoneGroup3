@@ -2,11 +2,11 @@
 
 namespace TicketAppWeb.Models.DomainModels
 {
-	public class Status
+	public class Stage
 	{
 		public string Id { get; set; }
 		public string Name { get; set; }
 
-		public ICollection<BoardStatus> BoardStatuses { get; set; }
+		public ICollection<BoardStage> BoardStages { get; set; }
 	}
 }

@@ -5,31 +5,31 @@
 
 <div class="container py-5">
     <div class="row g-4 d-flex flex-nowrap">
-        @foreach (var status in Model.Statuses)
+        @foreach (var stage in Model.Stages)
         {
             <div class="col-12 col-md-6 col-lg-4 column">
                 <div class="card shadow-lg border-light rounded">
                     <div class="card-header bg-primary text-white d-flex justify-content-between">
-	                    <h5 class="mb-0">@status.Name</h5>
-	                    <small class="d-block text-white-50">@Model.AssignedGroups[status.Id]</small>
+	                    <h5 class="mb-0">@stage.Name</h5>
+	                    <small class="d-block text-white-50">@Model.AssignedGroups[stage.Id]</small>
 	                    <div class="dropdown">
-		                    <button class="btn btn-link p-0" type="button" id="ellipsisButton-@status.Id" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; color: white; padding: 0;">
+		                    <button class="btn btn-link p-0" type="button" id="ellipsisButton-@stage.Id" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; color: white; padding: 0;">
 			                    <i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
 		                    </button>
 		                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 			                    <li>
-				                    <a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#assignGroupModal" onclick="setAssignGroupData('@status.Id')">
+				                    <a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#assignGroupModal" onclick="setAssignGroupData('@stage.Id')">
 					                    <i class="fas fa-users me-2"></i> Assign Group
 				                    </a>
 			                    </li>
 			                    <li>
-				                    <a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#renameColumnModal" onclick="setRenameColumnData('@status.Id', '@status.Name')">
-					                    <i class="fas fa-edit me-2"></i> Rename Column
+				                    <a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#renameStageModal" onclick="setRenameStageData('@stage.Id', '@stage.Name')">
+					                    <i class="fas fa-edit me-2"></i> Rename Stage
 				                    </a>
 			                    </li>
 			                    <li>
-				                    <a class="dropdown-item d-flex align-items-center text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteColumnModal" onclick="setDeleteColumnData('@status.Id')">
-					                    <i class="fas fa-trash-alt me-2"></i> Remove Column
+				                    <a class="dropdown-item d-flex align-items-center text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteStageModal" onclick="setDeleteStageData('@stage.Id')">
+					                    <i class="fas fa-trash-alt me-2"></i> Remove Stage
 				                    </a>
 
 			                    </li>
@@ -42,7 +42,7 @@
                         </ul>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-sm btn-success d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addTaskModal" onclick="setAddTaskData('@status.Id')">
+                        <button class="btn btn-sm btn-success d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addTaskModal" onclick="setAddTaskData('@stage.Id')">
                             <i class="fas fa-plus me-2"></i> Add Item
                         </button>
                     </div>
@@ -52,8 +52,8 @@
 
         <div class="col-auto">
             <div class="d-flex align-items-center justify-content-center h-100">
-                <button class="btn btn-outline-primary d-flex align-items-center px-4 py-3" data-bs-toggle="modal" data-bs-target="#addColumnModal">
-                    <i class="fas fa-plus me-2"></i> Add Column
+                <button class="btn btn-outline-primary d-flex align-items-center px-4 py-3" data-bs-toggle="modal" data-bs-target="#addStageModal">
+                    <i class="fas fa-plus me-2"></i> Add Stage
                 </button>
             </div>
         </div>
@@ -61,21 +61,21 @@
 </div>
 
 
-<!-- Add Column Modal -->
-<div class="modal fade" id="addColumnModal" tabindex="-1" aria-labelledby="addColumnModalLabel" aria-hidden="true">
+<!-- Add Stage Modal -->
+<div class="modal fade" id="addStageModal" tabindex="-1" aria-labelledby="addStageModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="addColumnModalLabel">Add New Column</h5>
+				<h5 class="modal-title" id="addStageModalLabel">Add New Stage</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<form asp-action="AddColumn" asp-controller="Board" method="post">
+			<form asp-action="AddStage" asp-controller="Board" method="post">
 				<input type="hidden" asp-for="Board.Id"/>
 				<input type="hidden" asp-for="Project.Id"/>
 				<div class="modal-body">
 					<div class="mb-3">
-						<label for="newColumnName" class="form-label">Column Name</label>
-						<input type="text" class="form-control" id="newColumnName" asp-for="NewStatusName" placeholder="Enter column name" required>
+						<label for="newStageName" class="form-label">Stage Name</label>
+						<input type="text" class="form-control" id="newStageName" asp-for="NewStageName" placeholder="Enter stage name" required>
 					</div>
 					<div class="mb-3">
 						<label for="initialGroupSelect" class="form-label">Select Group</label>
@@ -88,7 +88,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="submit" class="btn btn-primary">Add Column</button>
+					<button type="submit" class="btn btn-primary">Add Stage</button>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 				</div>
 			</form>
@@ -98,26 +98,26 @@
 
 
 
-<!-- Rename Column Modal -->
-<div class="modal fade" id="renameColumnModal" tabindex="-1" aria-labelledby="renameColumnModalLabel" aria-hidden="true">
+<!-- Rename Stage Modal -->
+<div class="modal fade" id="renameStageModal" tabindex="-1" aria-labelledby="renameStageModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="renameColumnModalLabel">Rename Column</h5>
+				<h5 class="modal-title" id="renameStageModalLabel">Rename Stage</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<form asp-action="RenameColumn" asp-controller="Board" method="post">
+			<form asp-action="RenameStage" asp-controller="Board" method="post">
 				<input type="hidden" asp-for="Board.Id"/>
 				<input type="hidden" asp-for="Project.Id"/>
 				<div class="modal-body">
-					<input type="hidden" id="renameColumnId" asp-for="SelectedStatusId">
+					<input type="hidden" id="renameStageId" asp-for="SelectedStageId">
 					<div class="mb-3">
-						<label for="renameColumnName" class="form-label">New Column Name</label>
-						<input type="text" class="form-control" id="renameColumnName" asp-for="NewStatusName" placeholder="Enter new name" required>
+						<label for="renameStageName" class="form-label">New Stage Name</label>
+						<input type="text" class="form-control" id="renameStageName" asp-for="NewStageName" placeholder="Enter new name" required>
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="submit" class="btn btn-primary">Rename</button>
+					<button type="submit" class="btn btn-primary">Rename Stage</button>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 				</div>
 			</form>
@@ -132,14 +132,14 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="assignGroupModalLabel">Assign Group to Column</h5>
+				<h5 class="modal-title" id="assignGroupModalLabel">Assign Group to Stage</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<form asp-action="AssignGroupToStatus" asp-controller="Board" method="post">
+			<form asp-action="AssignGroupToStage" asp-controller="Board" method="post">
 				<input type="hidden" asp-for="Board.Id"/>
 				<input type="hidden" asp-for="Project.Id"/>
 				<div class="modal-body">
-					<input type="hidden" id="assignGroupStatusId" asp-for="SelectedStatusId">
+					<input type="hidden" id="assignGroupStatusId" asp-for="SelectedStageId">
 					<div class="mb-3">
 						<label for="newGroupSelect" class="form-label">Select Group</label>
 						<select class="form-select" id="newGroupSelect" asp-for="SelectedGroupId">
@@ -151,7 +151,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="submit" class="btn btn-primary">Assign</button>
+					<button type="submit" class="btn btn-primary">Assign Group</button>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 				</div>
 			</form>
@@ -160,23 +160,23 @@
 </div>
 
 
-<!-- Delete Column Modal -->
-<div class="modal fade" id="deleteColumnModal" tabindex="-1" aria-labelledby="deleteColumnModalLabel" aria-hidden="true">
+<!-- Delete Stage Modal -->
+<div class="modal fade" id="deleteStageModal" tabindex="-1" aria-labelledby="deleteStageModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="deleteColumnModalLabel">Delete Column</h5>
+				<h5 class="modal-title" id="deleteStageModalLabel">Delete Stage</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<form asp-action="DeleteColumn" asp-controller="Board" method="post">
+			<form asp-action="DeleteStage" asp-controller="Board" method="post">
 				<input type="hidden" asp-for="Board.Id"/>
 				<input type="hidden" asp-for="Project.Id"/>
-				<input type="hidden" id="deleteColumnId" asp-for="SelectedStatusId">
+				<input type="hidden" id="deleteStageId" asp-for="SelectedStageId">
 				<div class="modal-body">
-					<p>Are you sure you want to delete this column? This action cannot be undone.</p>
+					<p>Are you sure you want to delete this stage? This action cannot be undone.</p>
 				</div>
 				<div class="modal-footer">
-					<button type="submit" class="btn btn-danger">Delete</button>
+					<button type="submit" class="btn btn-danger">Delete Stage</button>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 				</div>
 			</form>
@@ -195,7 +195,7 @@
 @* 			</div> *@
 @* 			<form asp-action="AddTask" asp-controller="Board" method="post"> *@
 @* 				<div class="modal-body"> *@
-@* 					<input type="hidden" id="taskStatusId" asp-for="StatusId"> *@
+@* 					<input type="hidden" id="taskStageId" asp-for="StageId"> *@
 @* 					<div class="mb-3"> *@
 @* 						<label for="taskName" class="form-label">Task Name</label> *@
 @* 						<input type="text" class="form-control" id="taskName" asp-for="TaskName" placeholder="Enter task name" required> *@
@@ -220,26 +220,26 @@
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
 <script>
-	function setAssignGroupData(statusId) {
-		document.getElementById("assignGroupStatusId").value = statusId;
+	function setAssignGroupData(stageId) {
+		document.getElementById("assignGroupStageId").value = stageId;
 	}
 </script>
 
 <script>
-	function setRenameColumnData(statusId, statusName) {
-		document.getElementById("renameColumnId").value = statusId;
-		document.getElementById("renameColumnName").value = statusName;
+	function setRenameStageData(stageId, stageName) {
+		document.getElementById("renameStageId").value = stageId;
+		document.getElementById("renameStageName").value = stageName;
 	}
 </script>
 
 <script>
-	function setDeleteColumnData(statusId) {
-		document.getElementById("deleteColumnId").value = statusId;
+	function setDeleteStageData(stageId) {
+		document.getElementById("deleteStageId").value = stageId;
 	}
 </script>
 
 @* <script> *@
-@* 	function setAddTaskData(statusId) { *@
-@* 		document.getElementById('taskStatusId').value = statusId; *@
+@* 	function setAddTaskData(stageId) { *@
+@* 		document.getElementById('taskStageId').value = stageId; *@
 @* 	} *@
 @* </script> *@

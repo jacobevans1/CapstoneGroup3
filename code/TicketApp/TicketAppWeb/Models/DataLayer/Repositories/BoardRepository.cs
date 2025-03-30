@@ -14,7 +14,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 	/// </summary>
 	public class BoardRepository : Repository<Board>, IBoardRepository
 	{
-		private readonly List<Status> _defaultStatuses;
+		private readonly List<Stage> _defaultStages;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BoardRepository"/> class.
@@ -22,11 +22,11 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <param name="ctx"></param>
 		public BoardRepository(TicketAppContext ctx) : base(ctx)
 		{
-			_defaultStatuses = new List<Status>
+			_defaultStages = new List<Stage>
 			{
-				new Status { Id = "5de8ea48-a734-4b97-bc39-18070e4e25a9", Name = "Todo" },
-				new Status { Id = "8409c38a-5fab-4283-8957-1c5888d7716d", Name = "In Progress" },
-				new Status { Id = "bd0ccc84-e3bd-4417-85ae-15ac2457e390", Name = "Done" }
+				new Stage { Id = "5de8ea48-a734-4b97-bc39-18070e4e25a9", Name = "Todo" },
+				new Stage { Id = "8409c38a-5fab-4283-8957-1c5888d7716d", Name = "In Progress" },
+				new Stage { Id = "bd0ccc84-e3bd-4417-85ae-15ac2457e390", Name = "Done" }
 			};
 		}
 
@@ -60,7 +60,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		{
 			var board = CreateBoard(project);
 			Insert(board);
-			AddDefaultBoardStatuses(board);
+			AddDefaultBoardStages(board);
 			Save();
 		}
 
@@ -68,17 +68,17 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// Adds a new status to the board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		/// <param name="statusName"></param>
+		/// <param name="stageName"></param>
 		/// <param name="groupId"></param>
-		public void AddStatus(string boardId, string statusName, string groupId)
+		public void AddStatus(string boardId, string stageName, string groupId)
 		{
-			var status = CreateStatus(statusName);
-			var boardStatus = CreateBoardStatus(boardId, status.Id, groupId);
+			var status = CreateStage(stageName);
+			var boardStatus = CreateBoardStage(boardId, status.Id, groupId);
 
-			context.Statuses.Add(status);
+			context.Stages.Add(status);
 			context.SaveChanges();
 
-			context.BoardStatuses.Add(boardStatus);
+			context.BoardStages.Add(boardStatus);
 			context.SaveChanges();
 		}
 
@@ -86,20 +86,20 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// Deletes a status for the specified board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		/// <param name="statusId"></param>
-		public void DeleteStatus(string boardId, string statusId)
+		/// <param name="stageId"></param>
+		public void DeleteStage(string boardId, string stageId)
 		{
-			var boardStatus = context.BoardStatuses.FirstOrDefault(bs => bs.BoardId == boardId && bs.StatusId == statusId);
+			var boardStatus = context.BoardStages.FirstOrDefault(bs => bs.BoardId == boardId && bs.StageId == stageId);
 			if (boardStatus != null)
 			{
-				context.BoardStatuses.Remove(boardStatus);
+				context.BoardStages.Remove(boardStatus);
 				Save();
 			}
 
-			var status = context.Statuses.FirstOrDefault(s => s.Id == statusId);
+			var status = context.Stages.FirstOrDefault(s => s.Id == stageId);
 			if (status != null)
 			{
-				context.Statuses.Remove(status);
+				context.Stages.Remove(status);
 				Save();
 			}
 		}
@@ -108,15 +108,15 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <summary>
 		/// Renames a status on the board.
 		/// </summary>
-		/// <param name="statusId"></param>
-		/// <param name="newStatusName"></param>
-		public void RenameStatus(string statusId, string newStatusName)
+		/// <param name="stageId"></param>
+		/// <param name="newStageName"></param>
+		public void RenameStage(string stageId, string newStageName)
 		{
-			var status = context.Statuses.FirstOrDefault(s => s.Id == statusId);
+			var status = context.Stages.FirstOrDefault(s => s.Id == stageId);
 			if (status != null)
 			{
-				status.Name = newStatusName;
-				context.Statuses.Update(status);
+				status.Name = newStageName;
+				context.Stages.Update(status);
 				Save();
 			}
 		}
@@ -124,16 +124,16 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <summary>
 		/// Assigns a group to a status.
 		/// </summary>
-		/// <param name="boardId"></param>
-		/// <param name="statusId"></param>
+		/// <param name="boardStageId"></param>
+		/// <param name="stageId"></param>
 		/// <param name="groupId"></param>
-		public void AssignGroupToStatus(string boardId, string statusId, string groupId)
+		public void AssignGroupToStage(string boardStageId, string stageId, string groupId)
 		{
-			var boardStatus = context.BoardStatuses.FirstOrDefault(bs => bs.BoardId == boardId && bs.StatusId == statusId);
+			var boardStatus = context.BoardStages.FirstOrDefault(bs => bs.BoardId == boardStageId && bs.StageId == stageId);
 			if (boardStatus != null)
 			{
 				boardStatus.GroupId = groupId;
-				context.BoardStatuses.Update(boardStatus);
+				context.BoardStages.Update(boardStatus);
 				Save();
 			}
 		}
@@ -142,15 +142,15 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// Gets the statuses for the specified board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		public ICollection<Status> GetStatusesForBoard(string boardId)
+		public ICollection<Stage> GetBoardStages(string boardId)
 		{
 			var query = @"
-		    SELECT bs.BoardId, bs.StatusId, s.*
-		    FROM BoardStatuses bs
-		    JOIN Statuses s ON bs.StatusId = s.Id
+		    SELECT bs.BoardId, bs.StageId, s.*
+		    FROM BoardStages bs
+		    JOIN Stages s ON bs.StageId = s.Id
 		    WHERE bs.BoardId = @BoardId";
 
-			var statuses = context.Statuses
+			var statuses = context.Stages
 				.FromSqlRaw(query, new SqlParameter("@BoardId", boardId))
 				.ToList();
 
@@ -158,20 +158,20 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		}
 
 		/// <summary>
-		/// Gets the groups assigned to each status for the specified board.
+		/// Gets the groups assigned to each stage for the specified board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		public Dictionary<string, string> GetAssignedGroupsForBoard(string boardId)
+		public Dictionary<string, string> GetAllAssignedGroupsForStages(string boardId)
 		{
 			var query = @"
-			SELECT bs.BoardId, bs.StatusId, bs.GroupId, g.GroupName
-			FROM BoardStatuses bs
+			SELECT bs.BoardId, bs.StageId, bs.GroupId, g.GroupName
+			FROM BoardStages bs
 			JOIN Groups g ON bs.GroupId = g.Id
 			WHERE bs.BoardId = @BoardId";
 
-			var assignedGroups = context.BoardStatuses
+			var assignedGroups = context.BoardStages
 				.FromSqlRaw(query, new SqlParameter("@BoardId", boardId))
-				.Select(bg => new { bg.StatusId, bg.Group.GroupName })
+				.Select(bg => new { StatusId = bg.StageId, bg.Group.GroupName })
 				.ToList();
 
 			return assignedGroups.ToDictionary(bg => bg.StatusId, bg => bg.GroupName);
@@ -188,37 +188,37 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			return board;
 		}
 
-		private Status CreateStatus(string statusName)
+		private Stage CreateStage(string stageName)
 		{
-			var status = new Status
+			var status = new Stage
 			{
 				Id = Guid.NewGuid().ToString(),
-				Name = statusName
+				Name = stageName
 			};
 			return status;
 		}
 
-		private BoardStatus CreateBoardStatus(string boardId, string statusId, string groupId)
+		private BoardStage CreateBoardStage(string boardId, string stageId, string groupId)
 		{
-			var boardStatus = new BoardStatus
+			var boardStatus = new BoardStage
 			{
 				BoardId = boardId,
-				StatusId = statusId,
+				StageId = stageId,
 				GroupId = groupId
 			};
 			return boardStatus;
 		}
 
-		private void AddDefaultBoardStatuses(Board board)
+		private void AddDefaultBoardStages(Board board)
 		{
-			foreach (var status in _defaultStatuses)
+			foreach (var status in _defaultStages)
 			{
-				var boardStatus = new BoardStatus
+				var boardStatus = new BoardStage
 				{
 					BoardId = board.Id,
-					StatusId = status.Id,
+					StageId = status.Id,
 				};
-				context.BoardStatuses.Add(boardStatus);
+				context.BoardStages.Add(boardStatus);
 			}
 
 			context.SaveChanges();

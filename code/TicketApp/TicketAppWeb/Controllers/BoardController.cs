@@ -16,6 +16,7 @@ namespace TicketAppWeb.Controllers
 		private readonly IProjectRepository _projectRepository;
 		private readonly IBoardRepository _boardRepository;
 
+
 		/// <summary>
 		/// Initializes a new instance of the UserController class.
 		/// </summary>
@@ -26,6 +27,7 @@ namespace TicketAppWeb.Controllers
 			_projectRepository = projectRepository;
 			_boardRepository = boardRepository;
 		}
+
 
 		/// <summary>
 		/// Displays the board index view.
@@ -42,15 +44,16 @@ namespace TicketAppWeb.Controllers
 			return View(viewModel);
 		}
 
+
 		/// <summary>
 		/// Adds a new column to the board.
 		/// </summary>
 		/// <param name="viewModel"></param>
 		[HttpPost]
-		public IActionResult AddColumn(BoardViewModel viewModel)
+		public IActionResult AddStage(BoardViewModel viewModel)
 		{
 			var boardId = viewModel.Board.Id;
-			var newStatusName = viewModel.NewStatusName;
+			var newStatusName = viewModel.NewStageName;
 			var groupId = viewModel.SelectedGroupId;
 
 			try
@@ -65,19 +68,20 @@ namespace TicketAppWeb.Controllers
 			}
 		}
 
+
 		/// <summary>
-		/// Renames a column on the board.
+		/// Renames a stage on the board.
 		/// </summary>
 		/// <param name="viewModel"></param>
 		[HttpPost]
-		public IActionResult RenameColumn(BoardViewModel viewModel)
+		public IActionResult RenameStage(BoardViewModel viewModel)
 		{
-			var statusId = viewModel.SelectedStatusId;
-			var newStatusName = viewModel.NewStatusName;
+			var statusId = viewModel.SelectedStageId;
+			var newStatusName = viewModel.NewStageName;
 
 			try
 			{
-				_boardRepository.RenameStatus(statusId, newStatusName);
+				_boardRepository.RenameStage(statusId, newStatusName);
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
 			catch (Exception ex)
@@ -86,20 +90,21 @@ namespace TicketAppWeb.Controllers
 			}
 		}
 
+
 		/// <summary>
-		/// Assigns a group to a status.
+		/// Assigns a group to a stage.
 		/// </summary>
 		/// <param name="viewModel"></param>
 		[HttpPost]
-		public IActionResult AssignGroupToStatus(BoardViewModel viewModel)
+		public IActionResult AssignGroupToStage(BoardViewModel viewModel)
 		{
 			var boardId = viewModel.Board.Id;
-			var statusId = viewModel.SelectedStatusId;
+			var statusId = viewModel.SelectedStageId;
 			var groupId = viewModel.SelectedGroupId;
 
 			try
 			{
-				_boardRepository.AssignGroupToStatus(boardId, statusId, groupId);
+				_boardRepository.AssignGroupToStage(boardId, statusId, groupId);
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
 			catch (Exception ex)
@@ -110,17 +115,17 @@ namespace TicketAppWeb.Controllers
 
 
 		/// <summary>
-		/// Deletes a column from the board.
+		/// Deletes a stage from the board.
 		/// </summary>
 		/// <param name="viewModel"></param>
-		public IActionResult DeleteColumn(BoardViewModel viewModel)
+		public IActionResult DeleteStage(BoardViewModel viewModel)
 		{
 			var boardId = viewModel.Board.Id;
-			var statusId = viewModel.SelectedStatusId;
+			var statusId = viewModel.SelectedStageId;
 
 			try
 			{
-				_boardRepository.DeleteStatus(boardId, statusId);
+				_boardRepository.DeleteStage(boardId, statusId);
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
 			catch (Exception ex)
@@ -129,15 +134,16 @@ namespace TicketAppWeb.Controllers
 			}
 		}
 
+
 		private void LoadIndexViewData(BoardViewModel vm, string projectId)
 		{
 			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
-			var statuses = _boardRepository.GetStatusesForBoard(board.Id);
-			var assignedGroups = _boardRepository.GetAssignedGroupsForBoard(board.Id);
+			var statuses = _boardRepository.GetBoardStages(board.Id);
+			var assignedGroups = _boardRepository.GetAllAssignedGroupsForStages(board.Id);
 
 			vm.Board = board;
 			vm.Project = board.Project;
-			vm.Statuses = statuses;
+			vm.Stages = statuses;
 			vm.AssignedGroups = assignedGroups;
 		}
 	}

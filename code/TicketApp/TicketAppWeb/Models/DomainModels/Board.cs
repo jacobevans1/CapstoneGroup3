@@ -35,9 +35,9 @@ namespace TicketAppWeb.Models.DomainModels
 		public Project Project { get; set; }
 
 		/// <summary>
-		/// Gets or sets the list of board statuses associated with the board.
+		/// Gets or sets the list of board stages associated with the board.
 		/// </summary>
-		public ICollection<BoardStatus> BoardStatuses { get; set; }
+		public ICollection<BoardStage> BoardStages { get; set; }
 
 		/// <summary>
 		/// Gets or sets the list of tickets associated with the board.
@@ -49,7 +49,7 @@ namespace TicketAppWeb.Models.DomainModels
 		/// </summary>
 		public Board()
 		{
-			BoardStatuses = new List<BoardStatus>();
+			BoardStages = new List<BoardStage>();
 			Tickets = new List<Ticket>();
 		}
 	}

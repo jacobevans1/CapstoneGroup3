@@ -79,9 +79,9 @@ namespace TicketAppWeb.Migrations
 						onDelete: ReferentialAction.Restrict);
 				});
 
-			// Create Statuses Table
+			// Create Stages Table
 			migrationBuilder.CreateTable(
-				name: "Statuses",
+				name: "Stages",
 				columns: table => new
 				{
 					Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -92,17 +92,17 @@ namespace TicketAppWeb.Migrations
 					table.PrimaryKey("PK_Statuses", x => x.Id);
 				});
 
-			// Create BoardStatuses Table
+			// Create BoardStages Table
 			migrationBuilder.CreateTable(
-				name: "BoardStatuses",
+				name: "BoardStages",
 				columns: table => new
 				{
 					BoardId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-					StatusId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+					StageId = table.Column<string>(type: "nvarchar(450)", nullable: false)
 				},
 				constraints: table =>
 				{
-					table.PrimaryKey("PK_BoardStatuses", x => new { x.BoardId, x.StatusId });
+					table.PrimaryKey("PK_BoardStatuses", x => new { x.BoardId, x.StageId });
 					table.ForeignKey(
 						name: "FK_BoardStatuses_Boards",
 						column: x => x.BoardId,
@@ -111,8 +111,8 @@ namespace TicketAppWeb.Migrations
 						onDelete: ReferentialAction.Cascade);
 					table.ForeignKey(
 						name: "FK_BoardStatuses_Statuses",
-						column: x => x.StatusId,
-						principalTable: "Statuses",
+						column: x => x.StageId,
+						principalTable: "Stages",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Restrict);
 				});
@@ -132,8 +132,8 @@ namespace TicketAppWeb.Migrations
 		/// <inheritdoc />
 		protected override void Down(MigrationBuilder migrationBuilder)
 		{
-			migrationBuilder.DropTable(name: "BoardStatuses");
-			migrationBuilder.DropTable(name: "Statuses");
+			migrationBuilder.DropTable(name: "BoardStages");
+			migrationBuilder.DropTable(name: "Stages");
 			migrationBuilder.DropTable(name: "TicketAssignees");
 			migrationBuilder.DropTable(name: "Tickets");
 			migrationBuilder.DropTable(name: "Boards");

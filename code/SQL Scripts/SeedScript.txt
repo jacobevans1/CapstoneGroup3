@@ -41,10 +41,14 @@ INSERT INTO [dbo].[GroupProject] ([ProjectsId], [GroupsId]) VALUES (N'7c49a8d5-9
 
 INSERT INTO [dbo].[Boards] ([Id], [BoardName], [Description], [ProjectId]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'National League Board', N'The National League Project Board', N'7c49a8d5-9e1c-4f91-8df4-2a0aafbfc6e8')
 
-INSERT INTO [dbo].[Statuses] ([Id], [Name]) VALUES (N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'Todo')
-INSERT INTO [dbo].[Statuses] ([Id], [Name]) VALUES (N'8409c38a-5fab-4283-8957-1c5888d7716d', N'In Progress')
-INSERT INTO [dbo].[Statuses] ([Id], [Name]) VALUES (N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'Done')
+INSERT INTO [dbo].[Stages] ([Id], [Name]) VALUES (N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'Todo')
+INSERT INTO [dbo].[Stages] ([Id], [Name]) VALUES (N'8409c38a-5fab-4283-8957-1c5888d7716d', N'In Progress')
+INSERT INTO [dbo].[Stages] ([Id], [Name]) VALUES (N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'Done')
 
-INSERT INTO [dbo].[BoardStatuses] ([BoardId], [StatusId], [GroupId]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3')
-INSERT INTO [dbo].[BoardStatuses] ([BoardId], [StatusId], [GroupId]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3')
-INSERT INTO [dbo].[BoardStatuses] ([BoardId], [StatusId], [GroupId]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3')
+INSERT INTO [dbo].[BoardStages] ([BoardId], [StageId], [GroupId]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3')
+INSERT INTO [dbo].[BoardStages] ([BoardId], [StageId], [GroupId]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3')
+INSERT INTO [dbo].[BoardStages] ([BoardId], [StageId], [GroupId]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3')
+
+INSERT INTO [dbo].[BoardStageOrders] ([BoardId], [StageId], [StageOrder]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'1')
+INSERT INTO [dbo].[BoardStageOrders] ([BoardId], [StageId], [StageOrder]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'2')
+INSERT INTO [dbo].[BoardStageOrders] ([BoardId], [StageId], [StageOrder]) VALUES (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'3')

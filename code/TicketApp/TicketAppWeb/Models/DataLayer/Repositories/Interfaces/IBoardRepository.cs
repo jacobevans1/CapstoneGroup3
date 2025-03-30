@@ -22,45 +22,45 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		void AddBoard(Project project);
 
 		/// <summary>
-		/// Adds a new status to the board.
+		/// Adds a new stage to the board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		/// <param name="statusName"></param>
+		/// <param name="stageName"></param>
 		/// <param name="groupId"></param>
-		void AddStatus(string boardId, string statusName, string groupId);
+		void AddStatus(string boardId, string stageName, string groupId);
 
 		/// <summary>
-		/// Deletes a status for the specified board.
+		/// Deletes a stage for the specified board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		/// <param name="statusId"></param>
-		void DeleteStatus(string boardId, string statusId);
+		/// <param name="stageId"></param>
+		void DeleteStage(string boardId, string stageId);
 
 		/// <summary>
-		/// Renames a status on the board.
+		/// Renames a stage on the board.
 		/// </summary>
-		/// <param name="statusId"></param>
-		/// <param name="newStatusName"></param>
-		void RenameStatus(string statusId, string newStatusName);
+		/// <param name="stageId"></param>
+		/// <param name="newStageName"></param>
+		void RenameStage(string stageId, string newStageName);
 
 		/// <summary>
-		/// Assigns a group to a status.
+		/// Assigns a group to a stage.
 		/// </summary>
-		/// <param name="boardStatusId"></param>
-		/// <param name="statusId"></param>
+		/// <param name="boardStageId"></param>
+		/// <param name="stageId"></param>
 		/// <param name="groupId"></param>
-		void AssignGroupToStatus(string boardStatusId, string statusId, string groupId);
+		void AssignGroupToStage(string boardStageId, string stageId, string groupId);
 
 		/// <summary>
-		/// Gets the statuses for the specified board.
+		/// Gets the stages for the specified board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		ICollection<Status> GetStatusesForBoard(string boardId);
+		ICollection<Stage> GetBoardStages(string boardId);
 
 		/// <summary>
-		/// Gets the groups assigned to each status for the specified board.
+		/// Gets the groups assigned to each stage for the specified board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		Dictionary<string, string> GetAssignedGroupsForBoard(string boardId);
+		Dictionary<string, string> GetAllAssignedGroupsForStages(string boardId);
 	}
 }

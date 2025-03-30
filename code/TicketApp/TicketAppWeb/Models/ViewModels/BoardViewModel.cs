@@ -33,9 +33,9 @@ namespace TicketAppWeb.Models.ViewModels
 		public Project Project { get; set; }
 
 		/// <summary>
-		/// Gets or sets the list of statuses associated with the board.
+		/// Gets or sets the list of stages associated with the board.
 		/// </summary>
-		public ICollection<Status> Statuses { get; set; }
+		public ICollection<Stage> Stages { get; set; }
 
 		/// <summary>
 		/// Gets or sets the list of groups associated with the board.
@@ -43,14 +43,14 @@ namespace TicketAppWeb.Models.ViewModels
 		public Dictionary<string, string> AssignedGroups { get; set; }
 
 		/// <summary>
-		/// Gets or sets the list of groups associated with the view model.
+		/// Gets or sets the name of the new stage to be added.
 		/// </summary>
-		public string NewStatusName { get; set; }
+		public string NewStageName { get; set; }
 
 		/// <summary>
-		/// Gets or sets the selected status identifier.
+		/// Gets or sets the selected stage identifier.
 		/// </summary>
-		public string SelectedStatusId { get; set; }
+		public string SelectedStageId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the selected group identifier.

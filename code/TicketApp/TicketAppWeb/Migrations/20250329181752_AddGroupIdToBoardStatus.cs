@@ -12,19 +12,19 @@ namespace TicketAppWeb.Migrations
 		{
 			migrationBuilder.AddColumn<string>(
 				name: "GroupId",
-				table: "BoardStatuses",
+				table: "BoardStages",
 				type: "nvarchar(450)",
 				nullable: true,
 				defaultValue: "");
 
 			migrationBuilder.CreateIndex(
 				name: "IX_BoardStatuses_GroupId",
-				table: "BoardStatuses",
+				table: "BoardStages",
 				column: "GroupId");
 
 			migrationBuilder.AddForeignKey(
 				name: "FK_BoardStatuses_Groups_GroupId",
-				table: "BoardStatuses",
+				table: "BoardStages",
 				column: "GroupId",
 				principalTable: "Groups",
 				principalColumn: "Id",
@@ -36,15 +36,15 @@ namespace TicketAppWeb.Migrations
 		{
 			migrationBuilder.DropForeignKey(
 				name: "FK_BoardStatuses_Groups_GroupId",
-				table: "BoardStatuses");
+				table: "BoardStages");
 
 			migrationBuilder.DropIndex(
 				name: "IX_BoardStatuses_GroupId",
-				table: "BoardStatuses");
+				table: "BoardStages");
 
 			migrationBuilder.DropColumn(
 				name: "GroupId",
-				table: "BoardStatuses");
+				table: "BoardStages");
 		}
 	}
 }
