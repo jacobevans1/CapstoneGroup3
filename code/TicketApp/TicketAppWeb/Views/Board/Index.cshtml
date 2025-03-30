@@ -3,84 +3,93 @@
     ViewBag.Title = Model.Project.ProjectName;
 }
 
-<div class="container py-5">
-    <div class="row g-4 d-flex flex-nowrap">
-        @foreach (var stage in Model.Stages)
-        {
-            <div class="col-12 col-md-6 col-lg-4 column">
-                <div class="card shadow-lg border-light rounded">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between">
-	                    <h5 class="mb-0">@stage.Name</h5>
-	                    <small class="d-block text-white-50">@Model.AssignedGroups[stage.Id]</small>
-	                    <div class="dropdown">
-		                    <button class="btn btn-link p-0" type="button" id="ellipsisButton-@stage.Id" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; color: white; padding: 0;">
-			                    <i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
-		                    </button>
-		                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-			                    <li>
-				                    <a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#assignGroupModal" onclick="setAssignGroupData('@stage.Id')">
-					                    <i class="fas fa-users me-2"></i> Assign Group
-				                    </a>
-			                    </li>
-			                    <li>
-				                    <a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#renameStageModal" onclick="setRenameStageData('@stage.Id', '@stage.Name')">
-					                    <i class="fas fa-edit me-2"></i> Rename Stage
-				                    </a>
-			                    </li>
-			                    <li>
-				                    <a class="dropdown-item d-flex align-items-center text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteStageModal" onclick="setDeleteStageData('@stage.Id')">
-					                    <i class="fas fa-trash-alt me-2"></i> Remove Stage
-				                    </a>
+<h3 class="d-flex justify-content-left">@Model.Project.ProjectName Board</h3>
 
-			                    </li>
-		                    </ul>
-	                    </div>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            @* Task list here *@
-                        </ul>
-                    </div>
-	                <div class="card-footer">
+<div class="container-fluid py-5" style="height: 100vh; padding-top: 0;">
+	<div class="row g-4 d-flex flex-nowrap" style="overflow-x: auto; max-width: 100%; height: 100%; margin-bottom: 0;">
+		@foreach (var stage in Model.Stages)
+		{
+			<div class="col-12 col-md-6 col-lg-4 column" style="flex-shrink: 0; min-width: 400px; max-width: 400px;">
+				<div class="card shadow-lg border-light rounded h-100">
+					<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+						<div>
+							<h5 class="mb-0">@stage.Name</h5>
+							<small class="text-white-50">@Model.AssignedGroups[stage.Id]</small>
+						</div>
 
-		                <button class="btn btn-sm btn-success d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addTaskModal" onclick="setAddTaskData('@stage.Id')">
-			                <i class="fas fa-plus me-2"></i> Add Item
-		                </button>
+						<div class="dropdown" style="margin-left: auto;">
+							<button class="btn btn-link p-0" type="button" id="ellipsisButton-@stage.Id" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; color: white; padding: 0 15px;">
+								<i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
+							</button>
+							<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#assignGroupModal" onclick="setAssignGroupData('@stage.Id')">
+										<i class="fas fa-users me-2"></i> Assign Group
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#renameStageModal" onclick="setRenameStageData('@stage.Id', '@stage.Name')">
+										<i class="fas fa-edit me-2"></i> Rename Stage
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteStageModal" onclick="setDeleteStageData('@stage.Id')">
+										<i class="fas fa-trash-alt me-2"></i> Remove Stage
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
 
-		                <form id="stageForm_@stage.Id" method="post" asp-action="MoveStage" asp-controller="Board">
-			                <input type="hidden" asp-for="Board.Id"/>
-			                <input type="hidden" asp-for="Project.Id"/>
-			                <input type="hidden" id="moveStageId_@stage.Id" name="SelectedStageId" value=""/>
-			                <input type="hidden" id="moveDirection_@stage.Id" name="SelectedDirection" value=""/>
+					<div class="card-body">
+						<ul class="list-group list-group-flush">
+							@* Task list here *@
+						</ul>
+					</div>
 
-			                <div class="card-footer d-flex justify-content-between">
-				                <button type="submit" class="btn btn-sm btn-outline-secondary"
-				                        onclick="setMoveStageData('@stage.Id', 'left');">
-					                <i class="fas fa-arrow-left"></i>
-				                </button>
+					<div class="card-footer">
+						<form id="stageForm_@stage.Id" method="post" asp-action="MoveStage" asp-controller="Board">
+							<input type="hidden" asp-for="Board.Id" />
+							<input type="hidden" asp-for="Project.Id" />
+							<input type="hidden" id="moveStageId_@stage.Id" name="SelectedStageId" value="" />
+							<input type="hidden" id="moveDirection_@stage.Id" name="SelectedDirection" value="" />
 
-				                <button type="submit" class="btn btn-sm btn-outline-secondary"
-				                        onclick="setMoveStageData('@stage.Id', 'right');">
-					                <i class="fas fa-arrow-right"></i>
-				                </button>
-			                </div>
-		                </form>
+							<div class="card-footer d-flex justify-content-between">
+								<button type="submit" class="btn btn-sm btn-outline-secondary"
+										onclick="setMoveStageData('@stage.Id', 'left');">
+									<i class="fas fa-arrow-left"></i>
+								</button>
 
+								<button class="btn btn-sm btn-success d-flex align-items-center gap-1"
+										data-bs-toggle="modal"
+										data-bs-target="#addTaskModal">
+									<i class="fas fa-plus" style="font-size: 1rem;"></i> <span style="font-size: 1rem;">Add Item</span>
+								</button>
 
-	                </div>
-                </div>
-            </div>
-        }
+								<button type="submit" class="btn btn-sm btn-outline-secondary"
+										onclick="setMoveStageData('@stage.Id', 'right');">
+									<i class="fas fa-arrow-right"></i>
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		}
 
-        <div class="col-auto">
-            <div class="d-flex align-items-center justify-content-center h-100">
-                <button class="btn btn-outline-primary d-flex align-items-center px-4 py-3" data-bs-toggle="modal" data-bs-target="#addStageModal">
-                    <i class="fas fa-plus me-2"></i> Add Stage
-                </button>
-            </div>
-        </div>
-    </div>
+		<div class="col-auto">
+			<div class="d-flex align-items-center justify-content-center h-100">
+				<button class="btn btn-primary d-flex align-items-center gap-1"
+						data-bs-toggle="modal"
+						data-bs-target="#addStageModal">
+					<i class="fas fa-plus" style="font-size: 1rem;"></i> <span style="font-size: 1rem;">Add Stage</span>
+				</button>
+			</div>
+		</div>
+
+	</div>
 </div>
+
 
 
 <!-- Add Stage Modal -->
