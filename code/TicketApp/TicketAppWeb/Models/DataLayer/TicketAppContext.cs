@@ -123,7 +123,6 @@ namespace TicketAppWeb.Models.DataLayer
 				.OnDelete(DeleteBehavior.SetNull);
 
 
-
 			// TicketAssignee Configuration
 			modelBuilder.Entity<TicketAssignee>()
 				.HasKey(ta => new { ta.TicketId, ta.UserId });

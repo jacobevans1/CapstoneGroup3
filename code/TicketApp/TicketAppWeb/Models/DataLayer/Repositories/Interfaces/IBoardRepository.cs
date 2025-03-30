@@ -1,4 +1,5 @@
 ﻿using TicketAppWeb.Models.DomainModels;
+using TicketAppWeb.Models.DomainModels.MiddleTableModels;
 
 // Capstone Group 3
 // Spring 2025
@@ -27,7 +28,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// <param name="boardId"></param>
 		/// <param name="stageName"></param>
 		/// <param name="groupId"></param>
-		void AddStatus(string boardId, string stageName, string groupId);
+		void AddStage(string boardId, string stageName, string groupId);
 
 		/// <summary>
 		/// Deletes a stage for the specified board.
@@ -55,12 +56,24 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// Gets the stages for the specified board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		ICollection<Stage> GetBoardStages(string boardId);
+		ICollection<Stage> GetStages(string boardId);
+
+		/// <summary>
+		/// Gets the board stages for the specified board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		ICollection<BoardStage> GetBoardStages(string boardId);
 
 		/// <summary>
 		/// Gets the groups assigned to each stage for the specified board.
 		/// </summary>
 		/// <param name="boardId"></param>
 		Dictionary<string, string> GetAllAssignedGroupsForStages(string boardId);
+
+		/// <summary>
+		/// Saves the board stages to the database.
+		/// </summary>
+		/// <param name="boardStages"></param>
+		void SaveBoardStages(List<BoardStage> boardStages);
 	}
 }

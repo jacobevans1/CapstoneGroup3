@@ -41,11 +41,33 @@
                             @* Task list here *@
                         </ul>
                     </div>
-                    <div class="card-footer">
-                        <button class="btn btn-sm btn-success d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addTaskModal" onclick="setAddTaskData('@stage.Id')">
-                            <i class="fas fa-plus me-2"></i> Add Item
-                        </button>
-                    </div>
+	                <div class="card-footer">
+
+		                <button class="btn btn-sm btn-success d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addTaskModal" onclick="setAddTaskData('@stage.Id')">
+			                <i class="fas fa-plus me-2"></i> Add Item
+		                </button>
+
+		                <form id="stageForm_@stage.Id" method="post" asp-action="MoveStage" asp-controller="Board">
+			                <input type="hidden" asp-for="Board.Id"/>
+			                <input type="hidden" asp-for="Project.Id"/>
+			                <input type="hidden" id="moveStageId_@stage.Id" name="SelectedStageId" value=""/>
+			                <input type="hidden" id="moveDirection_@stage.Id" name="SelectedDirection" value=""/>
+
+			                <div class="card-footer d-flex justify-content-between">
+				                <button type="submit" class="btn btn-sm btn-outline-secondary"
+				                        onclick="setMoveStageData('@stage.Id', 'left');">
+					                <i class="fas fa-arrow-left"></i>
+				                </button>
+
+				                <button type="submit" class="btn btn-sm btn-outline-secondary"
+				                        onclick="setMoveStageData('@stage.Id', 'right');">
+					                <i class="fas fa-arrow-right"></i>
+				                </button>
+			                </div>
+		                </form>
+
+
+	                </div>
                 </div>
             </div>
         }
@@ -238,8 +260,44 @@
 	}
 </script>
 
+<script>
+	function setMoveStageData(stageId, direction) {
+		document.getElementById('moveStageId_' + stageId).value = stageId;
+		document.getElementById('moveDirection_' + stageId).value = direction;
+	}
+</script>
+
 @* <script> *@
 @* 	function setAddTaskData(stageId) { *@
 @* 		document.getElementById('taskStageId').value = stageId; *@
 @* 	} *@
 @* </script> *@
+
+<script>
+	function moveStageLeft(stageId) {
+		$.ajax({
+			url: '/Board/MoveStage',
+			type: 'POST',
+			data: { stageId: stageId, direction: 'left' },
+			success: function (response) {
+				if (response.success) {
+					location.reload();
+				}
+			}
+		});
+	}
+
+	function moveStageRight(stageId) {
+		$.ajax({
+			url: '/Board/MoveStage',
+			type: 'POST',
+			data: { stageId: stageId, direction: 'right' },
+			success: function (response) {
+				if (response.success) {
+					location.reload();
+				}
+			}
+		});
+	}
+
+</script>

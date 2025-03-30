@@ -12,8 +12,8 @@ using TicketAppWeb.Models.DataLayer;
 namespace TicketAppWeb.Migrations
 {
     [DbContext(typeof(TicketAppContext))]
-    [Migration("20250330023341_AddStageOrderTable")]
-    partial class AddStageOrderTable
+    [Migration("20250330030852_AddStageOrderToBoardStage")]
+    partial class AddStageOrderToBoardStage
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -252,6 +252,9 @@ namespace TicketAppWeb.Migrations
                     b.Property<string>("GroupId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("StageOrder")
+                        .HasColumnType("int");
 
                     b.HasKey("BoardId", "StageId");
 

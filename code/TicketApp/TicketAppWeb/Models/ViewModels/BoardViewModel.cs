@@ -58,6 +58,11 @@ namespace TicketAppWeb.Models.ViewModels
 		public string SelectedGroupId { get; set; }
 
 		/// <summary>
+		/// Gets or sets the direction to move the stage (e.g., "left" or "right").
+		/// </summary>
+		public string SelectedDirection { get; set; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="BoardViewModel"/> class.
 		/// </summary>
 		public BoardViewModel()

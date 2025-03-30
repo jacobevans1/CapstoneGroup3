@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
+using TicketAppWeb.Models.DomainModels.MiddleTableModels;
 using TicketAppWeb.Models.ViewModels;
 
 // Capstone Group 3
@@ -53,12 +54,12 @@ namespace TicketAppWeb.Controllers
 		public IActionResult AddStage(BoardViewModel viewModel)
 		{
 			var boardId = viewModel.Board.Id;
-			var newStatusName = viewModel.NewStageName;
+			var newStageName = viewModel.NewStageName;
 			var groupId = viewModel.SelectedGroupId;
 
 			try
 			{
-				_boardRepository.AddStatus(boardId, newStatusName, groupId);
+				_boardRepository.AddStage(boardId, newStageName, groupId);
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 
 			}
@@ -76,12 +77,12 @@ namespace TicketAppWeb.Controllers
 		[HttpPost]
 		public IActionResult RenameStage(BoardViewModel viewModel)
 		{
-			var statusId = viewModel.SelectedStageId;
+			var stageId = viewModel.SelectedStageId;
 			var newStatusName = viewModel.NewStageName;
 
 			try
 			{
-				_boardRepository.RenameStage(statusId, newStatusName);
+				_boardRepository.RenameStage(stageId, newStatusName);
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
 			catch (Exception ex)
@@ -99,12 +100,12 @@ namespace TicketAppWeb.Controllers
 		public IActionResult AssignGroupToStage(BoardViewModel viewModel)
 		{
 			var boardId = viewModel.Board.Id;
-			var statusId = viewModel.SelectedStageId;
+			var stageId = viewModel.SelectedStageId;
 			var groupId = viewModel.SelectedGroupId;
 
 			try
 			{
-				_boardRepository.AssignGroupToStage(boardId, statusId, groupId);
+				_boardRepository.AssignGroupToStage(boardId, stageId, groupId);
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
 			catch (Exception ex)
@@ -121,11 +122,11 @@ namespace TicketAppWeb.Controllers
 		public IActionResult DeleteStage(BoardViewModel viewModel)
 		{
 			var boardId = viewModel.Board.Id;
-			var statusId = viewModel.SelectedStageId;
+			var stageId = viewModel.SelectedStageId;
 
 			try
 			{
-				_boardRepository.DeleteStage(boardId, statusId);
+				_boardRepository.DeleteStage(boardId, stageId);
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
 			catch (Exception ex)
@@ -135,15 +136,63 @@ namespace TicketAppWeb.Controllers
 		}
 
 
+		/// <summary>
+		/// Moves a stage left or right on the board.
+		/// </summary>
+		/// <param name="viewModel"></param>
+		[HttpPost]
+		[HttpPost]
+		public IActionResult MoveStage(BoardViewModel viewModel)
+		{
+			var boardId = viewModel.Board.Id;
+			var stageId = viewModel.SelectedStageId;
+			var direction = viewModel.SelectedDirection;
+
+			try
+			{
+				var boardStages = _boardRepository.GetBoardStages(boardId).OrderBy(bs => bs.StageOrder).ToList();
+				var stageIndex = boardStages.FindIndex(bs => bs.StageId == stageId);
+
+				if (stageIndex == -1)
+					return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+
+				if (direction == "left" && stageIndex > 0)
+				{
+					SwapStageOrder(boardStages, stageIndex, stageIndex - 1);
+				}
+				else if (direction == "right" && stageIndex < boardStages.Count - 1)
+				{
+					SwapStageOrder(boardStages, stageIndex, stageIndex + 1);
+				}
+
+				_boardRepository.SaveBoardStages(boardStages);
+
+				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			}
+			catch (Exception ex)
+			{
+				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			}
+		}
+
+
+		private void SwapStageOrder(List<BoardStage> boardStages, int index1, int index2)
+		{
+			int tempOrder = boardStages[index1].StageOrder;
+			boardStages[index1].StageOrder = boardStages[index2].StageOrder;
+			boardStages[index2].StageOrder = tempOrder;
+		}
+
+
 		private void LoadIndexViewData(BoardViewModel vm, string projectId)
 		{
 			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
-			var statuses = _boardRepository.GetBoardStages(board.Id);
+			var stages = _boardRepository.GetStages(board.Id);
 			var assignedGroups = _boardRepository.GetAllAssignedGroupsForStages(board.Id);
 
 			vm.Board = board;
 			vm.Project = board.Project;
-			vm.Stages = statuses;
+			vm.Stages = stages;
 			vm.AssignedGroups = assignedGroups;
 		}
 	}

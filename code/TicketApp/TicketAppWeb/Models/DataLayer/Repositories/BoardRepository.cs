@@ -70,16 +70,16 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <param name="boardId"></param>
 		/// <param name="stageName"></param>
 		/// <param name="groupId"></param>
-		public void AddStatus(string boardId, string stageName, string groupId)
+		public void AddStage(string boardId, string stageName, string groupId)
 		{
 			var status = CreateStage(stageName);
 			var boardStatus = CreateBoardStage(boardId, status.Id, groupId);
 
 			context.Stages.Add(status);
-			context.SaveChanges();
+			Save();
 
 			context.BoardStages.Add(boardStatus);
-			context.SaveChanges();
+			Save();
 		}
 
 		/// <summary>
@@ -129,32 +129,52 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <param name="groupId"></param>
 		public void AssignGroupToStage(string boardStageId, string stageId, string groupId)
 		{
-			var boardStatus = context.BoardStages.FirstOrDefault(bs => bs.BoardId == boardStageId && bs.StageId == stageId);
-			if (boardStatus != null)
+			var boardStage = context.BoardStages.FirstOrDefault(bs => bs.BoardId == boardStageId && bs.StageId == stageId);
+			if (boardStage != null)
 			{
-				boardStatus.GroupId = groupId;
-				context.BoardStages.Update(boardStatus);
+				boardStage.GroupId = groupId;
+				context.BoardStages.Update(boardStage);
 				Save();
 			}
 		}
 
 		/// <summary>
-		/// Gets the statuses for the specified board.
+		/// Gets the stages for the specified board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		public ICollection<Stage> GetBoardStages(string boardId)
+		public ICollection<Stage> GetStages(string boardId)
 		{
 			var query = @"
 		    SELECT bs.BoardId, bs.StageId, s.*
 		    FROM BoardStages bs
 		    JOIN Stages s ON bs.StageId = s.Id
-		    WHERE bs.BoardId = @BoardId";
+		    WHERE bs.BoardId = @BoardId
+			ORDER BY bs.StageOrder";
 
-			var statuses = context.Stages
+			var stages = context.Stages
 				.FromSqlRaw(query, new SqlParameter("@BoardId", boardId))
 				.ToList();
 
-			return statuses;
+			return stages;
+		}
+
+		/// <summary>
+		/// Gets the board stages for the specified board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		public ICollection<BoardStage> GetBoardStages(string boardId)
+		{
+			var query = @"
+		    SELECT *
+		    FROM BoardStages bs
+		    WHERE bs.BoardId = @BoardId
+			ORDER BY bs.StageOrder";
+
+			var boardStages = context.BoardStages
+				.FromSqlRaw(query, new SqlParameter("@BoardId", boardId))
+				.ToList();
+
+			return boardStages;
 		}
 
 		/// <summary>
@@ -176,6 +196,25 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 
 			return assignedGroups.ToDictionary(bg => bg.StatusId, bg => bg.GroupName);
 		}
+
+		/// <summary>
+		/// Saves the board stages to the database.
+		/// </summary>
+		/// <param name="boardStages"></param>
+		public void SaveBoardStages(List<BoardStage> boardStages)
+		{
+			foreach (var boardStage in boardStages)
+			{
+				var existingStage = context.BoardStages.FirstOrDefault(bs => bs.StageId == boardStage.StageId);
+				if (existingStage != null)
+				{
+					existingStage.StageOrder = boardStage.StageOrder;
+					context.BoardStages.Update(existingStage);
+					Save();
+				}
+			}
+		}
+
 
 		private Board CreateBoard(Project project)
 		{
@@ -220,8 +259,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 				};
 				context.BoardStages.Add(boardStatus);
 			}
-
-			context.SaveChanges();
+			Save();
 		}
 	}
 }

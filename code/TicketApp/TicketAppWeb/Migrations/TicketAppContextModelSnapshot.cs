@@ -250,6 +250,9 @@ namespace TicketAppWeb.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("StageOrder")
+                        .HasColumnType("int");
+
                     b.HasKey("BoardId", "StageId");
 
                     b.HasIndex("GroupId");
