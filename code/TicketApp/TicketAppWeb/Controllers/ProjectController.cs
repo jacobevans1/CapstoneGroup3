@@ -18,9 +18,11 @@ public class ProjectController : Controller
 	private readonly IBoardRepository _boardRepository;
 
 	/// <summary>
-	/// Initializes a new instance of the ProjectController class.
+	/// Initializes a new instance of the Project Controller class.
 	/// </summary>
-	public ProjectController(SingletonService singletonService, IProjectRepository projectRepository, IBoardRepository boardRepository)
+	/// <param name="singletonService">The singleton service.</param>
+	/// <param name="projectRepository">The project repository.</param>
+	public ProjectController(SingletonService singletonService, IProjectRepository projectRepository)
 	{
 		_singletonService = singletonService;
 		_projectRepository = projectRepository;
@@ -28,8 +30,10 @@ public class ProjectController : Controller
 	}
 
 	/// <summary>
-	/// The start of the project management page.
+	/// The start of project management page
 	/// </summary>
+	/// <param name="projectName">Name of the project.</param>
+	/// <param name="projectLead">The project lead.</param>
 	public IActionResult Index(string? projectName, string? projectLead)
 	{
 		var viewModel = new ProjectViewModel();
@@ -59,6 +63,7 @@ public class ProjectController : Controller
 	/// <summary>
 	/// Creates the project and saves it to the database.
 	/// </summary>
+	/// <param name="model">The projetc management view model.</param>
 	[HttpPost]
 	public async Task<IActionResult> CreateProject(ProjectViewModel model)
 	{
@@ -98,8 +103,10 @@ public class ProjectController : Controller
 	/// <summary>
 	/// Gets the project to edit by Id of the project.
 	/// </summary>
+	/// <param name="id">The project identifier.</param>
+	/// <param name="leadChangeRequired">The lead change required, the flag used to check the why the edit is performed.</param>
 	[HttpGet]
-	public async Task<IActionResult> EditProject(string id)
+	public async Task<IActionResult> EditProject(string id, bool? leadChangeRequired = null)
 	{
 		var project = await _projectRepository.GetProjectByIdAsync(id);
 		if (project == null)
@@ -114,53 +121,66 @@ public class ProjectController : Controller
 			ProjectLeadId = project.LeadId,
 			SelectedGroupIds = project.Groups.Select(g => g.Id).ToList(),
 			AvailableGroups = await _projectRepository.GetAvailableGroupsAsync(),
-			AssignedGroups = project.Groups.ToList()
-		};
+			AssignedGroups = project.Groups.ToList(),
+			LeadChangeRequired = leadChangeRequired ?? false
+
+        };
 
 		return View(model);
 	}
 
 	/// <summary>
-	/// Edits the project.
+	/// Edits the project and saves the changes to the database
 	/// </summary>
+	/// <param name="model">The model.</param>
+	/// <param name="id">The identifier.</param>
 	[HttpPost]
-	public async Task<IActionResult> EditProject(ProjectViewModel model, string id)
-	{
-		if (!ModelState.IsValid)
-		{
-			model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
-			return View(model);
-		}
+    public async Task<IActionResult> EditProject(ProjectViewModel model, string id)
+    {
+        if (!ModelState.IsValid)
+        {
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View(model);
+        }
 
-		var project = await _projectRepository.GetProjectByIdAsync(id);
-		if (project == null)
-		{
-			return NotFound();
-		}
+        var project = await _projectRepository.GetProjectByIdAsync(id);
+        if (project == null)
+        {
+            return NotFound();
+        }
 
-		project.ProjectName = model.ProjectName;
-		project.Description = model.Description;
-		project.LeadId = model.ProjectLeadId;
+        project.ProjectName = model.ProjectName;
+        project.Description = model.Description;
+        project.LeadId = model.ProjectLeadId;
 
-		var isAdmin = User.IsInRole("Admin");
+        var isAdmin = User.IsInRole("Admin");
 
-		try
-		{
-			await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds, isAdmin);
-			TempData["SuccessMessage"] = $"Project {project.ProjectName} updated successfully";
-			return RedirectToAction("Index");
-		}
-		catch (Exception ex)
-		{
-			ModelState.AddModelError("", ex.Message);
-			model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
-			return View(model);
-		}
-	}
+        try
+        {
+
+            if (model.LeadChangeRequired)
+            {
+                await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds, isAdmin);
+                TempData["SuccessMessage"] = $"Project Lead updated successfully. Proced with The privous action ";
+                return RedirectToAction("Index", "Home");
+            }
+            await _projectRepository.UpdateProjectAsync(project, model.SelectedGroupIds, isAdmin);
+            TempData["SuccessMessage"] = $"Project {project.ProjectName} updated successfully.";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+			TempData["ErrorMessage"] += $"Unable to update project beacuse of " + ex.Message;
+            model.AvailableGroups = await _projectRepository.GetAvailableGroupsAsync();
+            return View(model);
+        }
+    }
 
 	/// <summary>
 	/// Gets the projet to be deleted by Id.
 	/// </summary>
+	/// <param name="id">The identifier.</param>
 	[HttpGet]
 	public async Task<IActionResult> DeleteProject(string id)
 	{
@@ -173,8 +193,9 @@ public class ProjectController : Controller
 	}
 
 	/// <summary>
-	/// Confirms the project delete action.
+	/// Confirms the project delete action and remove the project from the database
 	/// </summary>
+	/// <param name="id">The project identifier.</param>
 	[HttpPost]
 	public async Task<IActionResult> ConfirmDelete(string id)
 	{
@@ -199,8 +220,9 @@ public class ProjectController : Controller
 	}
 
 	/// <summary>
-	/// Gets the group leads based on selected groups
+	/// Gets the group leads based on selected groups (the managers of the selected groups)
 	/// </summary>
+	/// <param name="groupIds">The group ids.</param>
 	[HttpGet]
 	public async Task<JsonResult> GetGroupLeads(string groupIds)
 	{

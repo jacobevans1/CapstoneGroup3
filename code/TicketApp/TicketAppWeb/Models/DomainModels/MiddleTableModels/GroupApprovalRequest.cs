@@ -1,5 +1,10 @@
 ﻿namespace TicketAppWeb.Models.DomainModels.MiddleTableModels;
 
+/// <summary>
+/// The class represent groups that are pending to be added to a project needs menagers approval
+/// Jabesi Abwe
+/// 03/?/2025
+/// </summary>
 public class GroupApprovalRequest
 {
     /// <summary>

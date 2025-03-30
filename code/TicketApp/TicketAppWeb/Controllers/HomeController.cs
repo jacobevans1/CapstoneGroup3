@@ -6,14 +6,26 @@ using System.Security.Claims;
 
 namespace TicketAppWeb.Controllers;
 
+/// <summary>
+/// The home controller is responsible for managing anything that goes on the dashboard page
+/// Jabesi Abwe
+/// 03/?/2025
+/// </summary>
 [Authorize]
 public class HomeController : Controller
 {
     private readonly IProjectRepository _projectRepository;
+    private readonly IGroupRepository _groupRepository;
 
-    public HomeController(IProjectRepository projectRepository)
+	/// <summary>
+	/// Initializes a new instance of the Home Controller class.
+	/// </summary>
+	/// <param name="projectRepository">The project repository.</param>
+	/// <param name="groupRepository">The group repository.</param>
+	public HomeController(IProjectRepository projectRepository, IGroupRepository groupRepository)
     {
         _projectRepository = projectRepository;
+        _groupRepository = groupRepository;
     }
 
     /// <summary>
@@ -43,28 +55,43 @@ public class HomeController : Controller
         try
         {
             await _projectRepository.ApproveGroupForProjectAsync(projectId, groupId);
-            return Json(new { success = true });
+            return RedirectToAction("Index", "Home");
         }
         catch (Exception ex)
         {
-            return Json(new { success = false, message = ex.Message });
+            TempData["ErrorMessage"] = "Error processing approval: " + ex.Message;
+            return RedirectToAction("Index", "Home");
         }
     }
 
+
     /// <summary>
-    /// Rejects a group for a project.
+    /// Rejects a group for a project. If the group manager is set lead of project, 
+    /// redirects to edit the project to set a new lead
     /// </summary>
     [HttpPost]
     public async Task<IActionResult> RejectGroupForProject(string projectId, string groupId)
     {
+        var project = await _projectRepository.GetProjectByIdAsync(projectId);
+        if (project == null) return RedirectToAction("Index", "Home");
+
+        var group = await _groupRepository.GetAsync(groupId);
+        if (group == null) return RedirectToAction("Index", "Home");
+
+        if (project.LeadId == group.ManagerId)
+        {
+            return RedirectToAction("EditProject", "Project", new { id = projectId, leadChangeRequired = true });
+        }
+
         try
         {
             await _projectRepository.RejectGroupForProjectAsync(projectId, groupId);
-            return Json(new { success = true });
+            return RedirectToAction("Index", "Home");
         }
         catch (Exception ex)
         {
-            return Json(new { success = false, message = ex.Message });
+            TempData["ErrorMessage"] = "Error processing request: " + ex.Message;
+            return RedirectToAction("Index", "Home");
         }
     }
 

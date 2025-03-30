@@ -1,5 +1,9 @@
-﻿@model TicketAppWeb.Models.ViewModels.AddGroupViewModel
-
+﻿@*
+    The front end for adding a new group
+    Emma
+    03/?/2025
+*@
+@model AddGroupViewModel
 @{
     ViewData["Title"] = "Add New Group";
 }
@@ -20,9 +24,6 @@
         </div>
     </div>
 
-    <!-- Validation Errors -->
-    <div asp-validation-summary="All" class="text-danger text-center"></div>
-
     <form asp-action="CreateGroup" method="post" class="styled-form">
         <div class="form-group">
             <label asp-for="GroupName" class="form-label">Group Name <span class="text-danger">*</span></label>
@@ -40,18 +41,20 @@
             <!-- Available Users -->
             <div class="col-md-5">
                 <h6>Available Users</h6>
-                <ul id="availableUsers" class="list-group">
-                    @foreach (var user in Model.AllUsers)
-                    {
-                        if (!Model.SelectedUserIds.Contains(user.Id))
+                <div class="scrollable-container">
+                    <ul id="availableUsers" class="list-group">
+                        @foreach (var user in Model.AllUsers)
                         {
-                            <li class="list-group-item">
-                                <input type="checkbox" class="user-checkbox form-check-input mt-0" value="@user.Id" />
-                                @user.UserName (@user.Email)
-                            </li>
+                            if (!Model.SelectedUserIds.Contains(user.Id))
+                            {
+                                <li class="list-group-item">
+                                    <input type="checkbox" class="user-checkbox form-check-input mt-0" value="@user.Id" />
+                                    @user.UserName (@user.Email)
+                                </li>
+                            }
                         }
-                    }
-                </ul>
+                    </ul>
+                </div>
             </div>
 
             <div class="col-md-2 text-center align-self-center">
@@ -63,18 +66,20 @@
             <!-- Selected Members -->
             <div class="col-md-5">
                 <h6>Selected Members <span class="text-danger">*</span></h6>
-                <ul id="selectedUsers" class="list-group">
-                    @foreach (var user in Model.AllUsers)
-                    {
-                        if (Model.SelectedUserIds.Contains(user.Id))
+                <div class="scrollable-container">
+                    <ul id="selectedUsers" class="list-group">
+                        @foreach (var user in Model.AllUsers)
                         {
-                            <li class="list-group-item">
-                                <input type="checkbox" class="assigned-user-checkbox form-check-input mt-0" name="SelectedUserIds" value="@user.Id" checked />
-                                @user.UserName (@user.Email)
-                            </li>
+                            if (Model.SelectedUserIds.Contains(user.Id))
+                            {
+                                <li class="list-group-item">
+                                    <input type="checkbox" class="assigned-user-checkbox form-check-input mt-0" name="SelectedUserIds" value="@user.Id" checked />
+                                    @user.UserName (@user.Email)
+                                </li>
+                            }
                         }
-                    }
-                </ul>
+                    </ul>
+                </div>
             </div>
         </div>
         <span asp-validation-for="SelectedUserIds" class="text-danger"></span>
@@ -127,20 +132,19 @@
                 const selectedItems = sourceList.querySelectorAll("input:checked");
                 selectedItems.forEach(item => {
                     let listItem = item.closest("li");
-                    item.checked = false; // Reset checked state in new list
+                    item.checked = false;
 
                     if (isAdding) {
                         item.classList.add("assigned-user-checkbox");
                         item.name = "SelectedUserIds";
-                        item.checked = true; // Ensure it's marked as selected for form submission
+                        item.checked = true;
                     } else {
                         item.classList.remove("assigned-user-checkbox");
-                        item.removeAttribute("name"); // Remove from submission
+                        item.removeAttribute("name");
                     }
 
                     targetList.appendChild(listItem);
                 });
-
                 updateGroupLeads();
             }
 
@@ -172,7 +176,6 @@
             document.getElementById("groupLead").addEventListener("change", function () {
                 document.getElementById("hiddenGroupLeadId").value = this.value;
             });
-
             updateGroupLeads();
         });
     </script>

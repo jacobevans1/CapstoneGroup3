@@ -404,10 +404,17 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
 			.ToListAsync();
 	}
 
-	public async Task<List<Project>> GetProjectsByLeadAsync(string leadId)
-	{
-		return await context.Projects.Where(p => p.LeadId == leadId).ToListAsync();
-	}
-
+    /// <summary>
+    /// Gets the projects by lead asynchronous.
+    /// </summary>
+    /// <param name="leadId">The lead identifier.</param>
+    /// <returns></returns>
+    public async Task<List<Project>> GetProjectsByLeadAsync(string leadId)
+    {
+        return await context.Projects
+            .Where(p => p.LeadId == leadId)
+            .Include(p => p.Groups) 
+            .ToListAsync();
+    }
 
 }

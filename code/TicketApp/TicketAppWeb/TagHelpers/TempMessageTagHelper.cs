@@ -13,25 +13,32 @@ namespace TicketAppWeb.TagHelpers;
 [HtmlTargetElement("my-temp-message")]
 public class TempMessageTagHelper : TagHelper
 {
-    // Gets or sets the view CTX.
-    [ViewContext]
+	/// <summary>
+	/// Gets or sets the view CTX.
+	/// </summary>
+	[ViewContext]
     [HtmlAttributeNotBound]
     public ViewContext ViewCtx { get; set; } = null!;
 
-    public override void Process(TagHelperContext context, TagHelperOutput output)
+	/// <summary>
+	/// Synchronously executes the TagHelper with the given context and output.
+	/// </summary>
+	/// <param name="context">Contains information associated with the current HTML tag.</param>
+	/// <param name="output">A stateful HTML element used to generate an HTML tag.</param>
+	public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var td = ViewCtx.TempData;
 
         output.TagName = "h4";
 
-        if (td.ContainsKey("message"))
+        if (td.ContainsKey("SuccessMessage"))
         {
-            output.BuildTag("h4", "bg-info text-center text-white p-2");
-            output.Content.SetContent(td["message"]?.ToString());
+            output.BuildTag("h4", "bg-success bg-opacity-25 text-center text-success p-2");
+            output.Content.SetContent(td["SuccessMessage"]?.ToString());
         }
         else if (td.ContainsKey("ErrorMessage"))
         {
-            output.BuildTag("h4", "bg-danger text-center text-white p-2");
+            output.BuildTag("h4", "bg-danger bg-opacity-25 text-center text-danger p-2");
             output.Content.SetContent(td["ErrorMessage"]?.ToString());
         }
         else

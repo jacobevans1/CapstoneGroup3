@@ -11,8 +11,11 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 public interface IProjectRepository : IRepository<Project>
 {
 	/// <summary>
-	/// Gets the projects and groups.
+	/// Gets the filtered projects and thier assigned groups.
 	/// </summary>
+	/// <param name="projectName">Name of the project.</param>
+	/// <param name="projectLead">The project lead.</param>
+	/// <returns>The Dictionary of porjects and their assigned groups</returns>
 	Task<Dictionary<Project, List<Group>>> GetFilteredProjectsAndGroups(string? projectName, string? projectLead);
 
 	/// <summary>

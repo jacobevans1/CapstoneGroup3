@@ -1,4 +1,9 @@
-﻿@model PendingApprovalsViewModel
+﻿@*
+    The front display for all available groups waiting for manager approval to be added to a project
+    Jabesi Abwe
+    03/?/2025
+*@
+@model PendingApprovalsViewModel
 
 @if (Model.PendingRequests.Any())
 {
@@ -12,8 +17,16 @@
                 Group: <strong>@request.Group!.GroupName</strong>
             </p>
             <div class="d-flex justify-content-center gap-3">
-                <button class="btn btn-success approve-btn" data-project-id="@request.ProjectId" data-group-id="@request.GroupId">Approve</button>
-                <button class="btn btn-danger reject-btn" data-project-id="@request.ProjectId" data-group-id="@request.GroupId">Reject</button>
+                <form method="post" action="@Url.Action("ApproveGroupForProject", "Home")">
+                    <input type="hidden" name="projectId" value="@request.ProjectId" />
+                    <input type="hidden" name="groupId" value="@request.GroupId" />
+                    <button type="submit" class="btn btn-success">Approve</button>
+                </form>
+                <form method="post" action="@Url.Action("RejectGroupForProject", "Home")">
+                    <input type="hidden" name="projectId" value="@request.ProjectId" />
+                    <input type="hidden" name="groupId" value="@request.GroupId" />
+                    <button type="submit" class="btn btn-danger">Reject</button>
+                </form>
             </div>
         </div>
     </div>

@@ -9,29 +9,71 @@ namespace TicketAppWeb.Models.DataLayer;
 /// </summary>
 public class QueryOptions<T>
 {
-    // public properties for sorting, filtering, and paging
-    public Expression<Func<T, Object>> OrderBy { get; set; } = null!;
-    public Expression<Func<T, bool>> Where { get; set; } = null!;
-    public string OrderByDirection { get; set; } = "asc";  // default
-    public int PageNumber { get; set; }
-    public int PageSize { get; set; }
+	/// <summary>
+	/// Gets or sets the order by.
+	/// </summary>
+	public Expression<Func<T, Object>> OrderBy { get; set; } = null!;
 
-    /* Code for working with Include strings */
-    private string[] includes = Array.Empty<string>();
+	/// <summary>
+	/// Gets or sets the where.
+	/// </summary>
+	public Expression<Func<T, bool>> Where { get; set; } = null!;
 
-    // public write-only property for Include strings – accepts a string, converts it to
-    // a string array, and stores in private string array field
-    public string Includes
+	/// <summary>
+	/// Gets or sets the order by direction.
+	/// </summary>
+	public string OrderByDirection { get; set; } = "asc";
+
+	/// <summary>
+	/// Gets or sets the page number.
+	/// </summary>
+	public int PageNumber { get; set; }
+
+	/// <summary>
+	/// Gets or sets the size of the page.
+	/// </summary>
+	public int PageSize { get; set; }
+
+	/// <summary>
+	/// The includes
+	/// </summary>
+	private string[] includes = Array.Empty<string>();
+
+	/// <summary>
+	/// Sets the includes.
+	/// </summary>
+	public string Includes
     {
         set => includes = value.Replace(" ", "").Split(',');
     }
 
-    // public get method for Include strings - returns private string array, or
-    // empty string array if private backing field is null
-    public string[] GetIncludes() => includes;
+	/// <summary>
+	/// public get method for Include strings - returns private string array, or
+	/// empty string array if private backing field is null
+	/// </summary>
+	public string[] GetIncludes() => includes;
 
-    // read-only properties 
-    public bool HasWhere => Where != null;
-    public bool HasOrderBy => OrderBy != null;
-    public bool HasPaging => PageNumber > 0 && PageSize > 0;
+	/// <summary>
+	/// Gets a value indicating whether this instance has where.
+	/// </summary>
+	/// <value>
+	///   <c>true</c> if this instance has where; otherwise, <c>false</c>.
+	/// </value>
+	public bool HasWhere => Where != null;
+
+	/// <summary>
+	/// Gets a value indicating whether this instance has order by.
+	/// </summary>
+	/// <value>
+	///   <c>true</c> if this instance has order by; otherwise, <c>false</c>.
+	/// </value>
+	public bool HasOrderBy => OrderBy != null;
+
+	/// <summary>
+	/// Gets a value indicating whether this instance has paging.
+	/// </summary>
+	/// <value>
+	///   <c>true</c> if this instance has paging; otherwise, <c>false</c>.
+	/// </value>
+	public bool HasPaging => PageNumber > 0 && PageSize > 0;
 }
