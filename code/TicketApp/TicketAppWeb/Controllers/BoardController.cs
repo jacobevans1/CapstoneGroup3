@@ -96,7 +96,7 @@ namespace TicketAppWeb.Controllers
 
 			try
 			{
-				//_boardRepository.AssignGroupToStatus(boardStatusId, statusId, groupId);
+				_boardRepository.AssignGroupToStatus(boardId, statusId, groupId);
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
 			catch (Exception ex)

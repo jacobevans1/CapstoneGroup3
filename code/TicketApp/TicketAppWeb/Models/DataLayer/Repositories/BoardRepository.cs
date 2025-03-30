@@ -53,23 +53,6 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		}
 
 		/// <summary>
-		/// Assigns a group to a status.
-		/// </summary>
-		/// <param name="boardStatusId"></param>
-		/// <param name="statusId"></param>
-		/// <param name="groupId"></param>
-		public void AssignGroupToStatus(string boardStatusId, string statusId, string groupId)
-		{
-			var boardStatus = context.BoardStatuses.FirstOrDefault(bs => bs.BoardId == boardStatusId && bs.StatusId == statusId);
-			if (boardStatus != null)
-			{
-				boardStatus.GroupId = groupId;
-				context.BoardStatuses.Update(boardStatus);
-				Save();
-			}
-		}
-
-		/// <summary>
 		/// Adds a new board for the specified project.
 		/// </summary>
 		/// <param name="project"></param>
@@ -78,6 +61,17 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			var board = CreateBoard(project);
 			Insert(board);
 			AddDefaultBoardStatuses(board);
+			Save();
+		}
+
+		/// <summary>
+		/// Deletes a board for the specified project.
+		/// </summary>
+		/// <param name="project"></param>
+		public void DeleteBoard(Project project)
+		{
+			var board = context.Boards.FirstOrDefault(b => b.ProjectId == project.Id);
+			Delete(board);
 			Save();
 		}
 
@@ -106,14 +100,20 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		}
 
 		/// <summary>
-		/// Deletes a board for the specified project.
+		/// Assigns a group to a status.
 		/// </summary>
-		/// <param name="project"></param>
-		public void DeleteBoard(Project project)
+		/// <param name="boardId"></param>
+		/// <param name="statusId"></param>
+		/// <param name="groupId"></param>
+		public void AssignGroupToStatus(string boardId, string statusId, string groupId)
 		{
-			var board = context.Boards.FirstOrDefault(b => b.ProjectId == project.Id);
-			Delete(board);
-			Save();
+			var boardStatus = context.BoardStatuses.FirstOrDefault(bs => bs.BoardId == boardId && bs.StatusId == statusId);
+			if (boardStatus != null)
+			{
+				boardStatus.GroupId = groupId;
+				context.BoardStatuses.Update(boardStatus);
+				Save();
+			}
 		}
 
 		/// <summary>
