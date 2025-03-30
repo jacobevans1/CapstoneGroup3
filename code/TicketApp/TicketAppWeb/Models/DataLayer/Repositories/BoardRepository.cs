@@ -44,19 +44,29 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 				.FirstOrDefaultAsync();
 
 			var newBoard = result?.Board;
-			newBoard.Project = result?.Project;
+			var project = result?.Project;
 
-			var query = @"
-		    SELECT bs.BoardId, bs.StatusId, s.*
-		    FROM BoardStatuses bs
-		    JOIN Statuses s ON bs.StatusId = s.Id
-		    WHERE bs.BoardId = @BoardId";
-
-			var statuses = await context.Statuses
-				.FromSqlRaw(query, new SqlParameter("@BoardId", newBoard.Id))
-				.ToListAsync();
+			project.Groups = context.Projects.Include(p => p.Groups).FirstOrDefault(p => p.Id == projectId).Groups;
+			newBoard.Project = project;
 
 			return newBoard;
+		}
+
+		/// <summary>
+		/// Assigns a group to a status.
+		/// </summary>
+		/// <param name="boardStatusId"></param>
+		/// <param name="statusId"></param>
+		/// <param name="groupId"></param>
+		public void AssignGroupToStatus(string boardStatusId, string statusId, string groupId)
+		{
+			var boardStatus = context.BoardStatuses.FirstOrDefault(bs => bs.BoardId == boardStatusId && bs.StatusId == statusId);
+			if (boardStatus != null)
+			{
+				boardStatus.GroupId = groupId;
+				context.BoardStatuses.Update(boardStatus);
+				Save();
+			}
 		}
 
 		/// <summary>
@@ -67,8 +77,32 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		{
 			var board = CreateBoard(project);
 			Insert(board);
-			AddBoardStatuses(board);
+			AddDefaultBoardStatuses(board);
 			Save();
+		}
+
+		/// <summary>
+		/// Adds a new status to the board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		/// <param name="newStatusName"></param>
+		/// <param name="groupId"></param>
+		public void AddStatus(string boardId, string newStatusName, string groupId)
+		{
+			var status = CreateStatus(newStatusName);
+			var boardStatus = CreateBoardStatus(boardId, status.Id, groupId);
+
+			context.Statuses.Add(status);
+			Console.WriteLine($"Status Entity State: {context.Entry(status).State}");
+			var affectedRows = context.SaveChanges();
+			Console.WriteLine($"Affected Rows: {affectedRows}");
+
+
+			context.BoardStatuses.Add(boardStatus);
+			Console.WriteLine($"BoardStatus Entity State: {context.Entry(boardStatus).State}");
+			var affectedRows2 = context.SaveChanges();
+			Console.WriteLine($"Affected Rows: {affectedRows2}");
+
 		}
 
 		/// <summary>
@@ -82,6 +116,26 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			Save();
 		}
 
+		/// <summary>
+		/// Gets the statuses for the specified board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		/// <returns></returns>
+		public ICollection<Status> GetStatusesForBoard(string boardId)
+		{
+			var query = @"
+		    SELECT bs.BoardId, bs.StatusId, s.*
+		    FROM BoardStatuses bs
+		    JOIN Statuses s ON bs.StatusId = s.Id
+		    WHERE bs.BoardId = @BoardId";
+
+			var statuses = context.Statuses
+				.FromSqlRaw(query, new SqlParameter("@BoardId", boardId))
+				.ToList();
+
+			return statuses;
+		}
+
 		private Board CreateBoard(Project project)
 		{
 			var board = new Board();
@@ -93,7 +147,28 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			return board;
 		}
 
-		private void AddBoardStatuses(Board board)
+		private Status CreateStatus(string statusName)
+		{
+			var status = new Status
+			{
+				Id = Guid.NewGuid().ToString(),
+				Name = statusName
+			};
+			return status;
+		}
+
+		private BoardStatus CreateBoardStatus(string boardId, string statusId, string groupId)
+		{
+			var boardStatus = new BoardStatus
+			{
+				BoardId = boardId,
+				StatusId = statusId,
+				GroupId = groupId
+			};
+			return boardStatus;
+		}
+
+		private void AddDefaultBoardStatuses(Board board)
 		{
 			foreach (var status in _defaultStatuses)
 			{

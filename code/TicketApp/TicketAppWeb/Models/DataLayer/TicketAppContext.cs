@@ -40,14 +40,14 @@ namespace TicketAppWeb.Models.DataLayer
 		public DbSet<Group> Groups { get; set; }
 
 		/// <summary>
+		/// Gets or sets the DbSet representing the GroupProjects table in the database.
+		/// </summary>
+		//public DbSet<GroupProject> GroupProjects { get; set; }
+
+		/// <summary>
 		/// Gets or sets the group approval requests.
 		/// </summary>
 		public DbSet<GroupApprovalRequest> GroupApprovalRequests { get; set; }
-
-		/// <summary>
-		/// Gets or sets the DbSet representing the Boards table in the database.
-		/// </summary>
-		public DbSet<Board> Boards { get; set; }
 
 		/// <summary>
 		/// Gets or sets the DbSet representing the Tickets table in the database.
@@ -55,19 +55,24 @@ namespace TicketAppWeb.Models.DataLayer
 		public DbSet<Ticket> Tickets { get; set; }
 
 		/// <summary>
-		/// Gets or sets the DbSet representing the TicketComments table in the database.
-		/// </summary>
-		public DbSet<Status> Statuses { get; set; }
-
-		/// <summary>
 		/// Gets or sets the DbSet representing the TicketAssignees table in the database.
 		/// </summary>
 		public DbSet<TicketAssignee> TicketAssignees { get; set; }
 
 		/// <summary>
+		/// Gets or sets the DbSet representing the Boards table in the database.
+		/// </summary>
+		public DbSet<Board> Boards { get; set; }
+
+		/// <summary>
 		/// Gets or sets the DbSet representing the BoardStatus table in the database.
 		/// </summary>
 		public DbSet<BoardStatus> BoardStatuses { get; set; }
+
+		/// <summary>
+		/// Gets or sets the DbSet representing the TicketComments table in the database.
+		/// </summary>
+		public DbSet<Status> Statuses { get; set; }
 
 		/// <summary>
 		/// Configures the model for the context.
@@ -100,8 +105,6 @@ namespace TicketAppWeb.Models.DataLayer
 				.OnDelete(DeleteBehavior.Restrict);
 
 
-
-
 			// BoardStatus Configuration
 			modelBuilder.Entity<BoardStatus>()
 				.HasKey(bs => new { bs.BoardId, bs.StatusId });
@@ -118,6 +121,11 @@ namespace TicketAppWeb.Models.DataLayer
 				.HasForeignKey(bs => bs.StatusId)
 				.OnDelete(DeleteBehavior.Cascade);
 
+			modelBuilder.Entity<BoardStatus>()
+				.HasOne(bs => bs.Group)
+				.WithMany()
+				.HasForeignKey(bs => bs.GroupId)
+				.OnDelete(DeleteBehavior.SetNull);
 
 
 

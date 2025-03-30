@@ -40,18 +40,16 @@ namespace TicketAppWeb.Models.DomainModels
 		public ICollection<BoardStatus> BoardStatuses { get; set; }
 
 		/// <summary>
-		/// Gets or sets the list of statuses associated with the board.
-		/// </summary>
-		public ICollection<Status> Statuses { get; set; }
-
-		/// <summary>
 		/// Gets or sets the list of tickets associated with the board.
 		/// </summary>
 		public ICollection<Ticket> Tickets { get; set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Board"/> class.
+		/// </summary>
 		public Board()
 		{
-			Statuses = new List<Status>();
+			BoardStatuses = new List<BoardStatus>();
 			Tickets = new List<Ticket>();
 		}
 	}

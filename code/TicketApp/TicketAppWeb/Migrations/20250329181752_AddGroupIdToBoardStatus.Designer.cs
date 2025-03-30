@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketAppWeb.Models.DataLayer;
 
@@ -11,9 +12,11 @@ using TicketAppWeb.Models.DataLayer;
 namespace TicketAppWeb.Migrations
 {
     [DbContext(typeof(TicketAppContext))]
-    partial class TicketAppContextModelSnapshot : ModelSnapshot
+    [Migration("20250329181752_AddGroupIdToBoardStatus")]
+    partial class AddGroupIdToBoardStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace TicketAppWeb.Migrations
 
                     b.HasIndex("ProjectsId");
 
-                    b.ToTable("GroupProject", (string)null);
+                    b.ToTable("GroupProject");
                 });
 
             modelBuilder.Entity("GroupUser", b =>
@@ -206,7 +209,7 @@ namespace TicketAppWeb.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Boards", (string)null);
+                    b.ToTable("Boards");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Group", b =>
@@ -235,7 +238,7 @@ namespace TicketAppWeb.Migrations
 
                     b.HasIndex("ManagerId");
 
-                    b.ToTable("Groups", (string)null);
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.MiddleTableModels.BoardStatus", b =>
@@ -256,7 +259,7 @@ namespace TicketAppWeb.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("BoardStatuses", (string)null);
+                    b.ToTable("BoardStatuses");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.MiddleTableModels.GroupApprovalRequest", b =>
@@ -279,7 +282,7 @@ namespace TicketAppWeb.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("GroupApprovalRequests", (string)null);
+                    b.ToTable("GroupApprovalRequests");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.MiddleTableModels.TicketAssignee", b =>
@@ -294,7 +297,7 @@ namespace TicketAppWeb.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TicketAssignees", (string)null);
+                    b.ToTable("TicketAssignees");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Project", b =>
@@ -325,7 +328,7 @@ namespace TicketAppWeb.Migrations
 
                     b.HasIndex("LeadId");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Status", b =>
@@ -344,7 +347,7 @@ namespace TicketAppWeb.Migrations
 
                     b.HasIndex("BoardId");
 
-                    b.ToTable("Statuses", (string)null);
+                    b.ToTable("Statuses");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Ticket", b =>
@@ -372,7 +375,7 @@ namespace TicketAppWeb.Migrations
 
                     b.HasIndex("BoardId");
 
-                    b.ToTable("Tickets", (string)null);
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.TicketAppUser", b =>

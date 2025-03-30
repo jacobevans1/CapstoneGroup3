@@ -42,11 +42,77 @@ namespace TicketAppWeb.Controllers
 			return View(viewModel);
 		}
 
+		/// <summary>
+		/// Adds a new column to the board.
+		/// </summary>
+		/// <param name="viewModel"></param>
+		[HttpPost]
+		public IActionResult AddColumn(BoardViewModel viewModel)
+		{
+			var boardId = viewModel.Board.Id;
+			var newStatusName = viewModel.NewStatusName;
+			var groupId = viewModel.SelectedGroupId;
+
+			try
+			{
+				_boardRepository.AddStatus(boardId, newStatusName, groupId);
+				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+
+			}
+			catch (Exception ex)
+			{
+				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			}
+		}
+
+		/// <summary>
+		/// Renames a column on the board.
+		/// </summary>
+		/// <param name="viewModel"></param>
+		[HttpPost]
+		public IActionResult RenameColumn(BoardViewModel viewModel)
+		{
+			try
+			{
+				//_boardRepository.RenameColumn(viewModel.NewBoardStatus.Status.Name, viewModel.SelectedGroupId);
+				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			}
+			catch (Exception ex)
+			{
+				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			}
+		}
+
+		/// <summary>
+		/// Assigns a group to a status.
+		/// </summary>
+		/// <param name="viewModel"></param>
+		[HttpPost]
+		public IActionResult AssignGroupToStatus(BoardViewModel viewModel)
+		{
+			var boardId = viewModel.Board.Id;
+			var statusId = viewModel.SelectedStatusId;
+			var groupId = viewModel.SelectedGroupId;
+
+			try
+			{
+				//_boardRepository.AssignGroupToStatus(boardStatusId, statusId, groupId);
+				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			}
+			catch (Exception ex)
+			{
+				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			}
+		}
+
 		private void LoadIndexViewData(BoardViewModel vm, string projectId)
 		{
 			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
+			var statuses = _boardRepository.GetStatusesForBoard(board.Id);
+
 			vm.Board = board;
 			vm.Project = board.Project;
+			vm.Statuses = statuses;
 		}
 	}
 }

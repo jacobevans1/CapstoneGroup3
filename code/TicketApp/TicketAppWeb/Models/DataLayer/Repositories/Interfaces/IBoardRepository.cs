@@ -16,10 +16,32 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		Task<Board?> GetBoardByProjectIdAsync(string projectId);
 
 		/// <summary>
+		/// Assigns a group to a status.
+		/// </summary>
+		/// <param name="boardStatusId"></param>
+		/// <param name="statusId"></param>
+		/// <param name="groupId"></param>
+		void AssignGroupToStatus(string boardStatusId, string statusId, string groupId);
+
+		/// <summary>
 		///	Adds a new board for the specified project.
 		/// </summary>
 		/// <param name="project"></param>
 		void AddBoard(Project project);
+
+		/// <summary>
+		/// Adds a new status to the board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		/// <param name="newStatusName"></param>
+		/// <param name="groupId"></param>
+		void AddStatus(string boardId, string newStatusName, string groupId);
+
+		/// <summary>
+		/// Gets the statuses for the specified board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		ICollection<Status> GetStatusesForBoard(string boardId);
 
 		/// <summary>
 		/// Deletes a board for the specified project.

@@ -31,5 +31,34 @@ namespace TicketAppWeb.Models.ViewModels
 		/// Gets or sets the project associated with the view model.
 		/// </summary>
 		public Project Project { get; set; }
+
+		/// <summary>
+		/// Gets or sets the list of statuses associated with the board.
+		/// </summary>
+		public ICollection<Status> Statuses { get; set; }
+
+		/// <summary>
+		/// Gets or sets the list of groups associated with the view model.
+		/// </summary>
+		public string NewStatusName { get; set; }
+
+		/// <summary>
+		/// Gets or sets the selected status identifier.
+		/// </summary>
+		public string SelectedStatusId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the selected group identifier.
+		/// </summary>
+		public string SelectedGroupId { get; set; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BoardViewModel"/> class.
+		/// </summary>
+		public BoardViewModel()
+		{
+			Board = new Board();
+			Project = new Project();
+		}
 	}
 }
