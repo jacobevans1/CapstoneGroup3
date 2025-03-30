@@ -133,10 +133,12 @@ namespace TicketAppWeb.Controllers
 		{
 			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
 			var statuses = _boardRepository.GetStatusesForBoard(board.Id);
+			var assignedGroups = _boardRepository.GetAssignedGroupsForBoard(board.Id);
 
 			vm.Board = board;
 			vm.Project = board.Project;
 			vm.Statuses = statuses;
+			vm.AssignedGroups = assignedGroups;
 		}
 	}
 }

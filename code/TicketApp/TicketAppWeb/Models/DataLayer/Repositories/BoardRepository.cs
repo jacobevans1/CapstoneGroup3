@@ -142,7 +142,6 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// Gets the statuses for the specified board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		/// <returns></returns>
 		public ICollection<Status> GetStatusesForBoard(string boardId)
 		{
 			var query = @"
@@ -156,6 +155,26 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 				.ToList();
 
 			return statuses;
+		}
+
+		/// <summary>
+		/// Gets the groups assigned to each status for the specified board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		public Dictionary<string, string> GetAssignedGroupsForBoard(string boardId)
+		{
+			var query = @"
+			SELECT bs.BoardId, bs.StatusId, bs.GroupId, g.GroupName
+			FROM BoardStatuses bs
+			JOIN Groups g ON bs.GroupId = g.Id
+			WHERE bs.BoardId = @BoardId";
+
+			var assignedGroups = context.BoardStatuses
+				.FromSqlRaw(query, new SqlParameter("@BoardId", boardId))
+				.Select(bg => new { bg.StatusId, bg.Group.GroupName })
+				.ToList();
+
+			return assignedGroups.ToDictionary(bg => bg.StatusId, bg => bg.GroupName);
 		}
 
 		private Board CreateBoard(Project project)

@@ -56,5 +56,11 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// </summary>
 		/// <param name="boardId"></param>
 		ICollection<Status> GetStatusesForBoard(string boardId);
+
+		/// <summary>
+		/// Gets the groups assigned to each status for the specified board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		Dictionary<string, string> GetAssignedGroupsForBoard(string boardId);
 	}
 }

@@ -38,6 +38,11 @@ namespace TicketAppWeb.Models.ViewModels
 		public ICollection<Status> Statuses { get; set; }
 
 		/// <summary>
+		/// Gets or sets the list of groups associated with the board.
+		/// </summary>
+		public Dictionary<string, string> AssignedGroups { get; set; }
+
+		/// <summary>
 		/// Gets or sets the list of groups associated with the view model.
 		/// </summary>
 		public string NewStatusName { get; set; }
