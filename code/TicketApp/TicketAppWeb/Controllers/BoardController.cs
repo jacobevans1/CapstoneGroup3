@@ -60,13 +60,15 @@ namespace TicketAppWeb.Controllers
 			try
 			{
 				_boardRepository.AddStage(boardId, newStageName, groupId);
-				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
-
 			}
 			catch (Exception ex)
 			{
+				TempData["ErrorMessage"] = $"Sorry, stage creation failed.";
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
+
+			TempData["SuccessMessage"] = $"{newStageName} stage added successfully.";
+			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 		}
 
 
@@ -78,17 +80,20 @@ namespace TicketAppWeb.Controllers
 		public IActionResult RenameStage(BoardViewModel viewModel)
 		{
 			var stageId = viewModel.SelectedStageId;
-			var newStatusName = viewModel.NewStageName;
+			var newStageName = viewModel.NewStageName;
 
 			try
 			{
-				_boardRepository.RenameStage(stageId, newStatusName);
-				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+				_boardRepository.RenameStage(stageId, newStageName);
 			}
 			catch (Exception ex)
 			{
+				TempData["ErrorMessage"] = $"Sorry, renaming stage failed.";
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
+
+			TempData["SuccessMessage"] = $"Renamed {newStageName} stage successfully.";
+			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 		}
 
 
@@ -106,12 +111,15 @@ namespace TicketAppWeb.Controllers
 			try
 			{
 				_boardRepository.AssignGroupToStage(boardId, stageId, groupId);
-				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
 			catch (Exception ex)
 			{
+				TempData["ErrorMessage"] = $"Sorry, reassigning stage failed.";
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
+
+			TempData["SuccessMessage"] = $"Reassigned stage successfully.";
+			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 		}
 
 
@@ -127,12 +135,15 @@ namespace TicketAppWeb.Controllers
 			try
 			{
 				_boardRepository.DeleteStage(boardId, stageId);
-				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
 			catch (Exception ex)
 			{
+				TempData["ErrorMessage"] = $"Sorry, deleting stage failed.";
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
+
+			TempData["SuccessMessage"] = $"Deleted stage successfully.";
+			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 		}
 
 

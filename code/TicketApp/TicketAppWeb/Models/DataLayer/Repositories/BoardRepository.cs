@@ -1,12 +1,11 @@
-﻿// Capstone Group 3
-// Spring 2025
-
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.DomainModels.MiddleTableModels;
 
+// Capstone Group 3
+// Spring 2025
 namespace TicketAppWeb.Models.DataLayer.Repositories
 {
 	/// <summary>
@@ -59,8 +58,10 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		public void AddBoard(Project project)
 		{
 			var board = CreateBoard(project);
+			var managerGroup = project.Groups.FirstOrDefault(g => g.ManagerId == project.LeadId);
+
 			Insert(board);
-			AddDefaultBoardStages(board);
+			AddDefaultBoardStages(board, managerGroup.Id);
 			Save();
 		}
 
@@ -72,13 +73,14 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <param name="groupId"></param>
 		public void AddStage(string boardId, string stageName, string groupId)
 		{
-			var status = CreateStage(stageName);
-			var boardStatus = CreateBoardStage(boardId, status.Id, groupId);
+			var stage = CreateStage(stageName);
+			var boardStages = context.BoardStages.Where(bs => bs.BoardId == boardId).ToList();
+			var boardStage = CreateBoardStage(boardId, stage.Id, groupId, boardStages.Count);
 
-			context.Stages.Add(status);
+			context.Stages.Add(stage);
 			Save();
 
-			context.BoardStages.Add(boardStatus);
+			context.BoardStages.Add(boardStage);
 			Save();
 		}
 
@@ -89,17 +91,17 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <param name="stageId"></param>
 		public void DeleteStage(string boardId, string stageId)
 		{
-			var boardStatus = context.BoardStages.FirstOrDefault(bs => bs.BoardId == boardId && bs.StageId == stageId);
-			if (boardStatus != null)
+			var boardStage = context.BoardStages.FirstOrDefault(bs => bs.BoardId == boardId && bs.StageId == stageId);
+			if (boardStage != null)
 			{
-				context.BoardStages.Remove(boardStatus);
+				context.BoardStages.Remove(boardStage);
 				Save();
 			}
 
-			var status = context.Stages.FirstOrDefault(s => s.Id == stageId);
-			if (status != null)
+			var stage = context.Stages.FirstOrDefault(s => s.Id == stageId);
+			if (stage != null)
 			{
-				context.Stages.Remove(status);
+				context.Stages.Remove(stage);
 				Save();
 			}
 		}
@@ -112,11 +114,11 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <param name="newStageName"></param>
 		public void RenameStage(string stageId, string newStageName)
 		{
-			var status = context.Stages.FirstOrDefault(s => s.Id == stageId);
-			if (status != null)
+			var stage = context.Stages.FirstOrDefault(s => s.Id == stageId);
+			if (stage != null)
 			{
-				status.Name = newStageName;
-				context.Stages.Update(status);
+				stage.Name = newStageName;
+				context.Stages.Update(stage);
 				Save();
 			}
 		}
@@ -124,12 +126,12 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// <summary>
 		/// Assigns a group to a status.
 		/// </summary>
-		/// <param name="boardStageId"></param>
+		/// <param name="boardId"></param>
 		/// <param name="stageId"></param>
 		/// <param name="groupId"></param>
-		public void AssignGroupToStage(string boardStageId, string stageId, string groupId)
+		public void AssignGroupToStage(string boardId, string stageId, string groupId)
 		{
-			var boardStage = context.BoardStages.FirstOrDefault(bs => bs.BoardId == boardStageId && bs.StageId == stageId);
+			var boardStage = context.BoardStages.FirstOrDefault(bs => bs.BoardId == boardId && bs.StageId == stageId);
 			if (boardStage != null)
 			{
 				boardStage.GroupId = groupId;
@@ -237,25 +239,28 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			return status;
 		}
 
-		private BoardStage CreateBoardStage(string boardId, string stageId, string groupId)
+		private BoardStage CreateBoardStage(string boardId, string stageId, string groupId, int stageOrder)
 		{
 			var boardStatus = new BoardStage
 			{
 				BoardId = boardId,
 				StageId = stageId,
-				GroupId = groupId
+				GroupId = groupId,
+				StageOrder = stageOrder + 1
 			};
 			return boardStatus;
 		}
 
-		private void AddDefaultBoardStages(Board board)
+		private void AddDefaultBoardStages(Board board, string groupId)
 		{
-			foreach (var status in _defaultStages)
+			foreach (var stage in _defaultStages)
 			{
 				var boardStatus = new BoardStage
 				{
 					BoardId = board.Id,
-					StageId = status.Id,
+					StageId = stage.Id,
+					GroupId = groupId,
+					StageOrder = _defaultStages.IndexOf(stage)
 				};
 				context.BoardStages.Add(boardStatus);
 			}

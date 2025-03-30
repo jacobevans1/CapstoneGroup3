@@ -47,10 +47,10 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// <summary>
 		/// Assigns a group to a stage.
 		/// </summary>
-		/// <param name="boardStageId"></param>
+		/// <param name="boardId"></param>
 		/// <param name="stageId"></param>
 		/// <param name="groupId"></param>
-		void AssignGroupToStage(string boardStageId, string stageId, string groupId);
+		void AssignGroupToStage(string boardId, string stageId, string groupId);
 
 		/// <summary>
 		/// Gets the stages for the specified board.

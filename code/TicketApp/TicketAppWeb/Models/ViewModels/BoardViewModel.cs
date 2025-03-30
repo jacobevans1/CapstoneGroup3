@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using TicketAppWeb.Models.DomainModels;
 
 // Capstone Group 3
@@ -25,26 +26,31 @@ namespace TicketAppWeb.Models.ViewModels
 		/// <summary>
 		/// Gets or sets the board associated with the view model.
 		/// </summary>
+		[ValidateNever]
 		public Board Board { get; set; }
 
 		/// <summary>
 		/// Gets or sets the project associated with the view model.
 		/// </summary>
+		[ValidateNever]
 		public Project Project { get; set; }
 
 		/// <summary>
 		/// Gets or sets the list of stages associated with the board.
 		/// </summary>
+		[ValidateNever]
 		public ICollection<Stage> Stages { get; set; }
 
 		/// <summary>
 		/// Gets or sets the list of groups associated with the board.
 		/// </summary>
+		[ValidateNever]
 		public Dictionary<string, string> AssignedGroups { get; set; }
 
 		/// <summary>
 		/// Gets or sets the name of the new stage to be added.
 		/// </summary>
+		[Required(ErrorMessage = "Please enter a stage name")]
 		public string NewStageName { get; set; }
 
 		/// <summary>

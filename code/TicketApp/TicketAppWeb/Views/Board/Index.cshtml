@@ -3,18 +3,40 @@
     ViewBag.Title = Model.Project.ProjectName;
 }
 
+<!-- TempData variables -->
+@{
+	var successMessage = TempData["SuccessMessage"] as string;
+	var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+<!-- Display success messages if any -->
+@if (!string.IsNullOrEmpty(successMessage))
+{
+	<div class="alert alert-success">
+		@successMessage
+	</div>
+}
+
+<!-- Display error messages if any -->
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+	<div class="alert alert-danger">
+		@errorMessage
+	</div>
+}
+
 <h3 class="d-flex justify-content-left">@Model.Project.ProjectName Board</h3>
 
-<div class="container-fluid py-5" style="height: 100vh; padding-top: 0;">
+<div class="container-fluid py-5" style="height: 90vh; padding-top: 0;">
 	<div class="row g-4 d-flex flex-nowrap" style="overflow-x: auto; max-width: 100%; height: 100%; margin-bottom: 0;">
 		@foreach (var stage in Model.Stages)
 		{
 			<div class="col-12 col-md-6 col-lg-4 column" style="flex-shrink: 0; min-width: 400px; max-width: 400px;">
-				<div class="card shadow-lg border-light rounded h-100">
+				<div class="card border-light rounded h-100">
 					<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 						<div>
 							<h5 class="mb-0">@stage.Name</h5>
-							<small class="text-white-50">@Model.AssignedGroups[stage.Id]</small>
+							<small class="text-white-50">@(Model.AssignedGroups?.GetValueOrDefault(stage.Id) ?? "Unassigned")</small>
 						</div>
 
 						<div class="dropdown" style="margin-left: auto;">
@@ -55,7 +77,7 @@
 							<input type="hidden" id="moveDirection_@stage.Id" name="SelectedDirection" value="" />
 
 							<div class="card-footer d-flex justify-content-between">
-								<button type="submit" class="btn btn-sm btn-outline-secondary"
+								<button type="submit" class="btn btn-sm"
 										onclick="setMoveStageData('@stage.Id', 'left');">
 									<i class="fas fa-arrow-left"></i>
 								</button>
@@ -66,7 +88,7 @@
 									<i class="fas fa-plus" style="font-size: 1rem;"></i> <span style="font-size: 1rem;">Add Item</span>
 								</button>
 
-								<button type="submit" class="btn btn-sm btn-outline-secondary"
+								<button type="submit" class="btn btn-sm"
 										onclick="setMoveStageData('@stage.Id', 'right');">
 									<i class="fas fa-arrow-right"></i>
 								</button>
@@ -105,8 +127,11 @@
 				<input type="hidden" asp-for="Project.Id"/>
 				<div class="modal-body">
 					<div class="mb-3">
-						<label for="newStageName" class="form-label">Stage Name</label>
-						<input type="text" class="form-control" id="newStageName" asp-for="NewStageName" placeholder="Enter stage name" required>
+						<label for="newStageName" class="form-label">
+							Stage Name<span class="text-danger">*</span>
+						</label>
+						<input type="text" class="form-control" id="newStageName" asp-for="NewStageName" required>
+						<span asp-validation-for="NewStageName" class="text-danger"></span>
 					</div>
 					<div class="mb-3">
 						<label for="initialGroupSelect" class="form-label">Select Group</label>
@@ -143,8 +168,11 @@
 				<div class="modal-body">
 					<input type="hidden" id="renameStageId" asp-for="SelectedStageId">
 					<div class="mb-3">
-						<label for="renameStageName" class="form-label">New Stage Name</label>
-						<input type="text" class="form-control" id="renameStageName" asp-for="NewStageName" placeholder="Enter new name" required>
+						<label for="renameStageName" class="form-label">
+							New Stage Name<span class="text-danger">*</span>
+						</label>
+						<input type="text" class="form-control" id="renameStageName" asp-for="NewStageName" required>
+						<span asp-validation-for="NewStageName" class="text-danger"></span>
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -170,7 +198,7 @@
 				<input type="hidden" asp-for="Board.Id"/>
 				<input type="hidden" asp-for="Project.Id"/>
 				<div class="modal-body">
-					<input type="hidden" id="assignGroupStatusId" asp-for="SelectedStageId">
+					<input type="hidden" id="assignGroupStageId" asp-for="SelectedStageId">
 					<div class="mb-3">
 						<label for="newGroupSelect" class="form-label">Select Group</label>
 						<select class="form-select" id="newGroupSelect" asp-for="SelectedGroupId">

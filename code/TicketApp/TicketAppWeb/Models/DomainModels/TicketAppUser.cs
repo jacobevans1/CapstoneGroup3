@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 // Capstone Group 3
 // Spring 2025
@@ -20,11 +21,13 @@ namespace TicketAppWeb.Models.DomainModels
 		/// <summary>
 		/// Gets or sets the first name of the user.
 		/// </summary>
+		[Required(ErrorMessage = "Please enter a first name")]
 		public string FirstName { get; set; } = string.Empty;
 
 		/// <summary>
 		/// Gets or sets the last name of the user.
 		/// </summary>
+		[Required(ErrorMessage = "Please enter a last name")]
 		public string LastName { get; set; } = string.Empty;
 
 		/// <summary>

@@ -1,7 +1,7 @@
-﻿// Capstone Group 3
-// Spring 2025
-using TicketAppWeb.Models.DomainModels.MiddleTableModels;
+﻿using TicketAppWeb.Models.DomainModels.MiddleTableModels;
 
+// Capstone Group 3
+// Spring 2025
 namespace TicketAppWeb.Models.DomainModels
 {
 	/// <summary>
