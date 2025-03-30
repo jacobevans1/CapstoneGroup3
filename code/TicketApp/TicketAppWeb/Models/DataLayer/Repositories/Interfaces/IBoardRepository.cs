@@ -31,9 +31,16 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// Adds a new status to the board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		/// <param name="newStatusName"></param>
+		/// <param name="statusName"></param>
 		/// <param name="groupId"></param>
-		void AddStatus(string boardId, string newStatusName, string groupId);
+		void AddStatus(string boardId, string statusName, string groupId);
+
+		/// <summary>
+		/// Renames a status on the board.
+		/// </summary>
+		/// <param name="statusId"></param>
+		/// <param name="newStatusName"></param>
+		void RenameStatus(string statusId, string newStatusName);
 
 		/// <summary>
 		/// Assigns a group to a status.

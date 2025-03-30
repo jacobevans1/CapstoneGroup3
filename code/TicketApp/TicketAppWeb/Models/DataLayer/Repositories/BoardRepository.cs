@@ -79,24 +79,34 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// Adds a new status to the board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		/// <param name="newStatusName"></param>
+		/// <param name="statusName"></param>
 		/// <param name="groupId"></param>
-		public void AddStatus(string boardId, string newStatusName, string groupId)
+		public void AddStatus(string boardId, string statusName, string groupId)
 		{
-			var status = CreateStatus(newStatusName);
+			var status = CreateStatus(statusName);
 			var boardStatus = CreateBoardStatus(boardId, status.Id, groupId);
 
 			context.Statuses.Add(status);
-			Console.WriteLine($"Status Entity State: {context.Entry(status).State}");
-			var affectedRows = context.SaveChanges();
-			Console.WriteLine($"Affected Rows: {affectedRows}");
-
+			context.SaveChanges();
 
 			context.BoardStatuses.Add(boardStatus);
-			Console.WriteLine($"BoardStatus Entity State: {context.Entry(boardStatus).State}");
-			var affectedRows2 = context.SaveChanges();
-			Console.WriteLine($"Affected Rows: {affectedRows2}");
+			context.SaveChanges();
+		}
 
+		/// <summary>
+		/// Renames a status on the board.
+		/// </summary>
+		/// <param name="statusId"></param>
+		/// <param name="newStatusName"></param>
+		public void RenameStatus(string statusId, string newStatusName)
+		{
+			var status = context.Statuses.FirstOrDefault(s => s.Id == statusId);
+			if (status != null)
+			{
+				status.Name = newStatusName;
+				context.Statuses.Update(status);
+				Save();
+			}
 		}
 
 		/// <summary>

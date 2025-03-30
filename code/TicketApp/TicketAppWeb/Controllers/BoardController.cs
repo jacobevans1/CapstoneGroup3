@@ -72,9 +72,12 @@ namespace TicketAppWeb.Controllers
 		[HttpPost]
 		public IActionResult RenameColumn(BoardViewModel viewModel)
 		{
+			var statusId = viewModel.SelectedStatusId;
+			var newStatusName = viewModel.NewStatusName;
+
 			try
 			{
-				//_boardRepository.RenameColumn(viewModel.NewBoardStatus.Status.Name, viewModel.SelectedGroupId);
+				_boardRepository.RenameStatus(statusId, newStatusName);
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 			}
 			catch (Exception ex)
