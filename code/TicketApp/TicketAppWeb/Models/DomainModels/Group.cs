@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+// Capstone Group 3
+// Spring 2025
 namespace TicketAppWeb.Models.DomainModels;
 
 /// <summary>

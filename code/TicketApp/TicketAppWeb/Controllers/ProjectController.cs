@@ -15,6 +15,7 @@ public class ProjectController : Controller
 {
 	private readonly SingletonService _singletonService;
 	private readonly IProjectRepository _projectRepository;
+	private readonly IBoardRepository _boardRepository;
 
 	/// <summary>
 	/// Initializes a new instance of the Project Controller class.
@@ -25,6 +26,7 @@ public class ProjectController : Controller
 	{
 		_singletonService = singletonService;
 		_projectRepository = projectRepository;
+		_boardRepository = boardRepository;
 	}
 
 	/// <summary>
@@ -86,6 +88,7 @@ public class ProjectController : Controller
 		{
 			var assignedGroups = model.SelectedGroupIds;
 			await _projectRepository.AddProjectAsync(project, assignedGroups, isAdmin);
+			_boardRepository.AddBoard(project);
 			TempData["SuccessMessage"] = $"Project {project.ProjectName} saved successfully";
 			return RedirectToAction("Index");
 		}
@@ -205,6 +208,7 @@ public class ProjectController : Controller
 		try
 		{
 			await _projectRepository.DeleteProjectAsync(project);
+			//_boardRepository.RemoveStatus(project);
 			TempData["SuccessMessage"] = $"Project {project.ProjectName} deleted successfully";
 			return RedirectToAction("Index");
 		}

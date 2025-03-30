@@ -22,7 +22,8 @@
         <div class="card-body text-center">
             <h5 class="card-title text-danger">Delete Project</h5>
             <p class="card-text">
-                Are you sure you want to delete the project: <strong>@Model.ProjectName</strong>?
+	            Are you sure you want to delete the project: <strong>@Model.ProjectName</strong>?
+				All data related to this project will be lost, including tasks, boards, and any other associated information.
                 This action can't be undone.
             </p>
             <form asp-action="ConfirmDelete" asp-route-id="@Model.Id" method="post">

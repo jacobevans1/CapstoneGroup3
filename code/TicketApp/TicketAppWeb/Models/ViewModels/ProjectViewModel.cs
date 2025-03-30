@@ -34,7 +34,7 @@ public class ProjectViewModel
 	/// <summary>
 	/// Gets or sets the name of the project.
 	/// </summary>
-	[Required(ErrorMessage = "Please provide a project name")]
+	[Required(ErrorMessage = "Please enter a project name")]
 	public string? ProjectName { get; set; }
 
 	/// <summary>

@@ -5,7 +5,7 @@ using Moq;
 using System.Security.Claims;
 using TicketAppWeb.Controllers;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
-using TicketAppWeb.Models.DomainModels;
+using TicketAppWeb.Models.DomainModels.MiddleTableModels;
 using TicketAppWeb.Models.ViewModels;
 using Xunit;
 

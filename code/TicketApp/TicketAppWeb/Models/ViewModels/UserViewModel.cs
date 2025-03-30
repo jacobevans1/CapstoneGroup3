@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using TicketAppWeb.Models.DomainModels;
 
 // Capstone Group 3
@@ -35,10 +36,11 @@ public class UserViewModel
 	/// </summary>
 	public IEnumerable<IdentityRole> AvailableRoles { get; set; } = new List<IdentityRole>();
 
-	/// <summary>
-	/// The name of the role selected in the dropdown. Used for creating a new user or editing an existing user.
-	/// </summary>
-	public string? SelectedRoleName { get; set; }
+		/// <summary>
+		/// The name of the role selected in the dropdown. Used for creating a new user or editing an existing user.
+		/// </summary>
+		[Required(ErrorMessage = "Please select a role")]
+		public string? SelectedRoleName { get; set; }
 
 	/// <summary>
 	/// Gets or sets the name of the user search string.

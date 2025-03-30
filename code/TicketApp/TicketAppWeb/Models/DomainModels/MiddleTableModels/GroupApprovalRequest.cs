@@ -1,4 +1,4 @@
-﻿namespace TicketAppWeb.Models.DomainModels;
+﻿namespace TicketAppWeb.Models.DomainModels.MiddleTableModels;
 
 /// <summary>
 /// The class represent groups that are pending to be added to a project needs menagers approval
