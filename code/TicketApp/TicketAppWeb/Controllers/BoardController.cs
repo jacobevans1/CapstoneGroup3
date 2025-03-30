@@ -108,6 +108,27 @@ namespace TicketAppWeb.Controllers
 			}
 		}
 
+
+		/// <summary>
+		/// Deletes a column from the board.
+		/// </summary>
+		/// <param name="viewModel"></param>
+		public IActionResult DeleteColumn(BoardViewModel viewModel)
+		{
+			var boardId = viewModel.Board.Id;
+			var statusId = viewModel.SelectedStatusId;
+
+			try
+			{
+				_boardRepository.DeleteStatus(boardId, statusId);
+				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			}
+			catch (Exception ex)
+			{
+				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			}
+		}
+
 		private void LoadIndexViewData(BoardViewModel vm, string projectId)
 		{
 			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;

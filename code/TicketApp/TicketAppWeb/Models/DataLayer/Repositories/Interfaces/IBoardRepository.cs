@@ -22,18 +22,19 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		void AddBoard(Project project);
 
 		/// <summary>
-		/// Deletes a board for the specified project.
-		/// </summary>
-		/// <param name="project"></param>
-		void DeleteBoard(Project project);
-
-		/// <summary>
 		/// Adds a new status to the board.
 		/// </summary>
 		/// <param name="boardId"></param>
 		/// <param name="statusName"></param>
 		/// <param name="groupId"></param>
 		void AddStatus(string boardId, string statusName, string groupId);
+
+		/// <summary>
+		/// Deletes a status for the specified board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		/// <param name="statusId"></param>
+		void DeleteStatus(string boardId, string statusId);
 
 		/// <summary>
 		/// Renames a status on the board.

@@ -65,17 +65,6 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		}
 
 		/// <summary>
-		/// Deletes a board for the specified project.
-		/// </summary>
-		/// <param name="project"></param>
-		public void DeleteBoard(Project project)
-		{
-			var board = context.Boards.FirstOrDefault(b => b.ProjectId == project.Id);
-			Delete(board);
-			Save();
-		}
-
-		/// <summary>
 		/// Adds a new status to the board.
 		/// </summary>
 		/// <param name="boardId"></param>
@@ -92,6 +81,29 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			context.BoardStatuses.Add(boardStatus);
 			context.SaveChanges();
 		}
+
+		/// <summary>
+		/// Deletes a status for the specified board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		/// <param name="statusId"></param>
+		public void DeleteStatus(string boardId, string statusId)
+		{
+			var boardStatus = context.BoardStatuses.FirstOrDefault(bs => bs.BoardId == boardId && bs.StatusId == statusId);
+			if (boardStatus != null)
+			{
+				context.BoardStatuses.Remove(boardStatus);
+				Save();
+			}
+
+			var status = context.Statuses.FirstOrDefault(s => s.Id == statusId);
+			if (status != null)
+			{
+				context.Statuses.Remove(status);
+				Save();
+			}
+		}
+
 
 		/// <summary>
 		/// Renames a status on the board.

@@ -27,9 +27,10 @@
 				                    </a>
 			                    </li>
 			                    <li>
-				                    <a class="dropdown-item d-flex align-items-center text-danger" href="#" onclick="removeColumn('@status.Id')">
+				                    <a class="dropdown-item d-flex align-items-center text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteColumnModal" onclick="setDeleteColumnData('@status.Id')">
 					                    <i class="fas fa-trash-alt me-2"></i> Remove Column
 				                    </a>
+
 			                    </li>
 		                    </ul>
 	                    </div>
@@ -69,7 +70,7 @@
 			</div>
 			<form asp-action="AddColumn" asp-controller="Board" method="post">
 				<input type="hidden" asp-for="Board.Id"/>
-				<input type="hidden" asp-for="Project.Id" />
+				<input type="hidden" asp-for="Project.Id"/>
 				<div class="modal-body">
 					<div class="mb-3">
 						<label for="newColumnName" class="form-label">Column Name</label>
@@ -105,8 +106,8 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<form asp-action="RenameColumn" asp-controller="Board" method="post">
-				<input type="hidden" asp-for="Board.Id" />
-				<input type="hidden" asp-for="Project.Id" />
+				<input type="hidden" asp-for="Board.Id"/>
+				<input type="hidden" asp-for="Project.Id"/>
 				<div class="modal-body">
 					<input type="hidden" id="renameColumnId" asp-for="SelectedStatusId">
 					<div class="mb-3">
@@ -135,7 +136,7 @@
 			</div>
 			<form asp-action="AssignGroupToStatus" asp-controller="Board" method="post">
 				<input type="hidden" asp-for="Board.Id"/>
-				<input type="hidden" asp-for="Project.Id" />
+				<input type="hidden" asp-for="Project.Id"/>
 				<div class="modal-body">
 					<input type="hidden" id="assignGroupStatusId" asp-for="SelectedStatusId">
 					<div class="mb-3">
@@ -157,6 +158,30 @@
 	</div>
 </div>
 
+
+<!-- Delete Column Modal -->
+<div class="modal fade" id="deleteColumnModal" tabindex="-1" aria-labelledby="deleteColumnModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="deleteColumnModalLabel">Delete Column</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form asp-action="DeleteColumn" asp-controller="Board" method="post">
+				<input type="hidden" asp-for="Board.Id"/>
+				<input type="hidden" asp-for="Project.Id"/>
+				<input type="hidden" id="deleteColumnId" asp-for="SelectedStatusId">
+				<div class="modal-body">
+					<p>Are you sure you want to delete this column? This action cannot be undone.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-danger">Delete</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
 
 
 <!-- Add Task Modal -->
@@ -203,6 +228,12 @@
 	function setRenameColumnData(statusId, statusName) {
 		document.getElementById("renameColumnId").value = statusId;
 		document.getElementById("renameColumnName").value = statusName;
+	}
+</script>
+
+<script>
+	function setDeleteColumnData(statusId) {
+		document.getElementById("deleteColumnId").value = statusId;
 	}
 </script>
 
