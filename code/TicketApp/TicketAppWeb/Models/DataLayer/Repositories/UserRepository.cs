@@ -24,42 +24,44 @@ public class UserRepository : Repository<TicketAppUser>, IUserRepository
 		_userManager = userManager;
 	}
 
-	/// <summary>
-	/// Creates a new user and assigns them a specified role.
-	/// </summary>
-	/// <param name="user">The user to be created.</param>
-	/// <param name="roleName">The name of the role to assign to the user.</param>
-	public async Task CreateUser(TicketAppUser user, string roleName)
-	{
-		if (checkIfUserExists(user))
-		{
-			throw new Exception("User already exists.");
-		}
+    /// <summary>
+    /// Creates a new user and assigns them a specified role.
+    /// </summary>
+    /// <param name="user">The user to be created.</param>
+    /// <param name="roleName">The name of the role to assign to the user.</param>
+    public async Task CreateUser(TicketAppUser user, string roleName)
+    {
+        if (checkIfUserExists(user))
+        {
+            throw new Exception("User already exists.");
+        }
 
-		user.UserName = user.FirstName + user.LastName;
-		var password = user.UserName + "123!";
-		user.EmailConfirmed = true;
+        user.UserName = user.FirstName + user.LastName;
+        var password = user.UserName + "123!";
+        user.EmailConfirmed = true;
 
-		var result = await _userManager.CreateAsync(user, password);
+        var result = await _userManager.CreateAsync(user, password);
 
-		if (result.Succeeded)
-		{
-			await _userManager.AddToRoleAsync(user, roleName);
-		}
-		else
-		{
-			var exception = new Exception(result.ToString());
-			exception.Data.Add("Errors", result.Errors);
-			throw exception;
-		}
-	}
+        if (result.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(user, roleName);
+        }
+        else
+        {
+            var errorMessages = string.Join(", ", result.Errors.Select(e => e.Description));
+            var exception = new Exception($"Failed: {errorMessages}");
+            exception.Data.Add("Errors", result.Errors);
+            throw exception;
+        }
+    }
 
-	/// <summary>
-	/// Updates an existing user's details and their assigned role.
-	/// </summary>
-	/// <param name="user">The user with updated details.</param>
-	/// <param name="roleName">The name of the new role to assign to the user.</param>
-	public async Task UpdateUser(TicketAppUser user, string roleName)
+
+    /// <summary>
+    /// Updates an existing user's details and their assigned role.
+    /// </summary>
+    /// <param name="user">The user with updated details.</param>
+    /// <param name="roleName">The name of the new role to assign to the user.</param>
+    public async Task UpdateUser(TicketAppUser user, string roleName)
 	{
 		if (checkIfUserExists(user))
 		{
