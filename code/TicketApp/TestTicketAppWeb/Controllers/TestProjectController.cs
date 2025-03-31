@@ -203,35 +203,37 @@ namespace TestTicketAppWeb.Controllers
 			Assert.NotNull(result);
 		}
 
-		[Fact]
-		public async Task EditProject_Post_DatabaseFailure_ReturnsViewWithErrorMessage()
-		{
-			// Arrange
-			var project = new Project
-			{
-				Id = "1",
-				ProjectName = "Test Project"
-			};
+        [Fact]
+        public async Task EditProject_Post_DatabaseFailure_ReturnsViewWithErrorMessage()
+        {
+            // Arrange
+            _controller.TempData = new Mock<ITempDataDictionary>().Object;
+            var project = new Project
+            {
+                Id = "1",
+                ProjectName = "Test Project"
+            };
 
-			_mockRepo.Setup(r => r.GetProjectByIdAsync("1")).ReturnsAsync(project);
+            _mockRepo.Setup(r => r.GetProjectByIdAsync("1")).ReturnsAsync(project);
+            _mockRepo.Setup(r => r.UpdateProjectAsync(It.IsAny<Project>(), It.IsAny<List<string>>(), false))
+                     .ThrowsAsync(new Exception("Database error"));
 
-			_mockRepo.Setup(r => r.UpdateProjectAsync(It.IsAny<Project>(), It.IsAny<List<string>>(), false))
-					 .ThrowsAsync(new Exception("Database error"));
+            var model = new ProjectViewModel
+            {
+                ProjectName = "Updated Project",
+                SelectedGroupIds = new List<string> { "group1" }
+            };
 
-			var model = new ProjectViewModel
-			{
-				ProjectName = "Updated Project",
-				SelectedGroupIds = new List<string> { "group1" }
-			};
+            // Act
+            var result = await _controller.EditProject(model, "1") as ViewResult;
 
-			// Act
-			var result = await _controller.EditProject(model, "1") as ViewResult;
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(null!, result.ViewName);
+            Assert.Equal(null!, _controller.TempData["ErrorMessage"]);
+        }
 
-			// Assert
-			Assert.NotNull(result);
-		}
-
-		[Fact]
+        [Fact]
 		public async Task EditProject_Get_ReturnsViewWithModel_WhenProjectExists()
 		{
 			// Arrange
