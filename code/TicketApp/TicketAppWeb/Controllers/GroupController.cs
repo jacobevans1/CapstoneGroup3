@@ -18,7 +18,7 @@ public class GroupController : Controller
 	private readonly SingletonService _singletonService;
 	private readonly IUserRepository _userRepository;
 	private readonly IGroupRepository _groupRepository;
-    private readonly IProjectRepository _projectRepository;
+	private readonly IProjectRepository _projectRepository;
 
 	/// <summary>
 	/// Initializes a new instance of the Group Controller class.
@@ -34,7 +34,7 @@ public class GroupController : Controller
 		_groupRepository = groupRepository;
 		_projectRepository = projectRepository;
 
-    }
+	}
 
 	/// <summary>
 	/// The index action method for the index page of group management page
@@ -181,7 +181,7 @@ public class GroupController : Controller
 			var user = group.Members.FirstOrDefault(m => m.Id == userId);
 			if (user != null)
 			{
-				group.Members.Remove(user); 
+				group.Members.Remove(user);
 			}
 		}
 
@@ -191,7 +191,7 @@ public class GroupController : Controller
 			var user = await _userRepository.GetAsync(userId);
 			if (user != null)
 			{
-				group.Members.Add(user); 
+				group.Members.Add(user);
 			}
 		}
 
@@ -202,101 +202,100 @@ public class GroupController : Controller
 		return RedirectToAction("Index");
 	}
 
-    /// <summary>
-    /// Gets the group's info ready for deletion.
-    /// </summary>
-    /// <param name="id">The identifier.</param>
-    [HttpGet]
-    public async Task<IActionResult> DeleteGroup(string id)
-    {
-        if (string.IsNullOrEmpty(id))
-        {
-            return NotFound();
-        }
+	/// <summary>
+	/// Gets the group's info ready for deletion.
+	/// </summary>
+	/// <param name="id">The identifier.</param>
+	[HttpGet]
+	public async Task<IActionResult> DeleteGroup(string id)
+	{
+		if (string.IsNullOrEmpty(id))
+		{
+			return NotFound();
+		}
 
-        var group = await _groupRepository.GetAsync(id);
-        if (group == null)
-        {
-            return NotFound();
-        }
+		var group = await _groupRepository.GetAsync(id);
+		if (group == null)
+		{
+			return NotFound();
+		}
 
-        var managerName = group.Manager?.FullName ?? "Unknown";
-        var affectedProjects = await GetConflictingProjectsForGroup(group);
+		var managerName = group.Manager?.FullName ?? "Unknown";
+		var affectedProjects = await GetConflictingProjectsForGroup(group);
 
-        var model = new DeleteGroupViewModel
-        {
-            GroupId = group.Id,
-            GroupName = group.GroupName,
-            ManagerId = group.ManagerId,
-            ManagerName = managerName,
-            AffectedProjects = affectedProjects
-        };
+		var model = new DeleteGroupViewModel
+		{
+			GroupId = group.Id,
+			GroupName = group.GroupName,
+			ManagerId = group.ManagerId,
+			ManagerName = managerName,
+			AffectedProjects = affectedProjects
+		};
 
-        if (affectedProjects.Any())
-        {
-            TempData["ErrorMessage"] = $"Cannot delete group '{group.GroupName}' because the manager: {managerName} is still assigned to the project(s): {string.Join(", ", affectedProjects.Select(p => p.ProjectName))}. Please reassign project leads before deleting.";
-            return RedirectToAction("Index");
-        }
+		if (affectedProjects.Any())
+		{
+			TempData["ErrorMessage"] = $"Cannot delete group '{group.GroupName}' because the manager: {managerName} is still assigned to the project(s): {string.Join(", ", affectedProjects.Select(p => p.ProjectName))}. Please reassign project leads before deleting.";
+			return RedirectToAction("Index");
+		}
 
-        return View(model);
-    }
-
-
-    /// <summary>
-    /// Confirms the groups deletion and removes it from the database.
-    /// </summary>
-    /// <param name="id">The identifier.</param>
-    [HttpPost]
-    public async Task<IActionResult> ConfirmDeleteGroup(string id)
-    {
-        if (string.IsNullOrEmpty(id))
-        {
-            return NotFound();
-        }
-
-        var group = await _groupRepository.GetAsync(id);
-        if (group == null)
-        {
-            return NotFound();
-        }
-
-        var managerName = group.Manager?.FullName ?? "Unknown";
-        var affectedProjects = await GetConflictingProjectsForGroup(group);
-
-        if (affectedProjects.Any())
-        {
-            TempData["ErrorMessage"] = $"Cannot delete group '{group.GroupName}' because the manager: {managerName} is still assigned to the project(s): {string.Join(", ", affectedProjects.Select(p => p.ProjectName))}. Please reassign project leads before deleting.";
-            return RedirectToAction("Index");
-        }
-
-        try
-        {
-            await _groupRepository.DeleteGroupAsync(group);
-            TempData["SuccessMessage"] = $"Group '{group.GroupName}' deleted successfully!";
-            return RedirectToAction("Index");
-        }
-        catch (Exception ex)
-        {
-            TempData["ErrorMessage"] = $"Error deleting group: {ex.Message}";
-            return View("DeleteGroup", group);
-        }
-    }
+		return View(model);
+	}
 
 
-    /// <summary>
-    /// Gets a list of projects where the group's manager is the lead AND the group is assigned to the project.
-    /// </summary>
-    /// <param name="group">The group being evaluated.</param>
-    private async Task<List<Project>> GetConflictingProjectsForGroup(Group group)
-    {
-        var projectsLedByManager = await _projectRepository.GetProjectsByLeadAsync(group.ManagerId);
+	/// <summary>
+	/// Confirms the groups deletion and removes it from the database.
+	/// </summary>
+	/// <param name="id">The identifier.</param>
+	[HttpPost]
+	public async Task<IActionResult> ConfirmDeleteGroup(string id)
+	{
+		if (string.IsNullOrEmpty(id))
+		{
+			return NotFound();
+		}
 
-        // Ensure groups are loaded if not included in the query
-        var conflictingProjects = projectsLedByManager
-            .Where(p => p.Groups.Any(g => g.Id == group.Id))
-            .ToList();
+		var group = await _groupRepository.GetAsync(id);
+		if (group == null)
+		{
+			return NotFound();
+		}
 
-        return conflictingProjects;
-    }
+		var managerName = group.Manager?.FullName ?? "Unknown";
+		var affectedProjects = await GetConflictingProjectsForGroup(group);
+
+		if (affectedProjects.Any())
+		{
+			TempData["ErrorMessage"] = $"Cannot delete group '{group.GroupName}' because the manager: {managerName} is still assigned to the project(s): {string.Join(", ", affectedProjects.Select(p => p.ProjectName))}. Please reassign project leads before deleting.";
+			return RedirectToAction("Index");
+		}
+
+		try
+		{
+			await _groupRepository.DeleteGroupAsync(group);
+			TempData["SuccessMessage"] = $"Group '{group.GroupName}' deleted successfully!";
+			return RedirectToAction("Index");
+		}
+		catch (Exception ex)
+		{
+			TempData["ErrorMessage"] = $"Error deleting group: {ex.Message}";
+			return View("DeleteGroup", group);
+		}
+	}
+
+
+	/// <summary>
+	/// Gets a list of projects where the group's manager is the lead AND the group is assigned to the project.
+	/// </summary>
+	/// <param name="group">The group being evaluated.</param>
+	private async Task<List<Project>> GetConflictingProjectsForGroup(Group group)
+	{
+		var projectsLedByManager = await _projectRepository.GetProjectsByLeadAsync(group.ManagerId)
+								   ?? new List<Project>();
+
+		return projectsLedByManager
+			.Where(p => p.Groups?.Any(g => g.Id == group.Id) ?? false)
+			.ToList();
+	}
+
 
 }

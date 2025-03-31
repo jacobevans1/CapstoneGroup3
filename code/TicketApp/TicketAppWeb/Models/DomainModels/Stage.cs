@@ -24,6 +24,6 @@ namespace TicketAppWeb.Models.DomainModels
 		/// <summary>
 		/// Gets or sets the description of the stage.
 		/// </summary>
-		public ICollection<BoardStage> BoardStages { get; set; }
+		public ICollection<BoardStage> BoardStages { get; set; } = new List<BoardStage>();
 	}
 }

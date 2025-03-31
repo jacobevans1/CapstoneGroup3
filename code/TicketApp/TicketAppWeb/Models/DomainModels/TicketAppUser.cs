@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
-namespace TicketAppWeb.Models.DomainModels;
 
 // Capstone Group 3
 // Spring 2025

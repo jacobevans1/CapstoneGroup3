@@ -30,16 +30,16 @@ namespace TicketAppWeb.Models.DomainModels.MiddleTableModels
 		/// <summary>
 		/// Gets or sets the board associated with this stage.
 		/// </summary>
-		public Board Board { get; set; }
+		public Board Board { get; set; } = new Board();
 
 		/// <summary>
 		/// Gets or sets the stage associated with this board.
 		/// </summary>
-		public Stage Stage { get; set; }
+		public Stage Stage { get; set; } = new Stage();
 
 		/// <summary>
 		/// Gets or sets the group associated with this board stage.
 		/// </summary>
-		public Group Group { get; set; }
+		public Group Group { get; set; } = new Group();
 	}
 }

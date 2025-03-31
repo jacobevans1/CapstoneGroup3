@@ -75,6 +75,8 @@ namespace TicketAppWeb.Models.ViewModels
 		{
 			Board = new Board();
 			Project = new Project();
+			Stages = new List<Stage>();
+			AssignedGroups = new Dictionary<string, string>();
 		}
 
 		/// <summary>

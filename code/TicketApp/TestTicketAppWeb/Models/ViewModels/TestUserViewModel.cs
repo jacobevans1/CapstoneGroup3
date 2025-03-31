@@ -47,5 +47,40 @@ namespace TestTicketAppWeb.Models.ViewModels
 			Assert.Single(viewModel.AvailableRoles);
 			Assert.Equal("Admin", viewModel.SelectedRoleName);
 		}
+
+		[Fact]
+		public void UserViewModel_FilteredUsers_ShouldFilterBasedOnUserNameSearchString()
+		{
+			// Arrange
+			var viewModel = new UserViewModel();
+			var users = new List<TicketAppUser>
+			{
+				new TicketAppUser { FirstName = "John", LastName = "Doe"},
+				new TicketAppUser { FirstName = "Jane", LastName = "Smith"},
+				new TicketAppUser { FirstName = "John", LastName = "Smith"}
+			};
+
+			viewModel.Users = users;
+
+			// Act & Assert
+			viewModel.UserNameSearchString = null;
+			var filteredUsers = viewModel.FilteredUsers.ToList();
+			Assert.Equal(3, filteredUsers.Count);
+
+			// Act & Assert
+			viewModel.UserNameSearchString = "John";
+			filteredUsers = viewModel.FilteredUsers.ToList();
+			Assert.Equal(2, filteredUsers.Count);
+
+			// Act & Assert
+			viewModel.UserNameSearchString = "Jane";
+			filteredUsers = viewModel.FilteredUsers.ToList();
+			Assert.Single(filteredUsers);
+
+			// Act & Assert
+			viewModel.UserNameSearchString = "Michael";
+			filteredUsers = viewModel.FilteredUsers.ToList();
+			Assert.Empty(filteredUsers);
+		}
 	}
 }
