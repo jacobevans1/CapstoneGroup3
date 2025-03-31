@@ -127,22 +127,28 @@ namespace TestTicketAppWeb.Controllers
 			Assert.IsType<AddGroupViewModel>(viewResult.Model);
 		}
 
-		[Fact]
-		public async Task DeleteGroup_ShouldReturnView_WhenGroupExists()
-		{
-			// Arrange
-			var group = new Group { Id = "1", GroupName = "Test Group" };
-			_mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync(group);
+        [Fact]
+        public async Task DeleteGroup_ShouldReturnView_WhenGroupExists()
+        {
+            // Arrange
+            var group = new Group { Id = "1", GroupName = "Test Group", ManagerId = "123" };
+            var affectedProjects = new List<Project>();
+            _mockGroupRepository.Setup(repo => repo.GetAsync("1")).ReturnsAsync(group);
+            _mockProjectRepository.Setup(repo => repo.GetProjectsByLeadAsync("123")).ReturnsAsync(affectedProjects);
 
-			// Act
-			var result = await _controller.DeleteGroup("1");
+            // Act
+            var result = await _controller.DeleteGroup("1");
 
-			// Assert
-			var viewResult = Assert.IsType<ViewResult>(result);
-			Assert.Equal(group, viewResult.Model);
-		}
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsType<DeleteGroupViewModel>(viewResult.Model);
+            Assert.Equal("1", model.GroupId);
+            Assert.Equal("Test Group", model.GroupName);
+            Assert.Equal("123", model.ManagerId);
+            Assert.Empty(model.AffectedProjects);
+        }
 
-		[Fact]
+        [Fact]
 		public async Task DeleteGroup_ShouldReturnNotFound_WhenGroupDoesNotExist()
 		{
 			// Arrange
