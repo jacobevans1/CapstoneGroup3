@@ -3,75 +3,69 @@
 namespace TestTicketAppWeb.Models.ViewModels;
 
 /// <summary>
-/// The the helper class that highlights the active nav
+/// The helper class that highlights the active nav
 /// Jabesi Abwe
 /// 02/23/2025
 /// </summary>
 public class NavTests
 {
-	[Fact]
-	public void Active_IntValuesEqual_ReturnsActive()
-	{
-		// Arrange
-		int value = 5;
+    [Fact]
+    public void Active_IntValuesEqual_ReturnsActive()
+    {
+        // Arrange
+        int value = 5;
+        int current = 5;
 
-		int current = 5;
+        // Act
+        string result = Nav.Active(value, current);
 
-		// Act
-		string result = Nav.Active(value, current);
+        // Assert
+        Assert.Equal("active", result);
+    }
 
-		// Assert
-		Assert.Equal("active", result);
-	}
+    [Fact]
+    public void Active_IntValuesNotEqual_ReturnsEmptyString()
+    {
+        // Arrange
+        int value = 5;
+        int current = 10;
 
-	[Fact]
-	public void Active_IntValuesNotEqual_ReturnsEmptyString()
-	{
-		// Arrange
-		int value = 5;
+        // Act
+        string result = Nav.Active(value, current);
 
-		int current = 10;
+        // Assert
+        Assert.Equal("", result);
+    }
 
-		// Act
-		string result = Nav.Active(value, current);
+    [Fact]
+    public void Active_StringValuesEqual_ReturnsNavActive()
+    {
+        // Arrange
+        string expectedController = "Home";
+        string currentController = "Home";
+        string expectedAction = "Index";
+        string currentAction = "Index";
 
-		// Assert
-		Assert.Equal("", result);
+        // Act
+        string result = Nav.Active(expectedController, currentController, expectedAction, currentAction);
 
-	}
+        // Assert
+        Assert.Equal("nav-active", result);
+    }
 
-	//[Fact]
-	//public void Active_StringValuesEqual_ReturnsNavActive()
-	//{
-	//	// Arrange
-	//	string value = "Home";
+    [Fact]
+    public void Active_StringValuesNotEqual_ReturnsEmptyString()
+    {
+        // Arrange
+        string expectedController = "Home";
+        string currentController = "About";
+        string expectedAction = "Index";
+        string currentAction = "Contact";
 
-	//	string current = "home";
+        // Act
+        string result = Nav.Active(expectedController, currentController, expectedAction, currentAction);
 
-	//	// Act
-	//	string result = Nav.Active(value, current);
-
-	//	// Assert
-	//	Assert.Equal("nav-active", result);
-	//}
-
-	//[Fact]
-
-	//public void Active_StringValuesNotEqual_ReturnsEmptyString()
-
-	//{
-	//	// Arrange
-
-	//	string value = "Home";
-
-	//	string current = "About";
-
-	//	// Act
-	//	string result = Nav.Active(value, current);
-
-	//	// Assert
-	//	Assert.Equal("", result);
-
-	//}
+        // Assert
+        Assert.Equal("", result);
+    }
 }
-
