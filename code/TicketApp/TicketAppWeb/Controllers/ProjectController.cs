@@ -63,7 +63,7 @@ public class ProjectController : Controller
 	/// <summary>
 	/// Creates the project and saves it to the database.
 	/// </summary>
-	/// <param name="model">The projetc management view model.</param>
+	/// <param name="model">The project management view model.</param>
 	[HttpPost]
 	public async Task<IActionResult> CreateProject(ProjectViewModel model)
 	{

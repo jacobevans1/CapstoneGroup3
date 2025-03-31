@@ -32,17 +32,19 @@
 	                <!-- Add Group Button -->
                     @if (Model.CurrentUserRole == "Admin")
                     {
-	                    <div style="width: 150px;">
-		                    <a class="btn btn-primary mb-3" asp-controller="Group" asp-action="CreateGroup" style="width: 100%;">Create Group</a>
+	                    <div>
+                            <a type="button" class="btn btn-sm btn-primary d-flex align-items-center gap-1" asp-controller="Group" asp-action="CreateGroup" style="width: 175px; height: 40px;">
+                                <i class="fas fa-plus" style="font-size: 1rem;"></i>Add Group
+		                    </a>
 	                    </div>
                     }
 
                     <!-- Search Fields -->
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2" style="width: 600px;">
                         <input type="text" id="groupSearch" class="form-control" placeholder="Search by group name" value="@Model.SearchGroupName">
                         <input type="text" id="leadSearch" class="form-control" placeholder="Search by group lead name" value="@Model.SearchGroupLead">
-                        <button type="button" class="btn btn-primary" id="filterBtn">Filter</button>
-                        <button type="button" class="btn btn-secondary" id="clearFilterBtn">Clear</button>
+                        <button type="button" class="btn btn-primary" style="width: 150px; height: 40px;" id="filterBtn">Filter</button>
+                        <button type="button" class="btn btn-secondary" style="width: 100px; height: 40px;" id="clearFilterBtn">Clear</button>
                     </div>
                 </div>
             </div>
@@ -50,10 +52,10 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th scope="col">Group Name</th>
+                        <th scope="col" style="width: 200px">Group Name</th>
                         <th scope="col">Members</th>
-                        <th scope="col">Group Lead</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col" style="width: 200px">Group Lead</th>
+                        <th scope="col" style="width: 200px">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,28 +76,32 @@
                                     @*     @group.Manager.FirstName @group.Manager.LastName *@
                                     @* </a> *@
 
-                                    <span class="badge bg-success text-dark text-decoration-none d-inline-block" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@group.Manager.FirstName @group.Manager.LastName</span>
+                                    <span class="badge bg-success text-light" style="min-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@group.Manager.FirstName @group.Manager.LastName</span>
                                 }
                             </td>
 	                        <td>
+                                
+		                        <div class="d-flex justify-content-center">
+                                    
+			                        @if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserGroupManagerForGroup(group))
+			                        {
+				                        <div class="d-flex gap-2">
+					                        <div>
+                                                <a asp-action="EditGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-warning d-flex justify-content-center align-items-center" style="width: 75px; height: 40px;">
+	                                                <i class="fas fa-pen"></i>
+						                        </a>
+					                        </div>
+					                        <div>
+                                                <a asp-action="DeleteGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-danger d-flex justify-content-center align-items-center" style="width: 75px; height: 40px;">
+	                                                <i class="fas fa-trash"></i>
+						                        </a>
+					                        </div>
+				                        </div>
+			                        }
 
-                                @if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserGroupManagerForGroup(group))
-                                {
-	                                <div class="d-flex justify-content-center gap-2">
-		                                <div class="col-auto" style="width: 150px;">
-			                                <a asp-action="EditGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-warning" style="width: 100%;">
-				                                Edit
-			                                </a>
-		                                </div>
-		                                <div class="col-auto" style="width: 150px">
-			                                <a asp-action="DeleteGroup" asp-controller="Group" asp-route-id="@group.Id" class="btn btn-danger" style="width: 100%;">
-				                                Delete
-			                                </a>
-		                                </div>
-	                                </div>
-                                }
+		                        </div>
+
 	                        </td>
-
                         </tr>
                     }
                 </tbody>

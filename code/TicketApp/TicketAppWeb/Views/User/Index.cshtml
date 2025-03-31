@@ -36,59 +36,78 @@
 
 
 <div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <h2 class="text-center">User Management</h2>
-	        <div class="title-divider"></div>
-			
-	        <!-- Filter Options -->
-	        <div class="row mb-3">
-		        <div class="col-md-12 d-flex justify-content-between align-items-center">
-	                
-			        <!-- Add User Button -->
-			        @if (Model.CurrentUserRole == "Admin")
-			        {
-				        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">Add User</button>
-			        }
+	<div class="row">
+		<div class="col-md-12">
+			<h2 class="text-center">User Management</h2>
+			<div class="title-divider"></div>
 
-			        <!-- Search Fields -->
-			        <div class="d-flex gap-2">
-				        <input type="text" id="userSearch" class="form-control" placeholder="Search by user's name" value="@Model.UserNameSearchString">
-				        <button type="button" class="btn btn-primary" id="searchBtn">Search</button>
-				        <button type="button" class="btn btn-secondary" id="clearSearchBtn">Clear</button>
-			        </div>
-		        </div>
-	        </div>
+			<!-- Filter Options -->
+			<div class="row mb-3">
+				<div class="col-md-12 d-flex justify-content-between align-items-center">
 
-            <table class="table table-striped">
-                <thead>
-                <tr>
-	                <th scope="col">
-		                Name
-	                </th>
-	                <th scope="col">
-		               Email
-	                </th>
-	                <th scope="col">
-		                Role
-	                </th>
-                </tr>
-                </thead>
-                <tbody>
-                    @foreach (TicketAppUser user in Model.FilteredUsers)
-                    {
-                        <tr>
-                            <td>@user.FullName</td>
-	                        <td>@user.Email</td>
-							<td>@Model.UserRoles[user]</td>
-                            
-	                        @if (Model.CurrentUserRole == "Admin")
-	                        {
-		                        <td>
-			                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="@user.Id">Edit</button>
-			                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal" data-user-id="@user.Id">Delete</button>
-		                        </td>
-	                        }
+					<!-- Add User Button -->
+					@if (Model.CurrentUserRole == "Admin")
+					{
+						<button type="button" class="btn btn-sm btn-primary d-flex align-items-center gap-1" style="width: 175px; height: 40px;" data-bs-toggle="modal" data-bs-target="#addUserModal">
+							<i class="fas fa-user-plus" style="font-size: 1rem;"></i>Add User
+						</button>
+					}
+
+					<!-- Search Fields -->
+					<div class="d-flex gap-2" style="width: 600px;">
+						<input type="text" id="userSearch" class="form-control" placeholder="Search by user's name" value="@Model.UserNameSearchString">
+						<button type="button" class="btn btn-primary" style="width: 150px; height: 40px;" id="searchBtn">Search</button>
+						<button type="button" class="btn btn-secondary" style="width: 100px; height: 40px;" id="clearSearchBtn">Clear</button>
+					</div>
+				</div>
+			</div>
+
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th scope="col" style="width: 200px">Name</th>
+						<th scope="col">Email</th>
+						<th scope="col" style="width: 200px">Role</th>
+						<th scope="col" style="width: 200px">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (TicketAppUser user in Model.FilteredUsers)
+					{
+						<tr>
+							<td>@user.FullName</td>
+							<td>@user.Email</td>
+
+							@if (@Model.UserRoles[user] == "User")
+							{
+								<td>
+									<span class="badge bg-success text-light" style="min-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Model.UserRoles[user]</span>
+								</td>
+							}
+							else
+							{
+								<td>
+									<span class="badge bg-black text-light" style="min-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Model.UserRoles[user]</span>
+								</td>
+							}
+
+
+							<div class="d-flex justify-content-center">
+								
+								@if (Model.CurrentUserRole == "Admin")
+								{
+									<td class="d-flex gap-2">
+										<button type="button" class="btn btn-warning d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="@user.Id" style="width: 75px; height: 40px;">
+											<i class="fas fa-pen"></i>
+										</button>
+										<button type="button" class="btn btn-danger d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#deleteUserModal" data-user-id="@user.Id" style="width: 75px; height: 40px;">
+											<i class="fas fa-trash"></i>
+										</button>
+									</td>
+								}
+
+							</div>
+
                         </tr>
                     }
                 </tbody>
