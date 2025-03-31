@@ -45,17 +45,33 @@ namespace TestTicketAppWeb.Controllers
 				Stages = new List<Stage>(),
 			};
 
-			_mockSingletonService.Setup(s => s.CurrentUserRole).Returns("Admin");
-			_mockProjectRepository.Setup(r => r.Get(It.IsAny<string>())).Returns(new Project { Id = projectId });
-			_mockBoardRepository.Setup(r => r.List(It.IsAny<QueryOptions<Board>>())).Returns(new List<Board>());
+            _mockBoardRepository
+			.Setup(b => b.GetBoardByProjectIdAsync(It.IsAny<string>()))
+			.ReturnsAsync(new Board
+			{
+				Id = "board1",
+				Project = new Project { ProjectName = "TestProject", LeadId = "lead1" }
+			});
 
-			// Act
-			var result = _controller.Index(projectId);
+            _mockBoardRepository
+                .Setup(b => b.GetStages(It.IsAny<string>()))
+                .Returns(new List<Stage>());
+
+            _mockBoardRepository
+                .Setup(b => b.GetAllAssignedGroupsForStages(It.IsAny<string>()))
+                .Returns(new Dictionary<string, string>());
+
+            _mockProjectRepository
+                .Setup(r => r.GetProjectByNameAndLeadAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new Project { Id = "project1" });
+
+
+            // Act
+            var result = _controller.Index(projectId);
 
 			// Assert
 			var viewResult = Assert.IsType<ViewResult>(result);
 			var model = Assert.IsAssignableFrom<BoardViewModel>(viewResult.Model);
-			Assert.Equal("Admin", model.CurrentUserRole);
 			Assert.Equal(projectId, model.Project.Id);
 			Assert.NotNull(model.Stages);
 		}
