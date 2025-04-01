@@ -224,6 +224,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 
 			board.Id = Guid.NewGuid().ToString();
 			board.BoardName = $"{project.ProjectName} Board";
+			board.Description = "Default Description";
 			board.Project = project;
 
 			return board;

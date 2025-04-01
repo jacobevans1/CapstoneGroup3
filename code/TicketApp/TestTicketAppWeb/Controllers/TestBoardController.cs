@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using TicketAppWeb.Controllers;
-using TicketAppWeb.Models.DataLayer;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.DomainModels.MiddleTableModels;
@@ -45,7 +44,7 @@ namespace TestTicketAppWeb.Controllers
 				Stages = new List<Stage>(),
 			};
 
-            _mockBoardRepository
+			_mockBoardRepository
 			.Setup(b => b.GetBoardByProjectIdAsync(It.IsAny<string>()))
 			.ReturnsAsync(new Board
 			{
@@ -53,21 +52,21 @@ namespace TestTicketAppWeb.Controllers
 				Project = new Project { ProjectName = "TestProject", LeadId = "lead1" }
 			});
 
-            _mockBoardRepository
-                .Setup(b => b.GetStages(It.IsAny<string>()))
-                .Returns(new List<Stage>());
+			_mockBoardRepository
+				.Setup(b => b.GetStages(It.IsAny<string>()))
+				.Returns(new List<Stage>());
 
-            _mockBoardRepository
-                .Setup(b => b.GetAllAssignedGroupsForStages(It.IsAny<string>()))
-                .Returns(new Dictionary<string, string>());
+			_mockBoardRepository
+				.Setup(b => b.GetAllAssignedGroupsForStages(It.IsAny<string>()))
+				.Returns(new Dictionary<string, string>());
 
-            _mockProjectRepository
-                .Setup(r => r.GetProjectByNameAndLeadAsync(It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(new Project { Id = "project1" });
+			_mockProjectRepository
+				.Setup(r => r.GetProjectByNameAndLeadAsync(It.IsAny<string>(), It.IsAny<string>()))
+				.ReturnsAsync(new Project { Id = "project1" });
 
 
-            // Act
-            var result = _controller.Index(projectId);
+			// Act
+			var result = _controller.Index(projectId);
 
 			// Assert
 			var viewResult = Assert.IsType<ViewResult>(result);
@@ -353,5 +352,66 @@ namespace TestTicketAppWeb.Controllers
 			Assert.Equal("Index", result.ActionName);
 			Assert.Equal("Board", result.ControllerName);
 		}
+
+		[Fact]
+		public void MoveStage_ShouldMoveLeft_WhenValid()
+		{
+			// Arrange
+			var viewModel = new BoardViewModel
+			{
+				Board = new Board { Id = "board1" },
+				SelectedStageId = "stage2",
+				SelectedDirection = "left",
+				Project = new Project { Id = "project1" }
+			};
+
+			var boardStages = new List<BoardStage>
+			{
+				new BoardStage { StageId = "stage1", StageOrder = 0 },
+				new BoardStage { StageId = "stage2", StageOrder = 1 }
+			};
+
+			_mockBoardRepository.Setup(b => b.GetBoardStages(It.IsAny<string>())).Returns(boardStages);
+			_mockBoardRepository.Setup(b => b.SaveBoardStages(It.IsAny<List<BoardStage>>()));
+
+			// Act
+			var result = _controller.MoveStage(viewModel) as RedirectToActionResult;
+
+			// Assert
+			Assert.NotNull(result);
+			Assert.Equal("Index", result.ActionName);
+			Assert.Equal("Board", result.ControllerName);
+		}
+
+		[Fact]
+		public void MoveStage_ShouldMoveRight_WhenValid()
+		{
+			// Arrange
+			var viewModel = new BoardViewModel
+			{
+				Board = new Board { Id = "board1" },
+				SelectedStageId = "stage1",
+				SelectedDirection = "right",
+				Project = new Project { Id = "project1" }
+			};
+
+			var boardStages = new List<BoardStage>
+			{
+				new BoardStage { StageId = "stage1", StageOrder = 0 },
+				new BoardStage { StageId = "stage2", StageOrder = 1 }
+			};
+
+			_mockBoardRepository.Setup(b => b.GetBoardStages(It.IsAny<string>())).Returns(boardStages);
+			_mockBoardRepository.Setup(b => b.SaveBoardStages(It.IsAny<List<BoardStage>>()));
+
+			// Act
+			var result = _controller.MoveStage(viewModel) as RedirectToActionResult;
+
+			// Assert
+			Assert.NotNull(result);
+			Assert.Equal("Index", result.ActionName);
+			Assert.Equal("Board", result.ControllerName);
+		}
+
 	}
 }
