@@ -231,8 +231,8 @@ var assemblies = [
   {
     "name": "TicketAppWeb",
     "classes": [
-      { "name": "TicketAppWeb.Controllers.BoardController", "rp": "TicketAppWeb_BoardController.html", "cl": 103, "ucl": 3, "cal": 106, "tl": 211, "cb": 7, "tb": 10, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "TicketAppWeb.Controllers.GroupController", "rp": "TicketAppWeb_GroupController.html", "cl": 99, "ucl": 67, "cal": 166, "tl": 301, "cb": 24, "tb": 50, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "TicketAppWeb.Controllers.BoardController", "rp": "TicketAppWeb_BoardController.html", "cl": 106, "ucl": 0, "cal": 106, "tl": 211, "cb": 9, "tb": 10, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "TicketAppWeb.Controllers.GroupController", "rp": "TicketAppWeb_GroupController.html", "cl": 152, "ucl": 14, "cal": 166, "tl": 301, "cb": 38, "tb": 50, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Controllers.HomeController", "rp": "TicketAppWeb_HomeController.html", "cl": 45, "ucl": 0, "cal": 45, "tl": 111, "cb": 8, "tb": 8, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Controllers.LoginController", "rp": "TicketAppWeb_LoginController.html", "cl": 34, "ucl": 0, "cal": 34, "tl": 88, "cb": 14, "tb": 14, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Controllers.ProjectController", "rp": "TicketAppWeb_ProjectController.html", "cl": 126, "ucl": 4, "cal": 130, "tl": 246, "cb": 18, "tb": 20, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
@@ -241,7 +241,7 @@ var assemblies = [
       { "name": "TicketAppWeb.Models.DataLayer.QueryExtensions", "rp": "TicketAppWeb_QueryExtensions.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 25, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Models.DataLayer.QueryOptions<T>", "rp": "TicketAppWeb_QueryOptions_1.html", "cl": 9, "ucl": 2, "cal": 11, "tl": 79, "cb": 2, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Models.DataLayer.Reposetories.ProjectRepository", "rp": "TicketAppWeb_ProjectRepository.html", "cl": 205, "ucl": 34, "cal": 239, "tl": 420, "cb": 44, "tb": 44, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "TicketAppWeb.Models.DataLayer.Repositories.BoardRepository", "rp": "TicketAppWeb_BoardRepository.html", "cl": 0, "ucl": 156, "cal": 156, "tl": 270, "cb": 0, "tb": 18, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "TicketAppWeb.Models.DataLayer.Repositories.BoardRepository", "rp": "TicketAppWeb_BoardRepository.html", "cl": 122, "ucl": 35, "cal": 157, "tl": 271, "cb": 16, "tb": 18, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Models.DataLayer.Repositories.GroupRepository", "rp": "TicketAppWeb_GroupRepository.html", "cl": 47, "ucl": 0, "cal": 47, "tl": 102, "cb": 12, "tb": 12, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Models.DataLayer.Repositories.Repository<T>", "rp": "TicketAppWeb_Repository_1.html", "cl": 33, "ucl": 1, "cal": 34, "tl": 105, "cb": 8, "tb": 8, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Models.DataLayer.Repositories.UserRepository", "rp": "TicketAppWeb_UserRepository.html", "cl": 61, "ucl": 0, "cal": 61, "tl": 133, "cb": 12, "tb": 12, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
@@ -260,8 +260,8 @@ var assemblies = [
       { "name": "TicketAppWeb.Models.ExtensionMethods.TagHelperExtensions", "rp": "TicketAppWeb_TagHelperExtensions.html", "cl": 11, "ucl": 4, "cal": 15, "tl": 53, "cb": 6, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Models.ViewModels.AddGroupViewModel", "rp": "TicketAppWeb_AddGroupViewModel.html", "cl": 6, "ucl": 0, "cal": 6, "tl": 25, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Models.ViewModels.BoardViewModel", "rp": "TicketAppWeb_BoardViewModel.html", "cl": 29, "ucl": 0, "cal": 29, "tl": 106, "cb": 4, "tb": 4, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "TicketAppWeb.Models.ViewModels.DeleteGroupViewModel", "rp": "TicketAppWeb_DeleteGroupViewModel.html", "cl": 6, "ucl": 1, "cal": 7, "tl": 16, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "TicketAppWeb.Models.ViewModels.GroupViewModel", "rp": "TicketAppWeb_GroupViewModel.html", "cl": 20, "ucl": 0, "cal": 20, "tl": 81, "cb": 1, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "TicketAppWeb.Models.ViewModels.DeleteGroupViewModel", "rp": "TicketAppWeb_DeleteGroupViewModel.html", "cl": 7, "ucl": 0, "cal": 7, "tl": 16, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "TicketAppWeb.Models.ViewModels.GroupViewModel", "rp": "TicketAppWeb_GroupViewModel.html", "cl": 20, "ucl": 0, "cal": 20, "tl": 81, "cb": 2, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Models.ViewModels.Nav", "rp": "TicketAppWeb_Nav.html", "cl": 9, "ucl": 0, "cal": 9, "tl": 31, "cb": 6, "tb": 6, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Models.ViewModels.PendingApprovalsViewModel", "rp": "TicketAppWeb_PendingApprovalsViewModel.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 9, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "TicketAppWeb.Models.ViewModels.ProjectViewModel", "rp": "TicketAppWeb_ProjectViewModel.html", "cl": 39, "ucl": 0, "cal": 39, "tl": 144, "cb": 14, "tb": 14, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
@@ -275,17 +275,9 @@ var metrics = [{ "name": "Crap Score", "abbreviation": "crp", "explanationUrl": 
 var historicCoverageExecutionTimes = [];
 
 var riskHotspotMetrics = [
-      { "name": "Crap Score", "explanationUrl": "https://googletesting.blogspot.de/2011/02/this-code-is-crap.html" },
-      { "name": "Cyclomatic complexity", "explanationUrl": "https://en.wikipedia.org/wiki/Cyclomatic_complexity" },
 ];
 
 var riskHotspots = [
-  {
-    "assembly": "TicketAppWeb", "class": "TicketAppWeb.Controllers.GroupController", "reportPath": "TicketAppWeb_GroupController.html", "methodName": "UpdateGroup()", "methodShortName": "UpdateGroup()", "fileIndex": 0, "line": 158,
-    "metrics": [
-      { "value": 156, "exceeded": true },
-      { "value": 12, "exceeded": false },
-    ]},
 ];
 
 var branchCoverageAvailable = true;
