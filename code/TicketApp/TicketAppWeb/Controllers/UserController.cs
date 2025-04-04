@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketAppWeb.Models.DataLayer;
-using TicketAppWeb.Models.DataLayer.Reposetories;
 using TicketAppWeb.Models.DataLayer.Repositories.Interfaces;
 using TicketAppWeb.Models.DomainModels;
 using TicketAppWeb.Models.ViewModels;
@@ -197,7 +196,7 @@ public class UserController : Controller
 			{
 				if (affectedGoroups.Any())
 				{
-					TempData["ErrorMessage"] = $"Cannot delete user {user.FullName} because they manages the following groups:  " +
+					TempData["ErrorMessage"] = $"Cannot delete user {user.FullName} because they manages the following groups: " +
 						$"{string.Join(", ", affectedGoroups.Select(p => p.GroupName))}. " +
 						$"Please reassign Group Managers before you cant continue this action.";
 					return RedirectToAction("Index");
@@ -229,14 +228,10 @@ public class UserController : Controller
 		vm.UserRoles = _usersRepository.GetUserRolesAsync().Result;
 	}
 
-
-    private async Task<List<Group>> GetConflictingGroupsForUser(TicketAppUser user)
+    protected virtual async Task<List<Group>> GetConflictingGroupsForUser(TicketAppUser user)
     {
         var projectsLedByManager = await _groupsRepository.GetGroupByManagerIdAsync(user.Id)
                                    ?? new List<Group>();
-
-        return projectsLedByManager
-            .Where(g => g.Members?.Any(u => u.Id == user.Id) ?? false)
-            .ToList();
+        return projectsLedByManager.Where(g => g.Members != null).ToList();
     }
 }
