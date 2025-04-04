@@ -15,6 +15,7 @@ public class UserController : Controller
 {
 	private readonly SingletonService _singletonService;
 	private readonly IUserRepository _usersRepository;
+	private readonly IGroupRepository _groupsRepository;
 
 	private static string? selectedUserId;
 	private static string? selectedUsername;
@@ -23,10 +24,11 @@ public class UserController : Controller
 	/// Initializes a new instance of the UserController class.
 	/// </summary>
 	/// <param name="usersRepository"></param>
-	public UserController(SingletonService singletonService, IUserRepository usersRepository)
+	public UserController(SingletonService singletonService, IUserRepository usersRepository, IGroupRepository groupRepository)
 	{
 		_singletonService = singletonService;
 		_usersRepository = usersRepository;
+		_groupsRepository = groupRepository;
 	}
 
 	/// <summary>
@@ -172,7 +174,7 @@ public class UserController : Controller
 	/// </summary>
 	/// <param name="id"></param>
 	[HttpPost]
-	public IActionResult DeleteConfirmed(string id)
+	public async Task<IActionResult> DeleteConfirmed(string id)
 	{
 		if (string.IsNullOrEmpty(id))
 		{
@@ -188,15 +190,27 @@ public class UserController : Controller
 		}
 		else
 		{
+			var affectedGoroups = await GetConflictingGroupsForUser(user);
+
 			try
 			{
-				_usersRepository.Delete(user);
-				_usersRepository.Save();
-				TempData["SuccessMessage"] = "User deleted successfully.";
+				if (affectedGoroups.Any())
+				{
+					TempData["ErrorMessage"] = $"Cannot delete user {user.FullName} because they manages the following groups: " +
+						$"{string.Join(", ", affectedGoroups.Select(p => p.GroupName))}. " +
+						$"Please reassign Group Managers before you cant continue this action.";
+					return RedirectToAction("Index");
+				}
+				else
+				{
+					_usersRepository.Delete(user);
+					_usersRepository.Save();
+					TempData["SuccessMessage"] = $"User {user.FullName} deleted successfully.";
+				}
 			}
 			catch (Exception)
 			{
-				TempData["ErrorMessage"] = $"Sorry, deleting user failed.";
+				TempData["ErrorMessage"] = $"Sorry, deleting user failed for unkwon reasons";
 			}
 		}
 
@@ -213,4 +227,11 @@ public class UserController : Controller
 		vm.AvailableRoles = _usersRepository.GetRolesAsync().Result;
 		vm.UserRoles = _usersRepository.GetUserRolesAsync().Result;
 	}
+
+    protected virtual async Task<List<Group>> GetConflictingGroupsForUser(TicketAppUser user)
+    {
+        var projectsLedByManager = await _groupsRepository.GetGroupByManagerIdAsync(user.Id)
+                                   ?? new List<Group>();
+        return projectsLedByManager.Where(g => g.Members != null).ToList();
+    }
 }

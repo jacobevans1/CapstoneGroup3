@@ -99,4 +99,17 @@ public class GroupRepository(TicketAppContext ctx) : Repository<Group>(ctx), IGr
         context.Groups.Remove(group);
         await context.SaveChangesAsync();
     }
+
+    /// <summary>
+    /// Gets the group by manager identifier asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns></returns>
+    public async Task<List<Group>> GetGroupByManagerIdAsync(string id)
+    {
+        return await context.Groups
+            .Where(g => g.ManagerId == id)
+            .Include(p => p.Members)
+            .ToListAsync();
+    }
 }
