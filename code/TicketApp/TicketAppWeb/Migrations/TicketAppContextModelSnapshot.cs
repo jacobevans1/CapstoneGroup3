@@ -246,16 +246,10 @@ namespace TicketAppWeb.Migrations
                     b.Property<string>("StageId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("GroupId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("StageOrder")
                         .HasColumnType("int");
 
                     b.HasKey("BoardId", "StageId");
-
-                    b.HasIndex("GroupId");
 
                     b.HasIndex("StageId");
 
@@ -583,12 +577,6 @@ namespace TicketAppWeb.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketAppWeb.Models.DomainModels.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TicketAppWeb.Models.DomainModels.Stage", "Stage")
                         .WithMany("BoardStages")
                         .HasForeignKey("StageId")
@@ -596,8 +584,6 @@ namespace TicketAppWeb.Migrations
                         .IsRequired();
 
                     b.Navigation("Board");
-
-                    b.Navigation("Group");
 
                     b.Navigation("Stage");
                 });

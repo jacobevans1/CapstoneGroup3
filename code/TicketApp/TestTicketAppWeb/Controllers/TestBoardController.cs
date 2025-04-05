@@ -57,7 +57,7 @@ namespace TestTicketAppWeb.Controllers
 				.Returns(new List<Stage>());
 
 			_mockBoardRepository
-				.Setup(b => b.GetAllAssignedGroupsForStages(It.IsAny<string>()))
+				.Setup(b => b.GetBoardStageGroups(It.IsAny<string>()))
 				.Returns(new Dictionary<string, string>());
 
 			_mockProjectRepository
