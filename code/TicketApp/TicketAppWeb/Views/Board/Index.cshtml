@@ -47,7 +47,7 @@
 								</button>
 								<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
-									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject())
+									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
 									{
 										<li>
 											<a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#assignGroupModal" onclick="setAssignGroupData('@stage.Id')">
