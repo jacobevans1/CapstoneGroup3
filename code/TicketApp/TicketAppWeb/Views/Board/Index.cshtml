@@ -36,7 +36,12 @@
 					<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 						<div>
 							<h5 class="mb-0">@stage.Name</h5>
-							<small class="text-white-50">@(Model.AssignedGroups?.GetValueOrDefault(stage.Id) ?? "Unassigned")</small>
+							@foreach (var group in Model.AssignedGroups?.GetValueOrDefault(stage.Id))
+							{
+								<div>
+									<small class="text-white-50">@group.GroupName</small>
+								</div>
+							}
 						</div>
 
 						@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
@@ -50,7 +55,7 @@
 									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject())
 									{
 										<li>
-											<a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#assignGroupModal" onclick="setAssignGroupData('@stage.Id')">
+											<a class="dropdown-item d-flex align-items-center" asp-action="AssignGroupToStage" asp-controller="Board" asp-route-projectId="@Model.Project.Id", asp-route-boardId="@Model.Board.Id" , asp-route-stageId="@stage.Id">
 												<i class="fas fa-users me-2"></i> Assign Group
 											</a>
 										</li>

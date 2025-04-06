@@ -133,16 +133,37 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// </summary>
 		/// <param name="boardId"></param>
 		/// <param name="stageId"></param>
-		/// <param name="groupId"></param>
-		public void AssignGroupToStage(string boardId, string stageId, string groupId)
+		/// <param name="groupIds"></param>
+		public void AssignGroupToStage(string boardId, string stageId, List<string> newGroupIds)
 		{
 			var boardStage = context.BoardStages.FirstOrDefault(bs => bs.BoardId == boardId && bs.StageId == stageId);
-			if (boardStage != null && !IsGroupAssignedToStage(boardId, stageId, groupId))
+			if (boardStage == null)
 			{
-				var newBoardStageGroup = CreateBoardStageGroup(boardId, stageId, groupId);
-				context.BoardStageGroups.Add(newBoardStageGroup);
-				Save();
+				throw new Exception("Board stage not found.");
 			}
+
+			var existingBoardStageGroups = GetBoardStageGroups(boardId)[stageId];
+
+			foreach (var group in existingBoardStageGroups)
+			{
+				if (!newGroupIds.Contains(group.Id))
+				{
+					var boardStageGroup = context.BoardStageGroups
+						.FirstOrDefault(bsg => bsg.BoardId == boardId && bsg.StageId == stageId && bsg.GroupId == group.Id);
+					context.BoardStageGroups.Remove(boardStageGroup);
+				}
+			}
+			Save();
+
+			foreach (var newGroupId in newGroupIds)
+			{
+				if (!IsGroupAssignedToStage(boardId, stageId, newGroupId))
+				{
+					var boardStageGroup = CreateBoardStageGroup(boardId, stageId, newGroupId);
+					context.BoardStageGroups.Add(boardStageGroup);
+				}
+			}
+			Save();
 		}
 
 		/// <summary>
@@ -188,24 +209,25 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// Gets the groups assigned to each stage for the specified board.
 		/// </summary>
 		/// <param name="boardId"></param>
-		public Dictionary<string, string> GetBoardStageGroups(string boardId)
+		public Dictionary<string, List<Group>> GetBoardStageGroups(string boardId)
 		{
 			var query = @"
-			SELECT bsg.Id, bsg.BoardId, bsg.StageId, bsg.GroupId, g.Id AS Group_Id, g.GroupName
+			SELECT bsg.Id, bsg.BoardId, bsg.StageId, bsg.GroupId
 			FROM BoardStageGroups bsg
-			JOIN Groups g ON bsg.GroupId = g.Id
 			WHERE bsg.BoardId = @BoardId";
 
 			var assignedGroups = context.BoardStageGroups
 				.FromSqlRaw(query, new SqlParameter("@BoardId", boardId))
 				.Include(bsg => bsg.Group)
-				.Select(bsg => new { StageId = bsg.StageId, bsg.Group.GroupName })
-				.ToList();
+				.AsEnumerable()
+				.GroupBy(bsg => bsg.StageId)
+				.ToDictionary(
+					g => g.Key,
+					g => g.Select(x => x.Group).ToList()
+				);
 
-			return assignedGroups.ToDictionary(bsg => bsg.StageId, bsg => bsg.GroupName);
-
+			return assignedGroups;
 		}
-
 
 		/// <summary>
 		/// Saves the board stages to the database.
@@ -222,6 +244,21 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 					context.BoardStages.Update(existingStage);
 					Save();
 				}
+			}
+		}
+
+		/// <summary>
+		/// Deletes the board stage groups for the specified board and stage.
+		/// </summary>
+		/// <param name="boardId"></param>
+		/// <param name="stageId"></param>
+		public void DeleteBoardStageGroups(string boardId, string stageId)
+		{
+			foreach (var boardStageGroup in context.BoardStageGroups
+				.Where(bsg => bsg.BoardId == boardId && bsg.StageId == stageId))
+			{
+				context.BoardStageGroups.Remove(boardStageGroup);
+				Save();
 			}
 		}
 
