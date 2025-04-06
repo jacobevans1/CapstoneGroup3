@@ -30,27 +30,58 @@ namespace TicketAppWeb.Controllers
 		}
 
 
-		/// <summary>
-		/// Displays the board index view.
-		/// </summary>
-		public IActionResult Index(string projectId)
-		{
-			var viewModel = new BoardViewModel();
+        /// <summary>
+        /// Displays the board index view.
+        /// </summary>
+        public IActionResult Index(string projectId)
+        {
+            var viewModel = new BoardViewModel
+            {
+                CurrentUser = _singletonService.CurrentUser,
+                CurrentUserRole = _singletonService.CurrentUserRole
+            };
 
-			viewModel.CurrentUser = _singletonService.CurrentUser;
-			viewModel.CurrentUserRole = _singletonService.CurrentUserRole;
+            LoadIndexViewData(viewModel, projectId);
 
-			LoadIndexViewData(viewModel, projectId);
-
-			return View(viewModel);
-		}
+            // Return read-only view for all users
+            return View("Index", viewModel);
+        }
 
 
-		/// <summary>
-		/// Adds a new column to the board.
-		/// </summary>
-		/// <param name="viewModel"></param>
-		[HttpPost]
+        public IActionResult EditBoard(string projectId)
+        {
+            // Only allow Admin, Project Lead, or Group Manager
+            var currentUser = _singletonService.CurrentUser;
+            var currentUserRole = _singletonService.CurrentUserRole;
+
+            var viewModel = new BoardViewModel
+            {
+                CurrentUser = currentUser,
+                CurrentUserRole = currentUserRole
+            };
+
+            LoadIndexViewData(viewModel, projectId);
+
+            bool isAuthorized = currentUserRole == "Admin" ||
+                                viewModel.IsCurrentUserProjectLeadForProject() ||
+                                viewModel.IsCurrentUserAGroupManagerInProject();
+
+            if (!isAuthorized)
+            {
+                TempData["ErrorMessage"] = "You are not authorized to edit this board.";
+                return RedirectToAction("Index", new { projectId });
+            }
+
+            return View("EditBoard", viewModel);
+        }
+
+
+
+        /// <summary>
+        /// Adds a new column to the board.
+        /// </summary>
+        /// <param name="viewModel"></param>
+        [HttpPost]
 		public IActionResult AddStage(BoardViewModel viewModel)
 		{
 			var boardId = viewModel.Board.Id;
@@ -64,11 +95,11 @@ namespace TicketAppWeb.Controllers
 			catch (Exception ex)
 			{
 				TempData["ErrorMessage"] = $"Sorry, stage creation failed.";
-				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+				return RedirectToAction("EditBoard", "Board", new { projectId = viewModel.Project.Id });
 			}
 
 			TempData["SuccessMessage"] = $"{newStageName} stage added successfully.";
-			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			return RedirectToAction("EditBoard", "Board", new { projectId = viewModel.Project.Id });
 		}
 
 
@@ -89,11 +120,11 @@ namespace TicketAppWeb.Controllers
 			catch (Exception ex)
 			{
 				TempData["ErrorMessage"] = $"Sorry, renaming stage failed.";
-				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+				return RedirectToAction("EditBoard", "Board", new { projectId = viewModel.Project.Id });
 			}
 
 			TempData["SuccessMessage"] = $"Renamed {newStageName} stage successfully.";
-			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			return RedirectToAction("EditBoard", "Board", new { projectId = viewModel.Project.Id });
 		}
 
 
@@ -115,11 +146,11 @@ namespace TicketAppWeb.Controllers
 			catch (Exception ex)
 			{
 				TempData["ErrorMessage"] = $"Sorry, reassigning stage failed.";
-				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+				return RedirectToAction("EditBoard", "Board", new { projectId = viewModel.Project.Id });
 			}
 
 			TempData["SuccessMessage"] = $"Reassigned stage successfully.";
-			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			return RedirectToAction("EditBoard", "Board", new { projectId = viewModel.Project.Id });
 		}
 
 
@@ -139,11 +170,11 @@ namespace TicketAppWeb.Controllers
 			catch (Exception ex)
 			{
 				TempData["ErrorMessage"] = $"Sorry, deleting stage failed.";
-				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+				return RedirectToAction("EditBoard", "Board", new { projectId = viewModel.Project.Id });
 			}
 
 			TempData["SuccessMessage"] = $"Deleted stage successfully.";
-			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			return RedirectToAction("EditBoard", "Board", new { projectId = viewModel.Project.Id });
 		}
 
 
@@ -165,7 +196,7 @@ namespace TicketAppWeb.Controllers
 				var stageIndex = boardStages.FindIndex(bs => bs.StageId == stageId);
 
 				if (stageIndex == -1)
-					return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+					return RedirectToAction("EditBoard", "Board", new { projectId = viewModel.Project.Id });
 
 				if (direction == "left" && stageIndex > 0)
 				{
@@ -178,11 +209,11 @@ namespace TicketAppWeb.Controllers
 
 				_boardRepository.SaveBoardStages(boardStages);
 
-				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+				return RedirectToAction("EditBoard", "Board", new { projectId = viewModel.Project.Id });
 			}
 			catch (Exception ex)
 			{
-				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+				return RedirectToAction("EditBoard", "Board", new { projectId = viewModel.Project.Id });
 			}
 		}
 
