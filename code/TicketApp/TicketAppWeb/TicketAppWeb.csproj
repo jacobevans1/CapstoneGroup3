@@ -7,6 +7,7 @@
     <UserSecretsId>95205375-d605-4392-a5a2-04d3ed0a2023</UserSecretsId>
   </PropertyGroup>
 
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.13" />
@@ -32,5 +33,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+
 
 </Project>
