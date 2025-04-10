@@ -124,9 +124,9 @@ VALUES
 
 INSERT INTO [dbo].[BoardStages] ([BoardId], [StageId], [GroupId], [StageOrder]) 
 VALUES 
-(N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3', N'1'),
-(N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3', N'2'),
-(N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3', N'3'),
-(N'5483ae19-3e94-4826-850f-23c617dce489', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1', 0),
-(N'5483ae19-3e94-4826-850f-23c617dce489', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1', 1),
-(N'5483ae19-3e94-4826-850f-23c617dce489', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1', 2);
+(N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3', N'0'),
+(N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3', N'1'),
+(N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3', N'2'),
+(N'5483ae19-3e94-4826-850f-23c617dce489', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1', N'0'),
+(N'5483ae19-3e94-4826-850f-23c617dce489', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1', N'1'),
+(N'5483ae19-3e94-4826-850f-23c617dce489', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1', N'2');

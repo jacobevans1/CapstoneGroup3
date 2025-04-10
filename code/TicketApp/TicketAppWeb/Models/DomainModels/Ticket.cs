@@ -23,9 +23,24 @@ namespace TicketAppWeb.Models.DomainModels
 		public string Description { get; set; }
 
 		/// <summary>
-		/// Gets or sets the status of the ticket.
+		/// Gets or sets the creation date of the ticket.
 		/// </summary>
-		public string Status { get; set; }
+		public DateTime CreatedDate { get; set; }
+
+		/// <summary>
+		/// Gets or sets the identifier of the user who created the ticket.
+		/// </summary>
+		public string CreatedBy { get; set; }
+
+		/// <summary>
+		/// Gets or sets the stage of the ticket.
+		/// </summary>
+		public string Stage { get; set; }
+
+		/// <summary>
+		/// Gets or sets the completion status of the ticket.
+		/// </summary>
+		public bool IsComplete { get; set; }
 
 		/// <summary>
 		/// Gets or sets the board identifier.

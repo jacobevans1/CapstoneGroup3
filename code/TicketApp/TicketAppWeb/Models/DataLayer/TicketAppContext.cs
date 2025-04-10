@@ -50,11 +50,6 @@ namespace TicketAppWeb.Models.DataLayer
 		public DbSet<Ticket> Tickets { get; set; }
 
 		/// <summary>
-		/// Gets or sets the DbSet representing the TicketAssignees table in the database.
-		/// </summary>
-		public DbSet<TicketAssignee> TicketAssignees { get; set; }
-
-		/// <summary>
 		/// Gets or sets the DbSet representing the Boards table in the database.
 		/// </summary>
 		public DbSet<Board> Boards { get; set; }
@@ -121,23 +116,6 @@ namespace TicketAppWeb.Models.DataLayer
 				.WithMany()
 				.HasForeignKey(bs => bs.GroupId)
 				.OnDelete(DeleteBehavior.SetNull);
-
-
-			// TicketAssignee Configuration
-			modelBuilder.Entity<TicketAssignee>()
-				.HasKey(ta => new { ta.TicketId, ta.UserId });
-
-			modelBuilder.Entity<TicketAssignee>()
-				.HasOne(ta => ta.Ticket)
-				.WithMany()
-				.HasForeignKey(ta => ta.TicketId)
-				.OnDelete(DeleteBehavior.Cascade);
-
-			modelBuilder.Entity<TicketAssignee>()
-				.HasOne(u => u.User)
-				.WithMany()
-				.HasForeignKey(u => u.UserId)
-				.OnDelete(DeleteBehavior.Cascade);
 		}
 
 
