@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            pictureBox1 = new PictureBox();
             pictureBox2 = new PictureBox();
             panel1 = new Panel();
             pictureBox3 = new PictureBox();
@@ -36,28 +35,19 @@
             loginBTN = new Button();
             usernameTB = new TextBox();
             passwordTB = new TextBox();
-            exitAppBTN = new Button();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            panel3 = new Panel();
+            panel4 = new Panel();
+            label1 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
+            panel3.SuspendLayout();
             SuspendLayout();
-            // 
-            // pictureBox1
-            // 
-            pictureBox1.BackColor = Color.Transparent;
-            pictureBox1.Image = Properties.Resources.logo_image;
-            pictureBox1.Location = new Point(1, -1);
-            pictureBox1.Margin = new Padding(2, 3, 2, 3);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(560, 491);
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.TabIndex = 0;
-            pictureBox1.TabStop = false;
             // 
             // pictureBox2
             // 
+            pictureBox2.BackColor = Color.Transparent;
             pictureBox2.Image = Properties.Resources.red_user_icon;
-            pictureBox2.Location = new Point(602, 155);
+            pictureBox2.Location = new Point(61, 194);
             pictureBox2.Margin = new Padding(2, 3, 2, 3);
             pictureBox2.Name = "pictureBox2";
             pictureBox2.Size = new Size(117, 43);
@@ -69,16 +59,17 @@
             // 
             panel1.BackColor = Color.IndianRed;
             panel1.ForeColor = SystemColors.ButtonShadow;
-            panel1.Location = new Point(602, 203);
+            panel1.Location = new Point(61, 243);
             panel1.Margin = new Padding(2, 3, 2, 3);
             panel1.Name = "panel1";
-            panel1.Size = new Size(363, 3);
+            panel1.Size = new Size(520, 1);
             panel1.TabIndex = 5;
             // 
             // pictureBox3
             // 
+            pictureBox3.BackColor = Color.Transparent;
             pictureBox3.Image = Properties.Resources.security_icon;
-            pictureBox3.Location = new Point(602, 251);
+            pictureBox3.Location = new Point(61, 303);
             pictureBox3.Margin = new Padding(2, 3, 2, 3);
             pictureBox3.Name = "pictureBox3";
             pictureBox3.Size = new Size(117, 43);
@@ -90,10 +81,10 @@
             // 
             panel2.BackColor = Color.IndianRed;
             panel2.ForeColor = SystemColors.ButtonShadow;
-            panel2.Location = new Point(602, 299);
+            panel2.Location = new Point(61, 352);
             panel2.Margin = new Padding(2, 3, 2, 3);
             panel2.Name = "panel2";
-            panel2.Size = new Size(363, 3);
+            panel2.Size = new Size(520, 1);
             panel2.TabIndex = 5;
             // 
             // loginBTN
@@ -103,7 +94,7 @@
             loginBTN.FlatStyle = FlatStyle.Flat;
             loginBTN.Font = new Font("Showcard Gothic", 14F, FontStyle.Regular, GraphicsUnit.Point, 0);
             loginBTN.ForeColor = Color.White;
-            loginBTN.Location = new Point(673, 315);
+            loginBTN.Location = new Point(221, 443);
             loginBTN.Margin = new Padding(2, 3, 2, 3);
             loginBTN.Name = "loginBTN";
             loginBTN.Size = new Size(203, 45);
@@ -118,11 +109,11 @@
             usernameTB.BorderStyle = BorderStyle.None;
             usernameTB.Font = new Font("Microsoft YaHei UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             usernameTB.ForeColor = SystemColors.HotTrack;
-            usernameTB.Location = new Point(732, 155);
+            usernameTB.Location = new Point(182, 194);
             usernameTB.Margin = new Padding(2, 3, 2, 3);
             usernameTB.Multiline = true;
             usernameTB.Name = "usernameTB";
-            usernameTB.Size = new Size(234, 43);
+            usernameTB.Size = new Size(399, 43);
             usernameTB.TabIndex = 1;
             // 
             // passwordTB
@@ -131,58 +122,75 @@
             passwordTB.BorderStyle = BorderStyle.None;
             passwordTB.Font = new Font("Microsoft YaHei UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             passwordTB.ForeColor = SystemColors.HotTrack;
-            passwordTB.Location = new Point(737, 251);
+            passwordTB.Location = new Point(182, 303);
             passwordTB.Margin = new Padding(2, 3, 2, 3);
             passwordTB.Multiline = true;
             passwordTB.Name = "passwordTB";
             passwordTB.PasswordChar = '*';
-            passwordTB.Size = new Size(229, 43);
+            passwordTB.Size = new Size(399, 43);
             passwordTB.TabIndex = 2;
+            passwordTB.KeyDown += passwordTB_KeyDown;
             // 
-            // exitAppBTN
+            // panel3
             // 
-            exitAppBTN.BackgroundImage = Properties.Resources.close_form_icon;
-            exitAppBTN.BackgroundImageLayout = ImageLayout.Stretch;
-            exitAppBTN.FlatAppearance.BorderSize = 0;
-            exitAppBTN.FlatStyle = FlatStyle.Flat;
-            exitAppBTN.Location = new Point(993, 9);
-            exitAppBTN.Margin = new Padding(2, 3, 2, 3);
-            exitAppBTN.Name = "exitAppBTN";
-            exitAppBTN.Size = new Size(43, 43);
-            exitAppBTN.TabIndex = 6;
-            exitAppBTN.UseVisualStyleBackColor = true;
-            exitAppBTN.Click += exitAppBTN_Click;
+            panel3.BackColor = Color.White;
+            panel3.BorderStyle = BorderStyle.Fixed3D;
+            panel3.Controls.Add(usernameTB);
+            panel3.Controls.Add(passwordTB);
+            panel3.Controls.Add(pictureBox2);
+            panel3.Controls.Add(panel1);
+            panel3.Controls.Add(panel4);
+            panel3.Controls.Add(label1);
+            panel3.Controls.Add(panel2);
+            panel3.Controls.Add(pictureBox3);
+            panel3.Controls.Add(loginBTN);
+            panel3.Location = new Point(132, 25);
+            panel3.Name = "panel3";
+            panel3.Size = new Size(640, 524);
+            panel3.TabIndex = 6;
+            // 
+            // panel4
+            // 
+            panel4.BackColor = Color.IndianRed;
+            panel4.ForeColor = SystemColors.ButtonShadow;
+            panel4.Location = new Point(160, 70);
+            panel4.Margin = new Padding(2, 3, 2, 3);
+            panel4.Name = "panel4";
+            panel4.Size = new Size(363, 1);
+            panel4.TabIndex = 6;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Showcard Gothic", 24F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.ForeColor = Color.IndianRed;
+            label1.Location = new Point(193, 17);
+            label1.Name = "label1";
+            label1.Size = new Size(260, 50);
+            label1.TabIndex = 0;
+            label1.Text = "Ticket App";
             // 
             // LoginForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(1047, 492);
-            Controls.Add(exitAppBTN);
-            Controls.Add(passwordTB);
-            Controls.Add(usernameTB);
-            Controls.Add(loginBTN);
-            Controls.Add(panel2);
-            Controls.Add(panel1);
-            Controls.Add(pictureBox3);
-            Controls.Add(pictureBox2);
-            Controls.Add(pictureBox1);
-            FormBorderStyle = FormBorderStyle.None;
+            BackgroundImageLayout = ImageLayout.Stretch;
+            ClientSize = new Size(932, 581);
+            Controls.Add(panel3);
+            DoubleBuffered = true;
             Margin = new Padding(2, 3, 2, 3);
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "LoginForm";
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
+            panel3.ResumeLayout(false);
+            panel3.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
-
-        private PictureBox pictureBox1;
         private PictureBox pictureBox2;
         private Panel panel1;
         private PictureBox pictureBox3;
@@ -190,6 +198,8 @@
         private Button loginBTN;
         private TextBox usernameTB;
         private TextBox passwordTB;
-        private Button exitAppBTN;
+        private Panel panel3;
+        private Panel panel4;
+        private Label label1;
     }
 }

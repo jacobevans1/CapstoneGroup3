@@ -1,29 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using TicketAppDesktop.ViewModels;
 
-namespace TicketAppDesktop.Views
+namespace TicketAppDesktop.Views;
+
+public partial class LoginForm : Form
 {
-    public partial class LoginForm : Form
+    private readonly LoginViewModel loginViewModel;
+
+    public LoginForm()
     {
-        public LoginForm()
+        InitializeComponent();
+        loginViewModel = new LoginViewModel();
+    }
+
+    private void loginBTN_Click(object sender, EventArgs e)
+    {
+        loginViewModel.User.UserName = usernameTB.Text;
+        loginViewModel.InputPassword = passwordTB.Text;
+
+        if (loginViewModel.Login())
         {
-            InitializeComponent();
+            var ticketAppHome = new TicketAppHome(loginViewModel.LoggedInUser);
+            ticketAppHome.Show();
+            this.Hide();
         }
+    }
 
-        private void loginBTN_Click(object sender, EventArgs e)
+    private void passwordTB_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Enter)
         {
+            e.Handled = true;
+            e.SuppressKeyPress = true;
 
-        }
+            loginViewModel.User.UserName = usernameTB.Text;
+            loginViewModel.InputPassword = passwordTB.Text;
 
-        private void exitAppBTN_Click(object sender, EventArgs e)
-        {
+            if (loginViewModel.Login())
+            {                
+                var ticketAppHome = new TicketAppHome(loginViewModel.LoggedInUser);
+                ticketAppHome.Show();
+                this.Hide();               
+            }
 
         }
     }

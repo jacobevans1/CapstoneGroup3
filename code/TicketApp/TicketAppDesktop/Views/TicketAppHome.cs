@@ -6,7 +6,7 @@ namespace TicketAppDesktop.Views
     {
         private readonly GroupViewModel _viewModel = new();
 
-        public TicketAppHome()
+        public TicketAppHome(string loggedInUser)
         {
             InitializeComponent();
             LoadGroupsIntoGrid();
