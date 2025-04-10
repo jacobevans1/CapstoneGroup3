@@ -67,7 +67,7 @@ namespace TicketAppWeb.Migrations
 				},
 				constraints: table =>
 				{
-					table.PrimaryKey("PK_Statuses", x => x.Id);
+					table.PrimaryKey("PK_Stages", x => x.Id);
 				});
 
 			// Create BoardStages Table
@@ -80,19 +80,46 @@ namespace TicketAppWeb.Migrations
 				},
 				constraints: table =>
 				{
-					table.PrimaryKey("PK_BoardStatuses", x => new { x.BoardId, x.StageId });
+					table.PrimaryKey("PK_BoardStages", x => new { x.BoardId, x.StageId });
 					table.ForeignKey(
-						name: "FK_BoardStatuses_Boards",
+						name: "FK_BoardStages_Boards",
 						column: x => x.BoardId,
 						principalTable: "Boards",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Cascade);
 					table.ForeignKey(
-						name: "FK_BoardStatuses_Statuses",
+						name: "FK_BoardStages_Stages",
 						column: x => x.StageId,
 						principalTable: "Stages",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Restrict);
+				});
+
+			// Create BoardStageGroups Table
+			migrationBuilder.CreateTable(
+				name: "BoardStageGroups",
+				columns: table => new
+				{
+					Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+					BoardId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+					StageId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+					GroupId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+				},
+				constraints: table =>
+				{
+					table.PrimaryKey("PK_BoardStageGroups", x => new { x.Id });
+					table.ForeignKey(
+						name: "FK_BoardStageGroups_BoardStages",
+						columns: x => new { x.BoardId, x.StageId },
+						principalTable: "BoardStages",
+						principalColumns: new[] { "BoardId", "StageId" },
+						onDelete: ReferentialAction.Cascade);
+					table.ForeignKey(
+						name: "FK_BoardStageGroups_Groups",
+						column: x => x.GroupId,
+						principalTable: "Groups",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Cascade);
 				});
 
 			// Indexes
@@ -105,6 +132,7 @@ namespace TicketAppWeb.Migrations
 		/// <inheritdoc />
 		protected override void Down(MigrationBuilder migrationBuilder)
 		{
+			migrationBuilder.DropTable(name: "BoardStageGroups");
 			migrationBuilder.DropTable(name: "BoardStages");
 			migrationBuilder.DropTable(name: "Stages");
 			migrationBuilder.DropTable(name: "Tickets");
