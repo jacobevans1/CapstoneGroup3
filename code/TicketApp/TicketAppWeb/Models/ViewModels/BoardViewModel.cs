@@ -42,10 +42,24 @@ namespace TicketAppWeb.Models.ViewModels
 		public ICollection<Stage> Stages { get; set; }
 
 		/// <summary>
+		/// Gets or sets the selected group ids.
+		/// </summary>
+		[Required(ErrorMessage = "Please assign at least one group")]
+		public List<string> SelectedGroupIds { get; set; } = new List<string>();
+
+		/// <summary>
 		/// Gets or sets the list of groups associated with the board.
 		/// </summary>
 		[ValidateNever]
-		public Dictionary<string, string> AssignedGroups { get; set; }
+		public Dictionary<string, List<Group>> AssignedGroups { get; set; }
+
+		/// <summary>
+		/// Gets or sets the list of groups available from the project.
+		/// </summary>
+		[ValidateNever]
+		public ICollection<Group> AvailableGroups => Project.Groups
+			.Where(g => !AssignedGroups.SelectMany(kvp => kvp.Value).Any(ag => ag.Id == g.Id))
+			.ToList();
 
 		/// <summary>
 		/// Gets or sets the name of the new stage to be added.
@@ -76,7 +90,7 @@ namespace TicketAppWeb.Models.ViewModels
 			Board = new Board();
 			Project = new Project();
 			Stages = new List<Stage>();
-			AssignedGroups = new Dictionary<string, string>();
+			AssignedGroups = new Dictionary<string, List<Group>>();
 		}
 
 		/// <summary>

@@ -98,6 +98,35 @@ namespace TicketAppWeb.Controllers
 
 
 		/// <summary>
+		/// Gets the page for assigning groups to a stage.
+		/// </summary>
+		/// <param name="projectId"></param>
+		/// <param name="boardId"></param>
+		/// <param name="stageId"></param>
+		[HttpGet]
+		public IActionResult AssignGroupToStage(string projectId, string boardId, string stageId)
+		{
+			var project = _projectRepository.GetProjectByIdAsync(projectId).Result;
+			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
+
+			var viewModel = new BoardViewModel
+			{
+				Project = project,
+				Board = board,
+				AssignedGroups = _boardRepository.GetBoardStageGroups(board.Id),
+				SelectedStageId = stageId
+			};
+
+			foreach (var group in viewModel.AssignedGroups[stageId])
+			{
+				viewModel.SelectedGroupIds.Add(group.Id);
+			}
+
+			return View(viewModel);
+		}
+
+
+		/// <summary>
 		/// Assigns a group to a stage.
 		/// </summary>
 		/// <param name="viewModel"></param>
@@ -106,11 +135,11 @@ namespace TicketAppWeb.Controllers
 		{
 			var boardId = viewModel.Board.Id;
 			var stageId = viewModel.SelectedStageId;
-			var groupId = viewModel.SelectedGroupId;
+			var groupIds = viewModel.SelectedGroupIds;
 
 			try
 			{
-				_boardRepository.AssignGroupToStage(boardId, stageId, groupId);
+				_boardRepository.AssignGroupToStage(boardId, stageId, groupIds);
 			}
 			catch (Exception ex)
 			{
@@ -199,7 +228,7 @@ namespace TicketAppWeb.Controllers
 		{
 			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
 			var stages = _boardRepository.GetStages(board.Id);
-			var assignedGroups = _boardRepository.GetAllAssignedGroupsForStages(board.Id);
+			var assignedGroups = _boardRepository.GetBoardStageGroups(board.Id);
 			var project = _projectRepository.GetProjectByNameAndLeadAsync(board.Project.ProjectName, board.Project.LeadId).Result;
 
 			vm.Board = board;
