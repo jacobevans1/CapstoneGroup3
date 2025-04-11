@@ -92,6 +92,27 @@ namespace TicketAppWeb.Controllers
 		}
 
 
+		/// <summary>
+		/// Deletes a ticket from the board.
+		/// </summary>
+		/// <param name="viewModel"></param>
+		public IActionResult DeleteTicket(BoardViewModel viewModel)
+		{
+			try
+			{
+				_ticketRepository.DeleteTicket(viewModel.SelectedTicketId);
+			}
+			catch (Exception ex)
+			{
+				TempData["ErrorMessage"] = $"Sorry, deleting ticket failed.";
+				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+			}
+
+			TempData["SuccessMessage"] = $"Deleted ticket successfully.";
+			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+		}
+
+
 		private Ticket CreateTicketObject(TicketViewModel viewModel)
 		{
 			var ticket = new Ticket
