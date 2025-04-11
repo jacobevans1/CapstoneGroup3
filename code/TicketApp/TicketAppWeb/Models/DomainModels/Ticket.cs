@@ -22,7 +22,7 @@ namespace TicketAppWeb.Models.DomainModels
 		/// <summary>
 		/// Gets or sets the description of the ticket.
 		/// </summary>
-		public string Description { get; set; }
+		public string? Description { get; set; }
 
 		/// <summary>
 		/// Gets or sets the creation date of the ticket.

@@ -27,8 +27,8 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// </summary>
 		/// <param name="boardId"></param>
 		/// <param name="stageName"></param>
-		/// <param name="groupId"></param>
-		void AddStage(string boardId, string stageName, string groupId);
+		/// <param name="groupIds"></param>
+		void AddStage(string boardId, string stageName, List<string> groupIds);
 
 		/// <summary>
 		/// Deletes a stage for the specified board.

@@ -99,16 +99,16 @@
 													<i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
 												</button>
 												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-													<li>
-														<a class="dropdown-item d-flex align-items-center"
-														   asp-action="AddTicket"
-														   asp-controller="Ticket"
-														   asp-route-projectId="@Model.Project.Id"
-														   asp-route-boardId="@Model.Board.Id"
-														   asp-route-stageId="@stage.Id">
-															<i class="fas fa-pen me-2"></i> Edit Ticket
-														</a>
-													</li>
+													@* <li> *@
+													@* 	<a class="dropdown-item d-flex align-items-center" *@
+													@* 	   asp-action="EditTicket" *@
+													@* 	   asp-controller="Ticket" *@
+													@* 	   asp-route-projectId="@Model.Project.Id" *@
+													@* 	   asp-route-boardId="@Model.Board.Id" *@
+													@* 	   asp-route-stageId="@stage.Id"> *@
+													@* 		<i class="fas fa-pen me-2"></i> Edit Ticket *@
+													@* 	</a> *@
+													@* </li> *@
 													<li>
 														<a class="dropdown-item d-flex align-items-center text-danger"
 														   href="#"
@@ -178,58 +178,19 @@
 		{
 			<div class="col-auto">
 				<div class="d-flex align-items-center justify-content-center h-100">
-					<button class="btn btn-primary d-flex align-items-center gap-1"
-					        data-bs-toggle="modal"
-					        data-bs-target="#addStageModal">
-						<i class="fas fa-plus" style="font-size: 1rem;"></i> <span style="font-size: 1rem;">Add Stage</span>
-					</button>
+					<a class="btn btn-primary d-flex align-items-center gap-1" style="width: 200px; height: 45px;"
+					   asp-action="AddStage"
+					   asp-controller="Board"
+					   asp-route-projectId="@Model.Project.Id" , asp-route-boardId="@Model.Board.Id">
+						<i class="fas fa-plus" style="font-size: 1rem;"></i>
+						<span style="font-size: 1rem;">Add Stage</span>
+					</a>
 				</div>
 			</div>
 		}
 
 	</div>
 </div>
-
-
-
-<!-- Add Stage Modal -->
-<div class="modal fade" id="addStageModal" tabindex="-1" aria-labelledby="addStageModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="addStageModalLabel">Add New Stage</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<form asp-action="AddStage" asp-controller="Board" method="post">
-				<input type="hidden" asp-for="Board.Id"/>
-				<input type="hidden" asp-for="Project.Id"/>
-				<div class="modal-body">
-					<div class="mb-3">
-						<label for="newStageName" class="form-label">
-							Stage Name<span class="text-danger">*</span>
-						</label>
-						<input type="text" class="form-control" id="newStageName" asp-for="NewStageName" required>
-						<span asp-validation-for="NewStageName" class="text-danger"></span>
-					</div>
-					<div class="mb-3">
-						<label for="initialGroupSelect" class="form-label">Select Group</label>
-						<select class="form-select" id="initialGroupSelect" asp-for="SelectedGroupId">
-							@foreach (var group in Model.Project.Groups)
-							{
-								<option value="@group.Id">@group.GroupName</option>
-							}
-						</select>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="submit" class="btn btn-primary">Add Stage</button>
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-				</div>
-			</form>
-		</div>
-	</div>
-</div>
-
 
 
 <!-- Rename Stage Modal -->
@@ -256,40 +217,6 @@
 				<div class="modal-footer">
 					<button type="submit" class="btn btn-primary">Rename Stage</button>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				</div>
-			</form>
-		</div>
-	</div>
-</div>
-
-
-
-<!-- Assign Group Modal -->
-<div class="modal fade" id="assignGroupModal" tabindex="-1" aria-labelledby="assignGroupModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="assignGroupModalLabel">Assign Group to Stage</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<form asp-action="AssignGroupToStage" asp-controller="Board" method="post">
-				<input type="hidden" asp-for="Board.Id"/>
-				<input type="hidden" asp-for="Project.Id"/>
-				<div class="modal-body">
-					<input type="hidden" id="assignGroupStageId" asp-for="SelectedStageId">
-					<div class="mb-3">
-						<label for="newGroupSelect" class="form-label">Select Group</label>
-						<select class="form-select" id="newGroupSelect" asp-for="SelectedGroupId">
-							@foreach (var group in Model.Project.Groups)
-							{
-								<option value="@group.Id">@group.GroupName</option>
-							}
-						</select>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="submit" class="btn btn-primary">Assign Group</button>
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 				</div>
 			</form>
 		</div>

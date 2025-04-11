@@ -74,6 +74,11 @@ namespace TicketAppWeb.Models.ViewModels
 		public string NewStageName { get; set; }
 
 		/// <summary>
+		/// Gets or sets the description of the new stage to be added.
+		/// </summary>
+		public string NewDescription { get; set; }
+
+		/// <summary>
 		/// Gets or sets the selected stage identifier.
 		/// </summary>
 		public string SelectedStageId { get; set; }

@@ -71,13 +71,12 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// </summary>
 		/// <param name="boardId"></param>
 		/// <param name="stageName"></param>
-		/// <param name="groupId"></param>
-		public void AddStage(string boardId, string stageName, string groupId)
+		/// <param name="groupIds"></param>
+		public void AddStage(string boardId, string stageName, List<string> groupIds)
 		{
 			var stage = CreateStage(stageName);
 			var boardStages = context.BoardStages.Where(bs => bs.BoardId == boardId).ToList();
 			var boardStage = CreateBoardStage(boardId, stage.Id, boardStages.Count);
-			var boardStageGroup = CreateBoardStageGroup(boardId, stage.Id, groupId);
 
 			context.Stages.Add(stage);
 			Save();
@@ -85,7 +84,11 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			context.BoardStages.Add(boardStage);
 			Save();
 
-			context.BoardStageGroups.Add(boardStageGroup);
+			foreach (var groupId in groupIds)
+			{
+				var boardStageGroup = CreateBoardStageGroup(boardId, stage.Id, groupId);
+				context.BoardStageGroups.Add(boardStageGroup);
+			}
 			Save();
 		}
 

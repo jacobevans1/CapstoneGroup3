@@ -48,6 +48,31 @@ namespace TicketAppWeb.Controllers
 
 
 		/// <summary>
+		/// Returns the view for adding a new board.
+		/// </summary>
+		/// <param name="projectId"></param>
+		[HttpGet]
+		public IActionResult AddStage(string projectId)
+		{
+			var project = _projectRepository.GetProjectByIdAsync(projectId).Result;
+			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
+
+			var viewModel = new BoardViewModel
+			{
+				Project = project,
+				Board = board
+			};
+
+			viewModel.Project.Id = projectId;
+
+			viewModel.CurrentUser = _singletonService.CurrentUser;
+			viewModel.CurrentUserRole = _singletonService.CurrentUserRole;
+
+			return View(viewModel);
+		}
+
+
+		/// <summary>
 		/// Adds a new column to the board.
 		/// </summary>
 		/// <param name="viewModel"></param>
@@ -56,11 +81,11 @@ namespace TicketAppWeb.Controllers
 		{
 			var boardId = viewModel.Board.Id;
 			var newStageName = viewModel.NewStageName;
-			var groupId = viewModel.SelectedGroupId;
+			var groupIds = viewModel.SelectedGroupIds;
 
 			try
 			{
-				_boardRepository.AddStage(boardId, newStageName, groupId);
+				_boardRepository.AddStage(boardId, newStageName, groupIds);
 			}
 			catch (Exception ex)
 			{
