@@ -16,17 +16,18 @@ namespace TicketAppWeb.Controllers
 		private readonly SingletonService _singletonService;
 		private readonly IProjectRepository _projectRepository;
 		private readonly IBoardRepository _boardRepository;
-
+		private readonly IUserRepository _userRepository;
 
 		/// <summary>
 		/// Initializes a new instance of the UserController class.
 		/// </summary>
 		public BoardController(SingletonService singletonService, IProjectRepository projectRepository,
-			IBoardRepository boardRepository)
+			IBoardRepository boardRepository, IUserRepository userRepository)
 		{
 			_singletonService = singletonService;
 			_projectRepository = projectRepository;
 			_boardRepository = boardRepository;
+			_userRepository = userRepository;
 		}
 
 
@@ -47,6 +48,31 @@ namespace TicketAppWeb.Controllers
 
 
 		/// <summary>
+		/// Returns the view for adding a new board.
+		/// </summary>
+		/// <param name="projectId"></param>
+		[HttpGet]
+		public IActionResult AddStage(string projectId)
+		{
+			var project = _projectRepository.GetProjectByIdAsync(projectId).Result;
+			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
+
+			var viewModel = new BoardViewModel
+			{
+				Project = project,
+				Board = board
+			};
+
+			viewModel.Project.Id = projectId;
+
+			viewModel.CurrentUser = _singletonService.CurrentUser;
+			viewModel.CurrentUserRole = _singletonService.CurrentUserRole;
+
+			return View(viewModel);
+		}
+
+
+		/// <summary>
 		/// Adds a new column to the board.
 		/// </summary>
 		/// <param name="viewModel"></param>
@@ -55,11 +81,11 @@ namespace TicketAppWeb.Controllers
 		{
 			var boardId = viewModel.Board.Id;
 			var newStageName = viewModel.NewStageName;
-			var groupId = viewModel.SelectedGroupId;
+			var groupIds = viewModel.SelectedGroupIds;
 
 			try
 			{
-				_boardRepository.AddStage(boardId, newStageName, groupId);
+				_boardRepository.AddStage(boardId, newStageName, groupIds);
 			}
 			catch (Exception ex)
 			{
@@ -181,7 +207,6 @@ namespace TicketAppWeb.Controllers
 		/// </summary>
 		/// <param name="viewModel"></param>
 		[HttpPost]
-		[HttpPost]
 		public IActionResult MoveStage(BoardViewModel viewModel)
 		{
 			var boardId = viewModel.Board.Id;
@@ -229,12 +254,29 @@ namespace TicketAppWeb.Controllers
 			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
 			var stages = _boardRepository.GetStages(board.Id);
 			var assignedGroups = _boardRepository.GetBoardStageGroups(board.Id);
+			var assignedTickets = LoadTickets(board.Id);
 			var project = _projectRepository.GetProjectByNameAndLeadAsync(board.Project.ProjectName, board.Project.LeadId).Result;
 
 			vm.Board = board;
 			vm.Project = project;
 			vm.Stages = stages;
 			vm.AssignedGroups = assignedGroups;
+			vm.AssignedTickets = assignedTickets;
+		}
+
+
+		private Dictionary<string, List<Ticket>> LoadTickets(string boardId)
+		{
+			var tickets = _boardRepository.GetBoardStageTickets(boardId);
+
+			foreach (var stage in tickets)
+			{
+				foreach (var ticket in stage.Value)
+				{
+					ticket.AssignedToUser = _userRepository.Get(ticket.AssignedTo);
+				}
+			}
+			return tickets;
 		}
 	}
 }

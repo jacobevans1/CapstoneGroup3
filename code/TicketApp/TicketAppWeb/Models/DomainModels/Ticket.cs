@@ -1,4 +1,6 @@
-﻿// Capstone Group 3
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+// Capstone Group 3
 // Spring 2025
 namespace TicketAppWeb.Models.DomainModels
 {
@@ -20,12 +22,38 @@ namespace TicketAppWeb.Models.DomainModels
 		/// <summary>
 		/// Gets or sets the description of the ticket.
 		/// </summary>
-		public string Description { get; set; }
+		public string? Description { get; set; }
 
 		/// <summary>
-		/// Gets or sets the status of the ticket.
+		/// Gets or sets the creation date of the ticket.
 		/// </summary>
-		public string Status { get; set; }
+		public DateTime CreatedDate { get; set; }
+
+		/// <summary>
+		/// Gets or sets the identifier of the user who created the ticket.
+		/// </summary>
+		public string CreatedBy { get; set; }
+
+		/// <summary>
+		/// Gets or sets the identifier of the user to whom the ticket is assigned.
+		/// </summary>
+		public string? AssignedTo { get; set; }
+
+		/// <summary>
+		/// Gets or sets the user to whom the ticket is assigned.
+		/// </summary>
+		[NotMapped]
+		public TicketAppUser AssignedToUser { get; set; }
+
+		/// <summary>
+		/// Gets or sets the stage of the ticket.
+		/// </summary>
+		public string Stage { get; set; }
+
+		/// <summary>
+		/// Gets or sets the completion status of the ticket.
+		/// </summary>
+		public bool IsComplete { get; set; }
 
 		/// <summary>
 		/// Gets or sets the board identifier.

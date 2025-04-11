@@ -122,7 +122,7 @@ VALUES
 (N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'Done');
 
 
-INSERT INTO [dbo].[BoardStages] ([BoardId], [StageId], [StageOrder])
+INSERT INTO [dbo].[BoardStages] ([BoardId], [StageId], [StageOrder]) 
 VALUES 
 (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'0'),
 (N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'1'),
@@ -133,10 +133,11 @@ VALUES
 
 
 INSERT INTO [dbo].[BoardStageGroups] ([Id], [BoardId], [StageId], [GroupId]) 
-VALUES
-(N'1bc5ee5c-e828-4829-8129-dc3d6ff8cf45', N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3'),
-(N'5b040106-46a2-4a1a-a8b8-eab6331cb156', N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3'),
-(N'59aabe24-809a-4253-893b-cb570dbc3775', N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3'),
-(N'86d28b54-9050-4f02-8830-082349996b44', N'5483ae19-3e94-4826-850f-23c617dce489', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1'),
-(N'c09a43ed-71e9-449f-b4d5-a2ae54dfaa56', N'5483ae19-3e94-4826-850f-23c617dce489', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1'),
-(N'4cdca2f1-b64b-47de-b153-602af0c183ce', N'5483ae19-3e94-4826-850f-23c617dce489', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1');
+VALUES 
+(N'f5a059e7-e220-4f97-97ae-cf4254c57a7b', N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3'),
+(N'e117cc6f-8b9e-450d-b107-a50105d74b84', N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'a15d2e37-5b66-4034-8a9a-71b5b6f6a9df'),
+(N'af707654-bba2-4222-af64-a689ec4bc499', N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3'),
+(N'5a1bc0bd-fcf6-4b15-963c-f75d3d7767ff', N'c82fbef5-f9a8-48e1-be92-1a7b9b789230', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'f6b8f840-9c3e-4a2a-9c5b-3b6aafcbb5b3'),
+(N'66970eb0-da3c-4046-82a5-07f43b78c391', N'5483ae19-3e94-4826-850f-23c617dce489', N'5de8ea48-a734-4b97-bc39-18070e4e25a9', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1'),
+(N'98ba25b7-0b9f-40d3-8b7c-59b51cc52a75', N'5483ae19-3e94-4826-850f-23c617dce489', N'8409c38a-5fab-4283-8957-1c5888d7716d', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1'),
+(N'cc4792de-15d1-4c0e-8329-2a275bc9eb8b', N'5483ae19-3e94-4826-850f-23c617dce489', N'bd0ccc84-e3bd-4417-85ae-15ac2457e390', N'5fa7e4d7-c4f6-47d3-9f7b-9301bc653ca1')

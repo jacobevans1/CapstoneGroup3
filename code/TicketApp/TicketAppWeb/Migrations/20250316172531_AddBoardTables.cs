@@ -40,7 +40,11 @@ namespace TicketAppWeb.Migrations
 					Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
 					Title = table.Column<string>(type: "nvarchar(50)", nullable: false),
 					Description = table.Column<string>(type: "nvarchar(50)", nullable: true),
-					Status = table.Column<string>(type: "nvarchar(50)", nullable: false),
+					CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+					CreatedBy = table.Column<string>(type: "nvarchar(450)", nullable: false),
+					AssignedTo = table.Column<string>(type: "nvarchar(450)", nullable: true),
+					Stage = table.Column<string>(type: "nvarchar(450)", nullable: false),
+					IsComplete = table.Column<bool>(type: "bit", nullable: false),
 					BoardId = table.Column<string>(type: "nvarchar(450)", nullable: false)
 				},
 				constraints: table =>
@@ -52,28 +56,15 @@ namespace TicketAppWeb.Migrations
 						principalTable: "Boards",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Cascade);
-				});
-
-			// Create TicketAssignees (Middle Table)
-			migrationBuilder.CreateTable(
-				name: "TicketAssignees",
-				columns: table => new
-				{
-					TicketId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-					UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-				},
-				constraints: table =>
-				{
-					table.PrimaryKey("PK_TicketAssignees", x => new { x.TicketId, x.UserId });
 					table.ForeignKey(
-						name: "FK_TicketAssignees_Tickets",
-						column: x => x.TicketId,
-						principalTable: "Tickets",
+						name: "FK_Tickets_AspNetUsers_CreatedBy",
+						column: x => x.CreatedBy,
+						principalTable: "AspNetUsers",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Restrict);
 					table.ForeignKey(
-						name: "FK_TicketAssignees_AspNetUsers",
-						column: x => x.UserId,
+						name: "FK_Tickets_AspNetUsers_AssignedTo",
+						column: x => x.AssignedTo,
 						principalTable: "AspNetUsers",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Restrict);
@@ -149,11 +140,6 @@ namespace TicketAppWeb.Migrations
 				name: "IX_Tickets_BoardId",
 				table: "Tickets",
 				column: "BoardId");
-
-			migrationBuilder.CreateIndex(
-				name: "IX_TicketAssignees_UserId",
-				table: "TicketAssignees",
-				column: "UserId");
 		}
 
 		/// <inheritdoc />
@@ -162,7 +148,6 @@ namespace TicketAppWeb.Migrations
 			migrationBuilder.DropTable(name: "BoardStageGroups");
 			migrationBuilder.DropTable(name: "BoardStages");
 			migrationBuilder.DropTable(name: "Stages");
-			migrationBuilder.DropTable(name: "TicketAssignees");
 			migrationBuilder.DropTable(name: "Tickets");
 			migrationBuilder.DropTable(name: "Boards");
 		}
