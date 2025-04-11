@@ -34,10 +34,16 @@ public interface IUserRepository : IRepository<TicketAppUser>
 	/// </summary>
 	Task<Dictionary<TicketAppUser, string>> GetUserRolesAsync();
 
-		/// <summary>
-		/// Retrieves all users from the database.
-		/// </summary>
-		Task<IEnumerable<TicketAppUser>> GetAllUsersAsync();
+	/// <summary>
+	/// Retrieves all users from the database.
+	/// </summary>
+	Task<IEnumerable<TicketAppUser>> GetAllUsersAsync();
+
+	/// <summary>
+	/// Retrieves all users from the database from a specific group.
+	/// </summary>
+	/// <param name="groupId"></param>
+	IEnumerable<TicketAppUser> GetUsersByGroupId(string groupId);
 
 	/// <summary>
 	/// Gets the asynchronous.

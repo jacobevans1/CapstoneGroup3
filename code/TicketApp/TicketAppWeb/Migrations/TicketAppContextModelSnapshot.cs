@@ -355,6 +355,10 @@ namespace TicketAppWeb.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AssignedTo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("BoardId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");

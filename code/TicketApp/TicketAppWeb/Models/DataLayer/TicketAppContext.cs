@@ -65,6 +65,11 @@ namespace TicketAppWeb.Models.DataLayer
 		public DbSet<Stage> Stages { get; set; }
 
 		/// <summary>
+		/// Gets or sets the DbSet representing the BoardStageGroup table in the database.
+		/// </summary>
+		public DbSet<BoardStageGroup> BoardStageGroups { get; set; }
+
+		/// <summary>
 		/// Configures the model for the context.
 		/// </summary>
 		/// <param name="modelBuilder">The builder used to construct the model for this context.</param>
@@ -111,11 +116,22 @@ namespace TicketAppWeb.Models.DataLayer
 				.HasForeignKey(bs => bs.StageId)
 				.OnDelete(DeleteBehavior.Cascade);
 
-			modelBuilder.Entity<BoardStage>()
-				.HasOne(bs => bs.Group)
+
+			// BoardStageGroups Configuration
+			modelBuilder.Entity<BoardStageGroup>()
+				.HasKey(bsg => bsg.Id);
+
+			modelBuilder.Entity<BoardStageGroup>()
+				.HasOne(bsg => bsg.BoardStage)
 				.WithMany()
-				.HasForeignKey(bs => bs.GroupId)
-				.OnDelete(DeleteBehavior.SetNull);
+				.HasForeignKey(bsg => new { bsg.BoardId, bsg.StageId })
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<BoardStageGroup>()
+				.HasOne(bsg => bsg.Group)
+				.WithMany()
+				.HasForeignKey(bsg => bsg.GroupId)
+				.OnDelete(DeleteBehavior.Cascade);
 		}
 
 

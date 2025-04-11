@@ -33,6 +33,11 @@ namespace TicketAppWeb.Models.DomainModels
 		public string CreatedBy { get; set; }
 
 		/// <summary>
+		/// Gets or sets the identifier of the user to whom the ticket is assigned.
+		/// </summary>
+		public string AssignedTo { get; set; }
+
+		/// <summary>
 		/// Gets or sets the stage of the ticket.
 		/// </summary>
 		public string Stage { get; set; }

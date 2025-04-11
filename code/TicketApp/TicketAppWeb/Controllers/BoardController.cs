@@ -17,7 +17,6 @@ namespace TicketAppWeb.Controllers
 		private readonly IProjectRepository _projectRepository;
 		private readonly IBoardRepository _boardRepository;
 
-
 		/// <summary>
 		/// Initializes a new instance of the UserController class.
 		/// </summary>
@@ -180,7 +179,6 @@ namespace TicketAppWeb.Controllers
 		/// Moves a stage left or right on the board.
 		/// </summary>
 		/// <param name="viewModel"></param>
-		[HttpPost]
 		[HttpPost]
 		public IActionResult MoveStage(BoardViewModel viewModel)
 		{

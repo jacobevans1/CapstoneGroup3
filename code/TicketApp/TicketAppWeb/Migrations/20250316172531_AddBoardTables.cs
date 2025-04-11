@@ -42,7 +42,8 @@ namespace TicketAppWeb.Migrations
 					Description = table.Column<string>(type: "nvarchar(50)", nullable: true),
 					CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
 					CreatedBy = table.Column<string>(type: "nvarchar(450)", nullable: false),
-					Stage = table.Column<string>(type: "nvarchar(50)", nullable: false),
+					AssignedTo = table.Column<string>(type: "nvarchar(450)", nullable: true),
+					Stage = table.Column<string>(type: "nvarchar(450)", nullable: false),
 					IsComplete = table.Column<bool>(type: "bit", nullable: false),
 					BoardId = table.Column<string>(type: "nvarchar(450)", nullable: false)
 				},
@@ -55,6 +56,18 @@ namespace TicketAppWeb.Migrations
 						principalTable: "Boards",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Cascade);
+					table.ForeignKey(
+						name: "FK_Tickets_AspNetUsers_CreatedBy",
+						column: x => x.CreatedBy,
+						principalTable: "AspNetUsers",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Restrict);
+					table.ForeignKey(
+						name: "FK_Tickets_AspNetUsers_AssignedTo",
+						column: x => x.AssignedTo,
+						principalTable: "AspNetUsers",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Restrict);
 				});
 
 			// Create Stages Table
