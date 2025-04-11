@@ -358,9 +358,6 @@ namespace TicketAppWeb.Migrations
                     b.Property<string>("AssignedTo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AssignedToUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("BoardId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -373,7 +370,6 @@ namespace TicketAppWeb.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsComplete")
@@ -388,8 +384,6 @@ namespace TicketAppWeb.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AssignedToUserId");
 
                     b.HasIndex("BoardId");
 
@@ -644,17 +638,11 @@ namespace TicketAppWeb.Migrations
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Ticket", b =>
                 {
-                    b.HasOne("TicketAppWeb.Models.DomainModels.TicketAppUser", "AssignedToUser")
-                        .WithMany()
-                        .HasForeignKey("AssignedToUserId");
-
                     b.HasOne("TicketAppWeb.Models.DomainModels.Board", null)
                         .WithMany("Tickets")
                         .HasForeignKey("BoardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("AssignedToUser");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Board", b =>
