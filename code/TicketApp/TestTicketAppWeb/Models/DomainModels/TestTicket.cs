@@ -13,7 +13,7 @@ namespace TestTicketAppWeb.Models.DomainModels
 				Id = "T1",
 				Title = "Bug Fix",
 				Description = "Fixing a bug in the system",
-				Stage = "Open",
+				Status = "Open",
 				BoardId = "B1"
 			};
 
@@ -21,7 +21,7 @@ namespace TestTicketAppWeb.Models.DomainModels
 			Assert.Equal("T1", ticket.Id);
 			Assert.Equal("Bug Fix", ticket.Title);
 			Assert.Equal("Fixing a bug in the system", ticket.Description);
-			Assert.Equal("Open", ticket.Stage);
+			Assert.Equal("Open", ticket.Status);
 			Assert.Equal("B1", ticket.BoardId);
 		}
 
@@ -63,10 +63,10 @@ namespace TestTicketAppWeb.Models.DomainModels
 		{
 			// Arrange
 			var ticket = new Ticket();
-			ticket.Stage = "Closed";
+			ticket.Status = "Closed";
 
 			// Act & Assert
-			Assert.Equal("Closed", ticket.Stage);
+			Assert.Equal("Closed", ticket.Status);
 		}
 
 		[Fact]
