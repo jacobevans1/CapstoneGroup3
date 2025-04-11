@@ -71,6 +71,12 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		Dictionary<string, List<Group>> GetBoardStageGroups(string boardId);
 
 		/// <summary>
+		/// Gets the tickets assigned to each stage for the specified board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		Dictionary<string, List<Ticket>> GetBoardStageTickets(string boardId);
+
+		/// <summary>
 		/// Saves the board stages to the database.
 		/// </summary>
 		/// <param name="boardStages"></param>

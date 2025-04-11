@@ -45,7 +45,7 @@ namespace TicketAppWeb.Models.DataLayer
 		public DbSet<GroupApprovalRequest> GroupApprovalRequests { get; set; }
 
 		/// <summary>
-		/// Gets or sets the DbSet representing the Tickets table in the database.
+		/// Gets or sets the DbSet representing the AssignedTickets table in the database.
 		/// </summary>
 		public DbSet<Ticket> Tickets { get; set; }
 

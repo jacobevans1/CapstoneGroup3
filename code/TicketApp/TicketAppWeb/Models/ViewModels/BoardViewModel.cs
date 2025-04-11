@@ -62,6 +62,12 @@ namespace TicketAppWeb.Models.ViewModels
 			.ToList();
 
 		/// <summary>
+		/// Gets or sets the list of tickets associated with the board.
+		/// </summary>
+		[ValidateNever]
+		public Dictionary<string, List<Ticket>> AssignedTickets { get; set; }
+
+		/// <summary>
 		/// Gets or sets the name of the new stage to be added.
 		/// </summary>
 		[Required(ErrorMessage = "Please enter a stage name")]
@@ -91,6 +97,7 @@ namespace TicketAppWeb.Models.ViewModels
 			Project = new Project();
 			Stages = new List<Stage>();
 			AssignedGroups = new Dictionary<string, List<Group>>();
+			AssignedTickets = new Dictionary<string, List<Ticket>>();
 		}
 
 		/// <summary>

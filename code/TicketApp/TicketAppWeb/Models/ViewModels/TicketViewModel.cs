@@ -42,6 +42,16 @@ namespace TicketAppWeb.Models.ViewModels
 		public Board Board { get; set; }
 
 		/// <summary>
+		/// Gets or sets the selected user ID.
+		/// </summary>
+		public string SelectedUserId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the selected stage ID.
+		/// </summary>
+		public string SelectedStageId { get; set; }
+
+		/// <summary>
 		/// Initializes a new instance of the TicketViewModel class.
 		/// </summary>
 		public TicketViewModel()

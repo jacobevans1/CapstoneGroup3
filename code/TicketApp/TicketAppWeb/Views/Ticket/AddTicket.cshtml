@@ -19,81 +19,68 @@
         </div>
     </div>
 
-    <form asp-action="AddTicket" method="post" class="styled-form" id="ticketForm">
-        <div class="form-group">
-            <label asp-for="Ticket.Title" class="form-label">Title<span class="text-danger">*</span></label>
-            <input asp-for="Ticket.Title" class="form-control" />
-            <span asp-validation-for="Ticket.Title" class="text-danger"></span>
-        </div>
-        <br />
-        <div class="form-group">
-            <label asp-for="Ticket.Description" class="form-label">Description</label>
-            <textarea asp-for="Ticket.Description" class="form-control"></textarea>
-        </div>
-        <br />
+	<form asp-action="AddTicket" method="post" class="styled-form" id="ticketForm">
+		<input type="hidden" asp-for="Board.Id"/>
+		<input type="hidden" asp-for="Project.Id"/>
+		<input type="hidden" asp-for="SelectedStageId" />
+		<div class="form-group">
+			<label asp-for="Ticket.Title" class="form-label">Title<span class="text-danger">*</span></label>
+			<input asp-for="Ticket.Title" class="form-control"/>
+			<span asp-validation-for="Ticket.Title" class="text-danger"></span>
+		</div>
+		<br/>
+		<div class="form-group">
+			<label asp-for="Ticket.Description" class="form-label">Description</label>
+			<textarea asp-for="Ticket.Description" class="form-control"></textarea>
+		</div>
+		<br/>
 
-        <div class="row">
-	        <div class="col-md-12">
-		        <h6>Select User <span class="text-danger">*</span></h6>
+		<div class="row">
+			<div class="col-md-12">
+				<h6>Select User <span class="text-danger">*</span></h6>
 
-		        <input type="text" class="form-control mb-2" id="userSearch" placeholder="Search users by name..." />
+				<input type="text" class="form-control mb-2" id="userSearch" placeholder="Search users by name..."/>
 
-		        <select class="form-control" id="userSelect" name="SelectedUserId">
-			        <option value="">-- Select a user --</option>
-			        @foreach (var group in Model.Project.Groups)
-			        {
-				        foreach (var member in group.Members)
-				        {
-					        <option value="@member.Id">@member.FullName</option>
-				        }
-			        }
-		        </select>
+				<select class="form-select" id="userSelect" asp-for="SelectedUserId">
+					<option value="">-- Select a user --</option>
+					@foreach (var group in Model.Project.Groups)
+					{
+						foreach (var member in group.Members)
+						{
+							<option value="@member.Id">@member.FullName</option>
+						}
+					}
+				</select>
+				<span asp-validation-for="Ticket.AssignedTo" class="text-danger"></span>
+			</div>
+		</div>
+		<br/>
 
-		        <span asp-validation-for="Ticket.AssignedTo" class="text-danger"></span>
-	        </div>
-        </div>
-        <br />
-
-        <div class="row justify-content-center">
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary">Add Ticket</button>
-            </div>
-            <div class="col-auto">
-                <div style="width: 150px">
-                    <a asp-action="Index" asp-controller="Board" asp-route-projectId="@Model.Project.Id" class="btn btn-secondary" style="width: 100%">Cancel</a>
-                </div>
-            </div>
-        </div>
-    </form>
+		<div class="row justify-content-center">
+			<div class="col-auto">
+				<button type="submit" class="btn btn-primary">Add Ticket</button>
+			</div>
+			<div class="col-auto">
+				<div style="width: 150px">
+					<a asp-action="Index" asp-controller="Board" asp-route-projectId="@Model.Project.Id" class="btn btn-secondary" style="width: 100%">Cancel</a>
+				</div>
+			</div>
+		</div>
+	</form>
 </div>
 
 @section scripts {
-    <script>
+	<script>
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('userSearch').addEventListener('input', function () {
-            var filter = this.value.toLowerCase();
-            var select = document.getElementById('userSelect');
-            var options = select.options;
+                var filter = this.value.toLowerCase();
+                var select = document.getElementById('userSelect');
+                var options = select.options;
 
-            for (var i = 0; i < options.length; i++) {
-                var text = options[i].text.toLowerCase();
-                options[i].style.display = text.includes(filter) || options[i].value === "" ? "" : "none";
-            }
-            });
-
-            document.getElementById("projectForm").addEventListener("submit", function () {
-                document.querySelectorAll("#assignedGroups li").forEach(li => {
-                    let checkbox = li.querySelector("input[type='checkbox']");
-                    if (!checkbox) return;
-
-                    if (!checkbox.checked) {
-                        let hiddenInput = document.createElement("input");
-                        hiddenInput.type = "hidden";
-                        hiddenInput.name = "SelectedGroupIds";
-                        hiddenInput.value = checkbox.value;
-                        this.appendChild(hiddenInput);
-                    }
-                });
+                for (var i = 0; i < options.length; i++) {
+                    var text = options[i].text.toLowerCase();
+                    options[i].style.display = text.includes(filter) || options[i].value === "" ? "" : "none";
+                }
             });
         });
     </script>

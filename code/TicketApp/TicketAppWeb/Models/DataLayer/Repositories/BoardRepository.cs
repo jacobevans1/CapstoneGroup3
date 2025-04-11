@@ -229,6 +229,41 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			return assignedGroups;
 		}
 
+
+		/// <summary>
+		/// Gets the tickets assigned to each stage for the specified board.
+		/// </summary>
+		/// <param name="boardId"></param>
+		public Dictionary<string, List<Ticket>> GetBoardStageTickets(string boardId)
+		{
+			var query = @"
+			SELECT t.*
+			FROM Tickets t
+			WHERE t.BoardId = @BoardId";
+
+			var allStages = context.BoardStages
+				.Where(bs => bs.BoardId == boardId)
+				.Select(bs => bs.StageId)
+				.ToList();
+
+			var tickets = context.Tickets
+				.FromSqlRaw(query, new SqlParameter("@BoardId", boardId))
+				.ToList();
+
+			var result = allStages.ToDictionary(id => id, id => new List<Ticket>());
+
+			foreach (var ticket in tickets)
+			{
+				if (ticket.Stage != null)
+				{
+					result[ticket.Stage].Add(ticket);
+				}
+			}
+
+			return result;
+		}
+
+
 		/// <summary>
 		/// Saves the board stages to the database.
 		/// </summary>

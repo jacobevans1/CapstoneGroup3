@@ -35,7 +35,12 @@ namespace TicketAppWeb.Models.DomainModels
 		/// <summary>
 		/// Gets or sets the identifier of the user to whom the ticket is assigned.
 		/// </summary>
-		public string AssignedTo { get; set; }
+		public string? AssignedTo { get; set; }
+
+		/// <summary>
+		/// Gets or sets the user to whom the ticket is assigned.
+		/// </summary>
+		//public TicketAppUser AssignedToUser { get; set; }
 
 		/// <summary>
 		/// Gets or sets the stage of the ticket.

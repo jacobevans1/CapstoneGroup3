@@ -18,6 +18,7 @@ namespace TicketAppWeb.Controllers
 		private readonly ITicketRepository _ticketRepository;
 		private readonly IUserRepository _userRepository;
 
+
 		/// <summary>
 		/// Initializes a new instance of the UserController class.
 		/// </summary>
@@ -30,12 +31,14 @@ namespace TicketAppWeb.Controllers
 			_userRepository = userRepository;
 		}
 
+
 		/// <summary>
-		/// Displays the ticket creation form for a specific board.
+		/// Displays the form to add a new ticket.
 		/// </summary>
 		/// <param name="projectId"></param>
+		/// <param name="stageId"></param>
 		[HttpGet]
-		public IActionResult AddTicket(string projectId)
+		public IActionResult AddTicket(string projectId, string stageId)
 		{
 			var project = _projectRepository.GetProjectByIdAsync(projectId).Result;
 			var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
@@ -43,12 +46,14 @@ namespace TicketAppWeb.Controllers
 			var viewModel = new TicketViewModel
 			{
 				Project = project,
-				Board = board,
-				CurrentUser = _singletonService.CurrentUser,
-				CurrentUserRole = _singletonService.CurrentUserRole
+				Board = board
 			};
 
 			viewModel.Project.Id = projectId;
+			viewModel.SelectedStageId = stageId;
+
+			viewModel.CurrentUser = _singletonService.CurrentUser;
+			viewModel.CurrentUserRole = _singletonService.CurrentUserRole;
 
 			foreach (var group in viewModel.Project.Groups)
 			{
@@ -67,6 +72,9 @@ namespace TicketAppWeb.Controllers
 		[HttpPost]
 		public IActionResult AddTicket(TicketViewModel viewModel)
 		{
+			viewModel.CurrentUser = _singletonService.CurrentUser;
+			viewModel.CurrentUserRole = _singletonService.CurrentUserRole;
+
 			var newTicket = CreateTicketObject(viewModel);
 
 			try
@@ -83,6 +91,7 @@ namespace TicketAppWeb.Controllers
 			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 		}
 
+
 		private Ticket CreateTicketObject(TicketViewModel viewModel)
 		{
 			var ticket = new Ticket
@@ -92,7 +101,9 @@ namespace TicketAppWeb.Controllers
 				Description = viewModel.Ticket.Description,
 				CreatedDate = DateTime.Now,
 				CreatedBy = viewModel.CurrentUser.Id,
-				AssignedTo = viewModel.Ticket.AssignedTo,
+				AssignedTo = viewModel.SelectedUserId,
+				//AssignedToUser = _userRepository.Get(viewModel.SelectedUserId),
+				Stage = viewModel.SelectedStageId,
 				IsComplete = false,
 				BoardId = viewModel.Board.Id
 			};
