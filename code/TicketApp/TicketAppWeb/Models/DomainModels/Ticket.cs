@@ -1,4 +1,6 @@
-﻿// Capstone Group 3
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+// Capstone Group 3
 // Spring 2025
 namespace TicketAppWeb.Models.DomainModels
 {
@@ -40,7 +42,8 @@ namespace TicketAppWeb.Models.DomainModels
 		/// <summary>
 		/// Gets or sets the user to whom the ticket is assigned.
 		/// </summary>
-		//public TicketAppUser AssignedToUser { get; set; }
+		[NotMapped]
+		public TicketAppUser AssignedToUser { get; set; }
 
 		/// <summary>
 		/// Gets or sets the stage of the ticket.

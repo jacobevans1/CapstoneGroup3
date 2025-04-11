@@ -102,7 +102,6 @@ namespace TicketAppWeb.Controllers
 				CreatedDate = DateTime.Now,
 				CreatedBy = viewModel.CurrentUser.Id,
 				AssignedTo = viewModel.SelectedUserId,
-				//AssignedToUser = _userRepository.Get(viewModel.SelectedUserId),
 				Stage = viewModel.SelectedStageId,
 				IsComplete = false,
 				BoardId = viewModel.Board.Id
