@@ -45,9 +45,14 @@ namespace TicketAppWeb.Models.DataLayer
 		public DbSet<GroupApprovalRequest> GroupApprovalRequests { get; set; }
 
 		/// <summary>
-		/// Gets or sets the DbSet representing the AssignedTickets table in the database.
+		/// Gets or sets the DbSet representing the Tickets table in the database.
 		/// </summary>
 		public DbSet<Ticket> Tickets { get; set; }
+
+		/// <summary>
+		/// Gets or sets the DbSet representing the TicketAssignees table in the database.
+		/// </summary>
+		public DbSet<TicketAssignee> TicketAssignees { get; set; }
 
 		/// <summary>
 		/// Gets or sets the DbSet representing the Boards table in the database.
@@ -115,6 +120,25 @@ namespace TicketAppWeb.Models.DataLayer
 				.WithMany(s => s.BoardStages)
 				.HasForeignKey(bs => bs.StageId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+
+
+			// TicketAssignee Configuration
+			modelBuilder.Entity<TicketAssignee>()
+				.HasKey(ta => new { ta.TicketId, ta.UserId });
+
+			modelBuilder.Entity<TicketAssignee>()
+				.HasOne(ta => ta.Ticket)
+				.WithMany()
+				.HasForeignKey(ta => ta.TicketId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<TicketAssignee>()
+				.HasOne(u => u.User)
+				.WithMany()
+				.HasForeignKey(u => u.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+
 
 
 			// BoardStageGroups Configuration

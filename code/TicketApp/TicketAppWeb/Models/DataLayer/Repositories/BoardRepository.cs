@@ -71,12 +71,13 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 		/// </summary>
 		/// <param name="boardId"></param>
 		/// <param name="stageName"></param>
-		/// <param name="groupIds"></param>
-		public void AddStage(string boardId, string stageName, List<string> groupIds)
+		/// <param name="groupId"></param>
+		public void AddStage(string boardId, string stageName, string groupId)
 		{
 			var stage = CreateStage(stageName);
 			var boardStages = context.BoardStages.Where(bs => bs.BoardId == boardId).ToList();
 			var boardStage = CreateBoardStage(boardId, stage.Id, boardStages.Count);
+			var boardStageGroup = CreateBoardStageGroup(boardId, stage.Id, groupId);
 
 			context.Stages.Add(stage);
 			Save();
@@ -84,11 +85,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 			context.BoardStages.Add(boardStage);
 			Save();
 
-			foreach (var groupId in groupIds)
-			{
-				var boardStageGroup = CreateBoardStageGroup(boardId, stage.Id, groupId);
-				context.BoardStageGroups.Add(boardStageGroup);
-			}
+			context.BoardStageGroups.Add(boardStageGroup);
 			Save();
 		}
 
@@ -231,41 +228,6 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 
 			return assignedGroups;
 		}
-
-
-		/// <summary>
-		/// Gets the tickets assigned to each stage for the specified board.
-		/// </summary>
-		/// <param name="boardId"></param>
-		public Dictionary<string, List<Ticket>> GetBoardStageTickets(string boardId)
-		{
-			var query = @"
-			SELECT t.*
-			FROM Tickets t
-			WHERE t.BoardId = @BoardId";
-
-			var allStages = context.BoardStages
-				.Where(bs => bs.BoardId == boardId)
-				.Select(bs => bs.StageId)
-				.ToList();
-
-			var tickets = context.Tickets
-				.FromSqlRaw(query, new SqlParameter("@BoardId", boardId))
-				.ToList();
-
-			var result = allStages.ToDictionary(id => id, id => new List<Ticket>());
-
-			foreach (var ticket in tickets)
-			{
-				if (ticket.Stage != null)
-				{
-					result[ticket.Stage].Add(ticket);
-				}
-			}
-
-			return result;
-		}
-
 
 		/// <summary>
 		/// Saves the board stages to the database.

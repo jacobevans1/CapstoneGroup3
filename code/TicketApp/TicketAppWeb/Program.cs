@@ -17,7 +17,7 @@ builder.Services.AddControllersWithViews(options =>
 	var policy = new AuthorizationPolicyBuilder()
 		.RequireAuthenticatedUser()
 		.Build();
-	options.Filters.Add(new AuthorizeFilter(policy));
+	options.Filters.Add(new AuthorizeFilter(policy)); // This applies authorization to ALL controllers
 });
 
 builder.Services.AddRazorPages();
@@ -69,7 +69,6 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IBoardRepository, BoardRepository>();
-builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 builder.Services.AddSingleton<SingletonService>();
