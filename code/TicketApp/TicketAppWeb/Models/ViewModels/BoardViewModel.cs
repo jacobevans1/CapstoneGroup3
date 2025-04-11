@@ -84,6 +84,11 @@ namespace TicketAppWeb.Models.ViewModels
 		public string SelectedGroupId { get; set; }
 
 		/// <summary>
+		/// Gets or sets the selected ticket identifier.
+		/// </summary>
+		public string SelectedTicketId { get; set; }
+
+		/// <summary>
 		/// Gets or sets the direction to move the stage (e.g., "left" or "right").
 		/// </summary>
 		public string SelectedDirection { get; set; }

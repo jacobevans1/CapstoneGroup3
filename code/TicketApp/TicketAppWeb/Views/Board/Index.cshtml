@@ -89,9 +89,42 @@
 							@foreach (var ticket in Model.AssignedTickets?.GetValueOrDefault(stage.Id))
 							{
 								<div class="card mb-2 shadow-sm" style="background-color: #f8f9fa;">
+
 									<div class="card-body py-2 px-3">
-										<h6 class="card-title mb-1 text-primary">@ticket.Title</h6>
-										<p class="card-text small text-muted mb-0">Assignee: @ticket.AssignedToUser.FullName</p>
+										<div class="d-flex justify-content-between align-items-center">
+											<h6 class="card-title mb-1 text-primary">@ticket.Title</h6>
+
+											<div class="dropdown">
+												<button class="btn btn-link p-0" type="button" id="ellipsisButton-@stage.Id" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; color: black; padding: 0 15px;">
+													<i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
+												</button>
+												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+													<li>
+														<a class="dropdown-item d-flex align-items-center"
+														   asp-action="AddTicket"
+														   asp-controller="Ticket"
+														   asp-route-projectId="@Model.Project.Id"
+														   asp-route-boardId="@Model.Board.Id"
+														   asp-route-stageId="@stage.Id">
+															<i class="fas fa-pen me-2"></i> Edit Ticket
+														</a>
+													</li>
+													<li>
+														<a class="dropdown-item d-flex align-items-center text-danger"
+														   href="#"
+														   data-bs-toggle="modal"
+														   data-bs-target="#deleteTicketModal"
+														   onclick="setDeleteTicketData('@ticket.Id')">
+															<i class="fas fa-trash-alt me-2"></i> Delete Ticket
+														</a>
+													</li>
+												</ul>
+											</div>
+										</div>
+										
+										<p class="card-text small text-muted mb-0">
+											Assignee: @ticket.AssignedToUser.FullName
+										</p>
 									</div>
 								</div>
 							}
@@ -278,6 +311,31 @@
 				</div>
 				<div class="modal-footer">
 					<button type="submit" class="btn btn-danger">Delete Stage</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<!-- Delete Ticket Modal -->
+<div class="modal fade" id="deleteTicketModal" tabindex="-1" aria-labelledby="deleteTicketModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="deleteTicketModalLabel">Delete Ticket</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form asp-action="DeleteTicket" asp-controller="Ticket" method="post">
+				<input type="hidden" asp-for="Board.Id" />
+				<input type="hidden" asp-for="Project.Id" />
+				<input type="hidden" id="deleteTicketId" asp-for="SelectedTicketId">
+				<div class="modal-body">
+					<p>Are you sure you want to delete this ticket? This action cannot be undone.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-danger">Delete Ticket</button>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 				</div>
 			</form>
