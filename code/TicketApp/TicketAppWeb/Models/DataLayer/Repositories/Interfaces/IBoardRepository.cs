@@ -27,8 +27,8 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// </summary>
 		/// <param name="boardId"></param>
 		/// <param name="stageName"></param>
-		/// <param name="groupIds"></param>
-		void AddStage(string boardId, string stageName, List<string> groupIds);
+		/// <param name="groupId"></param>
+		void AddStage(string boardId, string stageName, string groupId);
 
 		/// <summary>
 		/// Deletes a stage for the specified board.
@@ -69,12 +69,6 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		/// </summary>
 		/// <param name="boardId"></param>
 		Dictionary<string, List<Group>> GetBoardStageGroups(string boardId);
-
-		/// <summary>
-		/// Gets the tickets assigned to each stage for the specified board.
-		/// </summary>
-		/// <param name="boardId"></param>
-		Dictionary<string, List<Ticket>> GetBoardStageTickets(string boardId);
 
 		/// <summary>
 		/// Saves the board stages to the database.
