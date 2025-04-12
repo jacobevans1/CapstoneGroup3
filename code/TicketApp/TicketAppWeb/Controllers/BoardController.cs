@@ -31,39 +31,51 @@ namespace TicketAppWeb.Controllers
 		}
 
 
-        /// <summary>
-        /// Displays the board index view.
-        /// </summary>
-        public IActionResult Index(string projectId)
-        {
-            var viewModel = new BoardViewModel
-            {
-                CurrentUser = _singletonService.CurrentUser,
-                CurrentUserRole = _singletonService.CurrentUserRole
-            };
+		/// <summary>
+		/// Displays the board index view.
+		/// </summary>
+		public IActionResult Index(string projectId)
+		{
+			var viewModel = new BoardViewModel
+			{
+				CurrentUser = _singletonService.CurrentUser,
+				CurrentUserRole = _singletonService.CurrentUserRole
+			};
 
-            LoadIndexViewData(viewModel, projectId);
+			LoadIndexViewData(viewModel, projectId);
 
-            // Return read-only view for all users
-            return View("Index", viewModel);
-        }
+			return View("Index", viewModel);
+		}
 
 
-        public IActionResult EditBoard(string projectId)
-        {
-            // Only allow Admin, Project Lead, or Group Manager
-            var currentUser = _singletonService.CurrentUser;
-            var currentUserRole = _singletonService.CurrentUserRole;
+		/// <summary>
+		/// Displays the edit board view.
+		/// </summary>
+		/// <param name="projectId"></param>
+		public IActionResult EditBoard(string projectId)
+		{
+			var currentUser = _singletonService.CurrentUser;
+			var currentUserRole = _singletonService.CurrentUserRole;
 
-            var viewModel = new BoardViewModel
-            {
-                CurrentUser = currentUser,
-                CurrentUserRole = currentUserRole
-            };
+			var viewModel = new BoardViewModel
+			{
+				CurrentUser = currentUser,
+				CurrentUserRole = currentUserRole
+			};
 
-            LoadIndexViewData(viewModel, projectId);
+			LoadIndexViewData(viewModel, projectId);
 
-			return View(viewModel);
+			bool isAuthorized = currentUserRole == "Admin" ||
+								viewModel.IsCurrentUserProjectLeadForProject() ||
+								viewModel.IsCurrentUserAGroupManagerInProject();
+
+			if (!isAuthorized)
+			{
+				TempData["ErrorMessage"] = "You are not authorized to edit this board.";
+				return RedirectToAction("Index", new { projectId });
+			}
+
+			return View("EditBoard", viewModel);
 		}
 
 
@@ -90,18 +102,7 @@ namespace TicketAppWeb.Controllers
 
 			return View(viewModel);
 		}
-            bool isAuthorized = currentUserRole == "Admin" ||
-                                viewModel.IsCurrentUserProjectLeadForProject() ||
-                                viewModel.IsCurrentUserAGroupManagerInProject();
 
-            if (!isAuthorized)
-            {
-                TempData["ErrorMessage"] = "You are not authorized to edit this board.";
-                return RedirectToAction("Index", new { projectId });
-            }
-
-            return View("EditBoard", viewModel);
-        }
 
 		/// <summary>
 		/// Adds a new column to the board.
