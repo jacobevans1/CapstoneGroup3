@@ -3,7 +3,6 @@
     ViewData["Title"] = "Edit Ticket";
 }
 
-<!-- You can include any CSS file needed for your project -->
 <link href="~/css/projectmanagement.css" rel="stylesheet" />
 
 <div class="container">
@@ -37,30 +36,18 @@
                 <input type="text" class="form-control mb-2" id="userSearch" placeholder="Search users by name..." />
                 <select class="form-select" id="userSelect" asp-for="SelectedUserId">
                     <option value="">-- Select a user --</option>
-                    @{   
-                        var assignedGroups = ViewBag.AssignedGroups as Dictionary<string, List<Group>>;
-                        List<Group> groupsForStage = new List<Group>();
-                        if (assignedGroups != null && assignedGroups.ContainsKey(Model.SelectedStageId))
-                        {
-                            groupsForStage = assignedGroups[Model.SelectedStageId];
-                        }
-                    }
-                    @foreach (var group in groupsForStage)
+                    @foreach (var user in Model.EligibleAssignees)
                     {
-                        foreach (var member in group.Members)
+                        if (user.Id == Model.Ticket.AssignedTo)
                         {
-                            if (member.Id == Model.Ticket.AssignedTo)
-                            {
-                                <option value="@member.Id" selected="selected">@member.FullName</option>
-                            }
-                            else
-                            {
-                                <option value="@member.Id">@member.FullName</option>
-                            }
+                            <option value="@user.Id" selected="selected">@user.FullName</option>
+                        }
+                        else
+                        {
+                            <option value="@user.Id">@user.FullName</option>
                         }
                     }
                 </select>
-
                 <span asp-validation-for="Ticket.AssignedTo" class="text-danger"></span>
             </div>
         </div>
@@ -91,4 +78,3 @@
         });
     </script>
 }
-

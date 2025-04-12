@@ -89,48 +89,81 @@ public class TicketController : Controller
 		return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 	}
 
-	[HttpGet]
-	public IActionResult EditTicket(string ticketId, string projectId, string boardId, string stageId)
-	{
-		var ticket = _ticketRepository.Get(ticketId);
-		if (ticket == null)
-		{
-			TempData["ErrorMessage"] = "Ticket not found.";
-			return RedirectToAction("Index", "Board", new { projectId });
-		}
+    /// <summary>
+    /// Edits the ticket.
+    /// </summary>
+    /// <param name="ticketId">The ticket identifier.</param>
+    /// <param name="projectId">The project identifier.</param>
+    /// <param name="boardId">The board identifier.</param>
+    /// <param name="stageId">The stage identifier.</param>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult EditTicket(string ticketId, string projectId, string boardId, string stageId)
+    {
+        var ticket = _ticketRepository.Get(ticketId);
+        if (ticket == null)
+        {
+            TempData["ErrorMessage"] = "Ticket not found.";
+            return RedirectToAction("Index", "Board", new { projectId });
+        }
 
-		var project = _projectRepository.GetProjectByIdAsync(projectId).Result;
-		var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
+        var project = _projectRepository.GetProjectByIdAsync(projectId).Result;
+        var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
 
-		if (project != null && project.Groups != null)
-		{
-			foreach (var group in project.Groups)
-			{
-				if (group.Members == null || !group.Members.Any())
-				{
-					group.Members = _userRepository.GetUsersByGroupId(group.Id).ToList();
-				}
-			}
-		}
+        if (project != null && project.Groups != null)
+        {
+            foreach (var group in project.Groups)
+            {
+                if (group.Members == null || !group.Members.Any())
+                {
+                    group.Members = _userRepository.GetUsersByGroupId(group.Id).ToList();
+                }
+            }
+        }
 
-		var assignedGroups = _boardRepository.GetBoardStageGroups(board!.Id);
-		ViewBag.AssignedGroups = assignedGroups;
+        var assignedGroups = _boardRepository.GetBoardStageGroups(board!.Id);
 
-		ticket.AssignedToUser = _userRepository.Get(ticket.AssignedTo!)!;
+        var viewModel = new TicketViewModel
+        {
+            Ticket = ticket,
+            Project = project!,
+            Board = board,
+            SelectedStageId = stageId,
+            SelectedUserId = ticket.AssignedTo!,
+            CurrentUser = _singletonService.CurrentUser!,
+            CurrentUserRole = _singletonService.CurrentUserRole,
+            AssignedGroups = assignedGroups ?? new Dictionary<string, List<Group>>()
+        };
 
-		var viewModel = new TicketViewModel
-		{
-			Ticket = ticket,
-			Project = project!,
-			Board = board,
-			SelectedStageId = stageId,
-			SelectedUserId = ticket.AssignedTo!,
-			CurrentUser = _singletonService.CurrentUser!,
-			CurrentUserRole = _singletonService.CurrentUserRole
-		};
+        if (assignedGroups != null && assignedGroups.ContainsKey(stageId))
+        {
+            foreach (var group in assignedGroups[stageId])
+            {
+                if (group.ManagerId == _singletonService.CurrentUser!.Id)
+                {
+                    foreach (var member in group.Members)
+                    {
+                        if (!viewModel.EligibleAssignees.Any(u => u.Id == member.Id))
+                        {
+                            viewModel.EligibleAssignees.Add(member);
+                        }
+                    }
+                }
 
-		return View(viewModel);
-	}
+                else if (group.Members.Any(m => m.Id == _singletonService.CurrentUser.Id))
+                {
+                    if (!viewModel.EligibleAssignees.Any(u => u.Id == _singletonService.CurrentUser.Id))
+                    {
+                        viewModel.EligibleAssignees.Add(_singletonService.CurrentUser);
+                    }
+                }
+            }
+        }
+
+        ticket.AssignedToUser = _userRepository.Get(ticket.AssignedTo!)!;
+
+        return View(viewModel);
+    }
 
     /// <summary>
     /// Edits the ticket.
@@ -177,7 +210,6 @@ public class TicketController : Controller
 
 		return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 	}
-
 
 	/// <summary>
 	/// Moves the ticket.
@@ -259,7 +291,6 @@ public class TicketController : Controller
 		TempData["SuccessMessage"] = $"Deleted ticket successfully.";
 		return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 	}
-
 
 	private Ticket CreateTicketObject(TicketViewModel viewModel)
 	{

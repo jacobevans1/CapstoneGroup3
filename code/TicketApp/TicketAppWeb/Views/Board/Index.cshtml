@@ -89,60 +89,64 @@
 							@foreach (var ticket in Model.AssignedTickets?.GetValueOrDefault(stage.Id)!)
 							{
 								<div class="card mb-2 shadow-sm" style="background-color: #f8f9fa;">
-
 									<div class="card-body py-2 px-3">
 										<div class="d-flex justify-content-between align-items-center">
 											<h6 class="card-title mb-1 text-primary">@ticket.Title</h6>
 
-											<div class="dropdown">
-												<button class="btn btn-link p-0" type="button" id="ellipsisButton-@stage.Id" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; color: black; padding: 0 30px;">
-													<i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
-												</button>
-												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-													<li class="dropdown-submenu" style="position: relative;">
-														<a class="dropdown-item" href="#" style="display: flex; align-items: center;">
-															<i class="fas fa-arrows-alt me-2"></i> Move Ticket To
-														</a>
-														<ul class="dropdown-menu" style="width: 100%; top: 100%; left: 0; margin-top: 0;">
-															@foreach (var ticketStage in Model.Stages)
-															{
-																<li>
-																	<a class="dropdown-item d-flex align-items-center" href="@Url.Action("MoveTicket", "Ticket", new { ticketId = ticket.Id, newStageId = ticketStage.Id, boardId = Model.Board.Id, projectId = Model.Project.Id })">
-																		@ticketStage.Name
-																	</a>
-																</li>
-															}
-														</ul>
-													</li>
-													<li>
-														<a class="dropdown-item d-flex align-items-center"
-														   asp-action="EditTicket"
-														   asp-controller="Ticket"
-														   asp-route-ticketId="@ticket.Id"
-														   asp-route-projectId="@Model.Project.Id"
-														   asp-route-boardId="@Model.Board.Id"
-														   asp-route-stageId="@stage.Id">
-															<i class="fas fa-pen me-2"></i> Edit Ticket
-														</a>
-													</li>
-													<li>
-														<a class="dropdown-item d-flex align-items-center text-danger"
-														   href="#"
-														   data-bs-toggle="modal"
-														   data-bs-target="#deleteTicketModal"
-														   onclick="setDeleteTicketData('@ticket.Id')">
-															<i class="fas fa-trash-alt me-2"></i> Delete Ticket
-														</a>
-													</li>
-												</ul>
-											</div>
+											@if (Model.CurrentUserRole == "Admin"
+																			|| Model.IsCurrentUserProjectLeadForProject()
+																			|| Model.IsCurrentUserAGroupManagerInProject()
+																			|| (ticket.AssignedTo != null && ticket.AssignedTo == Model.CurrentUser.Id))
+											{
+												<div class="dropdown">
+													<button class="btn btn-link p-0" type="button" id="ellipsisButton-@stage.Id" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; color: black; padding: 0 30px;">
+														<i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
+													</button>
+													<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+														<li class="dropdown-submenu" style="position: relative;">
+															<a class="dropdown-item" href="#" style="display: flex; align-items: center;">
+																<i class="fas fa-arrows-alt me-2"></i> Move Ticket To
+															</a>
+															<ul class="dropdown-menu" style="width: 100%; top: 100%; left: 0; margin-top: 0;">
+																@foreach (var ticketStage in Model.Stages)
+																{
+																	<li>
+																		<a class="dropdown-item d-flex align-items-center"
+																		   href="@Url.Action("MoveTicket", "Ticket", new { ticketId = ticket.Id, newStageId = ticketStage.Id, boardId = Model.Board.Id, projectId = Model.Project.Id })">
+																			@ticketStage.Name
+																		</a>
+																	</li>
+																}
+															</ul>
+														</li>
+														<li>
+															<a class="dropdown-item d-flex align-items-center"
+															   asp-action="EditTicket"
+															   asp-controller="Ticket"
+															   asp-route-ticketId="@ticket.Id"
+															   asp-route-projectId="@Model.Project.Id"
+															   asp-route-boardId="@Model.Board.Id"
+															   asp-route-stageId="@stage.Id">
+																<i class="fas fa-pen me-2"></i> Edit Ticket
+															</a>
+														</li>
+														<li>
+															<a class="dropdown-item d-flex align-items-center text-danger"
+															   href="#"
+															   data-bs-toggle="modal"
+															   data-bs-target="#deleteTicketModal"
+															   onclick="setDeleteTicketData('@ticket.Id')">
+																<i class="fas fa-trash-alt me-2"></i> Delete Ticket
+															</a>
+														</li>
+													</ul>
+												</div>
+											}
 										</div>
-
 										<div class="d-flex justify-content-between align-items-center">
 											<p class="card-text small text-muted mb-0">
 												Assignee: @(ticket.AssignedToUser != null ? ticket.AssignedToUser.FullName : "None")
 											</p>
-
 										</div>
 									</div>
 								</div>
