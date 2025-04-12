@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketAppWeb.Models.DataLayer;
 
@@ -11,9 +12,11 @@ using TicketAppWeb.Models.DataLayer;
 namespace TicketAppWeb.Migrations
 {
     [DbContext(typeof(TicketAppContext))]
-    partial class TicketAppContextModelSnapshot : ModelSnapshot
+    [Migration("20250412144652_NewBaseline")]
+    partial class NewBaseline
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
