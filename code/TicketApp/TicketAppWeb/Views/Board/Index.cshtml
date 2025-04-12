@@ -1,4 +1,4 @@
-﻿@model TicketAppWeb.Models.ViewModels.BoardViewModel
+﻿@model BoardViewModel
 @{
 	ViewBag.Title = Model.Project.ProjectName;
 }
@@ -36,7 +36,7 @@
 					<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 						<div>
 							<h5 class="mb-0">@stage.Name</h5>
-							@foreach (var group in Model.AssignedGroups?.GetValueOrDefault(stage.Id))
+							@foreach (var group in Model.AssignedGroups?.GetValueOrDefault(stage.Id)!)
 							{
 								<div>
 									<small class="text-white-50">@group.GroupName</small>
@@ -86,7 +86,7 @@
 
 					<div class="card-body">
 						<ul class="list-group list-group-flush">
-							@foreach (var ticket in Model.AssignedTickets?.GetValueOrDefault(stage.Id))
+							@foreach (var ticket in Model.AssignedTickets?.GetValueOrDefault(stage.Id)!)
 							{
 								<div class="card mb-2 shadow-sm" style="background-color: #f8f9fa;">
 
@@ -99,16 +99,31 @@
 													<i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
 												</button>
 												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-													@* <li> *@
-													@* 	<a class="dropdown-item d-flex align-items-center" *@
-													@* 	   asp-action="EditTicket" *@
-													@* 	   asp-controller="Ticket" *@
-													@* 	   asp-route-projectId="@Model.Project.Id" *@
-													@* 	   asp-route-boardId="@Model.Board.Id" *@
-													@* 	   asp-route-stageId="@stage.Id"> *@
-													@* 		<i class="fas fa-pen me-2"></i> Edit Ticket *@
-													@* 	</a> *@
-													@* </li> *@
+													<li class="dropdown-submenu" style="position: relative;">
+														<a class="dropdown-item" href="#" style="display: flex; align-items: center;">
+															<i class="fas fa-arrows-alt me-2"></i> Move Ticket To
+														</a>
+														<ul class="dropdown-menu" style="width: 100%; top: 100%; left: 0; margin-top: 0;">
+															@foreach (var ticketStage in Model.Stages)
+															{
+																<li>
+																	<a class="dropdown-item d-flex align-items-center" href="@Url.Action("MoveTicket", "Ticket", new { ticketId = ticket.Id, newStageId = ticketStage.Id, boardId = Model.Board.Id, projectId = Model.Project.Id })">
+																		@ticketStage.Name
+																	</a>
+																</li>
+															}
+														</ul>
+													</li>
+													<li>
+														<a class="dropdown-item d-flex align-items-center"
+														   asp-action="EditTicket"
+														   asp-controller="Ticket"
+														   asp-route-projectId="@Model.Project.Id"
+														   asp-route-boardId="@Model.Board.Id"
+														   asp-route-stageId="@stage.Id">
+															<i class="fas fa-pen me-2"></i> Edit Ticket
+														</a>
+													</li>
 													<li>
 														<a class="dropdown-item d-flex align-items-center text-danger"
 														   href="#"
@@ -124,7 +139,7 @@
 
 										<div class="d-flex justify-content-between align-items-center">
 											<p class="card-text small text-muted mb-0">
-												Assignee: @ticket.AssignedToUser.FullName
+												Assignee: @(ticket.AssignedToUser != null ? ticket.AssignedToUser.FullName : "None")
 											</p>
 
 										</div>
@@ -192,7 +207,6 @@
 	</div>
 </div>
 
-
 <!-- Rename Stage Modal -->
 <div class="modal fade" id="renameStageModal" tabindex="-1" aria-labelledby="renameStageModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
@@ -223,7 +237,6 @@
 	</div>
 </div>
 
-
 <!-- Delete Stage Modal -->
 <div class="modal fade" id="deleteStageModal" tabindex="-1" aria-labelledby="deleteStageModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
@@ -247,7 +260,6 @@
 		</div>
 	</div>
 </div>
-
 
 <!-- Delete Ticket Modal -->
 <div class="modal fade" id="deleteTicketModal" tabindex="-1" aria-labelledby="deleteTicketModalLabel" aria-hidden="true">
@@ -281,35 +293,25 @@
 	function setAssignGroupData(stageId) {
 		document.getElementById("assignGroupStageId").value = stageId;
 	}
-</script>
 
-<script>
 	function setRenameStageData(stageId, stageName) {
 		document.getElementById("renameStageId").value = stageId;
 		document.getElementById("renameStageName").value = stageName;
 	}
-</script>
 
-<script>
 	function setDeleteStageData(stageId) {
 		document.getElementById("deleteStageId").value = stageId;
 	}
-</script>
 
-<script>
 	function setDeleteTicketData(ticketId) {
 		document.getElementById("deleteTicketId").value = ticketId;
 	}
-</script>
 
-<script>
 	function setMoveStageData(stageId, direction) {
 		document.getElementById('moveStageId_' + stageId).value = stageId;
 		document.getElementById('moveDirection_' + stageId).value = direction;
 	}
-</script>
 
-<script>
 	function moveStageLeft(stageId) {
 		$.ajax({
 			url: '/Board/MoveStage',
@@ -335,4 +337,28 @@
 			}
 		});
 	}
+
+	document.addEventListener("DOMContentLoaded", function () {
+		var submenuLinks = document.querySelectorAll(".dropdown-submenu > a");
+		submenuLinks.forEach(function (link) {
+			link.addEventListener("click", function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				var submenu = link.nextElementSibling;
+				if (submenu && submenu.classList.contains("dropdown-menu")) {
+					submenu.classList.toggle("show");
+				}
+			});
+		});
+
+		var dropdownElements = document.querySelectorAll('.dropdown');
+		dropdownElements.forEach(function (dropdown) {
+			dropdown.addEventListener('hide.bs.dropdown', function () {
+				var openedSubmenus = dropdown.querySelectorAll('.dropdown-menu.show');
+				openedSubmenus.forEach(function (submenu) {
+					submenu.classList.remove('show');
+				});
+			});
+		});
+	});
 </script>

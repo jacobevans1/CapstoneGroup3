@@ -45,14 +45,14 @@ namespace TicketAppWeb.Controllers
 
 			var viewModel = new TicketViewModel
 			{
-				Project = project,
-				Board = board
+				Project = project!,
+				Board = board!
 			};
 
-			viewModel.Project.Id = projectId;
+			viewModel.Project!.Id = projectId;
 			viewModel.SelectedStageId = stageId;
 
-			viewModel.CurrentUser = _singletonService.CurrentUser;
+			viewModel.CurrentUser = _singletonService.CurrentUser!;
 			viewModel.CurrentUserRole = _singletonService.CurrentUserRole;
 
 			foreach (var group in viewModel.Project.Groups)
@@ -72,7 +72,7 @@ namespace TicketAppWeb.Controllers
 		[HttpPost]
 		public IActionResult AddTicket(TicketViewModel viewModel)
 		{
-			viewModel.CurrentUser = _singletonService.CurrentUser;
+			viewModel.CurrentUser = _singletonService.CurrentUser!;
 			viewModel.CurrentUserRole = _singletonService.CurrentUserRole;
 
 			var newTicket = CreateTicketObject(viewModel);
@@ -81,7 +81,7 @@ namespace TicketAppWeb.Controllers
 			{
 				_ticketRepository.AddTicket(newTicket);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				TempData["ErrorMessage"] = $"Sorry, ticket creation failed.";
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
@@ -91,6 +91,66 @@ namespace TicketAppWeb.Controllers
 			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 		}
 
+		/// <summary>
+		/// Moves the ticket.
+		/// </summary>
+		/// <param name="ticketId">The ticket identifier.</param>
+		/// <param name="newStageId">The new stage identifier.</param>
+		/// <param name="boardId">The board identifier.</param>
+		/// <param name="projectId">The project identifier.</param>
+		/// <returns></returns>
+		[HttpGet]
+		public IActionResult MoveTicket(string ticketId, string newStageId, string boardId, string projectId)
+		{
+			var ticket = _ticketRepository.Get(ticketId);
+			if (ticket == null)
+			{
+				TempData["ErrorMessage"] = "Ticket not found.";
+				return RedirectToAction("Index", "Board", new { projectId });
+			}
+
+			ticket.Stage = newStageId;
+
+			if (!string.IsNullOrEmpty(ticket.AssignedTo))
+			{
+				var boardStageGroups = _boardRepository.GetBoardStageGroups(boardId);
+				if (boardStageGroups != null && boardStageGroups.ContainsKey(newStageId))
+				{
+					var targetGroups = boardStageGroups[newStageId];
+					bool userInGroup = false;
+
+					var project = _projectRepository.GetProjectByIdAsync(projectId).Result;
+					if (project != null && project.Groups != null)
+					{
+						var relevantGroups = project.Groups.Where(g => targetGroups.Any(tg => tg.Id == g.Id));
+
+						foreach (var group in relevantGroups)
+						{
+							var members = group.Members;
+							if (members == null || !members.Any())
+							{
+								members = _userRepository.GetUsersByGroupId(group.Id).ToList();
+							}
+
+							if (members.Any(m => m.Id == ticket.AssignedTo))
+							{
+								userInGroup = true;
+								break;
+							}
+						}
+					}
+
+					if (!userInGroup)
+					{
+						ticket.AssignedTo = null;
+					}
+				}
+			}
+
+			_ticketRepository.UpdateTicket(ticket);
+			TempData["SuccessMessage"] = "Ticket moved successfully.";
+			return RedirectToAction("Index", "Board", new { projectId });
+		}
 
 		/// <summary>
 		/// Deletes a ticket from the board.
@@ -102,7 +162,7 @@ namespace TicketAppWeb.Controllers
 			{
 				_ticketRepository.DeleteTicket(viewModel.SelectedTicketId);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				TempData["ErrorMessage"] = $"Sorry, deleting ticket failed.";
 				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
