@@ -94,6 +94,92 @@ h5 {
     flex-direction: column;
 }
 
+/* === Board View Styles (shared between Index & EditBoard) === */
+.board-outer-container {
+    padding-top: 0;
+}
+
+.board-scroll-wrapper {
+    -webkit-overflow-scrolling: touch;
+}
+
+    .board-scroll-wrapper::-webkit-scrollbar {
+        height: 12px;
+    }
+
+    .board-scroll-wrapper::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 6px;
+    }
+
+    .board-scroll-wrapper::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 6px;
+        border: 3px solid #f1f1f1;
+    }
+
+.stage-column {
+    scroll-snap-align: start;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+    scroll-snap-align: start; /* Optional: better scrolling alignment */
+}
+
+/* Preserve original card styling */
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+
+/* === EditBoard Scroll and Card Styling === */
+.board-outer-container {
+    padding-top: 0;
+}
+
+.board-scroll-wrapper {
+    -webkit-overflow-scrolling: touch;
+}
+
+    .board-scroll-wrapper::-webkit-scrollbar {
+        height: 12px;
+    }
+
+    .board-scroll-wrapper::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 6px;
+    }
+
+    .board-scroll-wrapper::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 6px;
+        border: 3px solid #f1f1f1;
+    }
+
+.stage-column {
+    scroll-snap-align: start;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+
 
 
 
