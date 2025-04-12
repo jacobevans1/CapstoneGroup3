@@ -76,7 +76,7 @@ namespace TicketAppWeb.Models.ViewModels
 		/// <summary>
 		/// Gets or sets the description of the new stage to be added.
 		/// </summary>
-		public string NewDescription { get; set; }
+		public string? NewDescription { get; set; }
 
 		/// <summary>
 		/// Gets or sets the selected stage identifier.
@@ -124,6 +124,22 @@ namespace TicketAppWeb.Models.ViewModels
 		public bool IsCurrentUserAGroupManagerInProject()
 		{
 			foreach (var group in Project.Groups)
+			{
+				if (group.ManagerId == CurrentUser.Id)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Checks if the current user is a group manager in the stage.
+		/// </summary>
+		public bool IsCurrentUserAGroupManagerForStage(string stageId)
+		{
+			foreach (var group in AssignedGroups[stageId])
 			{
 				if (group.ManagerId == CurrentUser.Id)
 				{
