@@ -112,8 +112,37 @@ namespace TicketAppWeb.Controllers
 			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 		}
 
+        [HttpGet]
+        public IActionResult Details(string ticketId, string projectId)
+        {
+            var ticket = _ticketRepository.GetTicketWithHistory(ticketId);
+            if (ticket == null)
+            {
+                return NotFound();
+            }
 
-		private Ticket CreateTicketObject(TicketViewModel viewModel)
+            var project = _projectRepository.GetProjectByIdAsync(projectId).Result;
+            var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
+
+			var stageName = _boardRepository.GetStages(board.Id).FirstOrDefault(s => s.Id == ticket.Stage)?.Name ?? "Unknown";
+
+			var viewModel = new TicketDetailsViewModel
+            {
+                Ticket = ticket,
+                Project = project,
+                Board = board,
+				StageName = stageName,
+				History = ticket.History.OrderByDescending(h => h.ChangeDate).ToList(),
+                CurrentUser = _singletonService.CurrentUser,
+                CurrentUserRole = _singletonService.CurrentUserRole
+            };
+
+            return View(viewModel);
+        }
+
+
+
+        private Ticket CreateTicketObject(TicketViewModel viewModel)
 		{
 			var ticket = new Ticket
 			{

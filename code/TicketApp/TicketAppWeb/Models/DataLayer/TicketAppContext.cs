@@ -69,11 +69,14 @@ namespace TicketAppWeb.Models.DataLayer
 		/// </summary>
 		public DbSet<BoardStageGroup> BoardStageGroups { get; set; }
 
-		/// <summary>
-		/// Configures the model for the context.
-		/// </summary>
-		/// <param name="modelBuilder">The builder used to construct the model for this context.</param>
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public DbSet<TicketHistory> TicketHistories { get; set; }
+
+
+        /// <summary>
+        /// Configures the model for the context.
+        /// </summary>
+        /// <param name="modelBuilder">The builder used to construct the model for this context.</param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 
@@ -132,7 +135,21 @@ namespace TicketAppWeb.Models.DataLayer
 				.WithMany()
 				.HasForeignKey(bsg => bsg.GroupId)
 				.OnDelete(DeleteBehavior.Cascade);
-		}
+
+			// TicketHistory Configuration
+            modelBuilder.Entity<TicketHistory>()
+            .HasOne(th => th.ChangedByUser)
+            .WithMany()
+            .HasForeignKey(th => th.ChangedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TicketHistory>()
+                .HasOne<Ticket>()
+                .WithMany(t => t.History)
+                .HasForeignKey(th => th.TicketId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+        }
 
 
 		/// <summary>

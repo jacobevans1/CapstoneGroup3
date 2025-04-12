@@ -1,0 +1,110 @@
+﻿@model TicketDetailsViewModel
+@{
+    ViewData["Title"] = "Ticket Details";
+}
+
+<!-- Google Font for Bubblegum Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+
+<!-- Link to CSS -->
+<link href="~/css/projectmanagement.css" rel="stylesheet" />
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2>@Model.Ticket.Title</h2>
+            <small class="text-white-50">Created: @Model.Ticket.CreatedDate.ToString("g")</small>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4>Description</h4>
+                    <p>@Model.Ticket.Description</p>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Details</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <strong>Status:</strong> @Model.StageName
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Assigned To:</strong>
+                                    @(Model.Ticket.AssignedToUser?.FullName ?? "Unassigned")
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Board:</strong> @Model.Board.BoardName
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            <hr />
+
+            <h4>Ticket History</h4>
+            <div class="timeline">
+                @foreach (var history in Model.History)
+                {
+                    <div class="timeline-item">
+                        <div class="timeline-badge">
+                            <i class="fas @GetHistoryIcon(history.PropertyChanged)"></i>
+                        </div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h5 class="timeline-title">@history.ChangeDescription</h5>
+                                <p>
+                                    <small class="text-muted">
+                                        @history.ChangeDate.ToString("g") by
+                                        @history.ChangedByUser?.FullName
+                                    </small>
+                                </p>
+                            </div>
+                            @if (!string.IsNullOrEmpty(history.OldValue) || !string.IsNullOrEmpty(history.NewValue))
+                            {
+                                <div class="timeline-body">
+                                    @if (!string.IsNullOrEmpty(history.OldValue))
+                                    {
+                                        <p><strong>From:</strong> @history.OldValue</p>
+                                    }
+                                    @if (!string.IsNullOrEmpty(history.NewValue))
+                                    {
+                                        <p><strong>To:</strong> @history.NewValue</p>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <a asp-action="Index" asp-controller="Board"
+               asp-route-projectId="@Model.Project.Id" class="btn btn-secondary">
+                Back to Board
+            </a>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetHistoryIcon(string propertyChanged)
+    {
+        return propertyChanged switch
+        {
+            "Created" => "fa-plus-circle",
+            "Title" => "fa-heading",
+            "Description" => "fa-file-alt",
+            "AssignedTo" => "fa-user-edit",
+            "Stage" => "fa-columns",
+            "IsComplete" => "fa-check-circle",
+            _ => "fa-history"
+        };
+    }
+}

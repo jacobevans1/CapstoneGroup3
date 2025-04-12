@@ -59,5 +59,8 @@ namespace TicketAppWeb.Models.DomainModels
 		/// Gets or sets the board identifier.
 		/// </summary>
 		public string BoardId { get; set; }
-	}
+
+        public ICollection<TicketHistory> History { get; set; } = new List<TicketHistory>();
+
+    }
 }
