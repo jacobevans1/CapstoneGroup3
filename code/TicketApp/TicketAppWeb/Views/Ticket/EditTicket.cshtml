@@ -1,0 +1,80 @@
+﻿@model TicketAppWeb.Models.ViewModels.TicketViewModel
+@{
+    ViewData["Title"] = "Edit Ticket";
+}
+
+<link href="~/css/projectmanagement.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center">Edit Ticket</h2>
+            <div class="title-divider"></div>
+        </div>
+    </div>
+    <form asp-action="EditTicket" method="post" class="styled-form">
+        <input type="hidden" asp-for="Ticket.Id" />
+        <input type="hidden" asp-for="Board.Id" />
+        <input type="hidden" asp-for="Project.Id" />
+        <input type="hidden" asp-for="SelectedStageId" />
+
+        <div class="form-group">
+            <label asp-for="Ticket.Title" class="form-label">Title <span class="text-danger">*</span></label>
+            <input asp-for="Ticket.Title" class="form-control" />
+            <span asp-validation-for="Ticket.Title" class="text-danger"></span>
+        </div>
+        <br />
+        <div class="form-group">
+            <label asp-for="Ticket.Description" class="form-label">Description</label>
+            <textarea asp-for="Ticket.Description" class="form-control"></textarea>
+            <span asp-validation-for="Ticket.Description" class="text-danger"></span>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <h6>Select User <span class="text-danger">*</span></h6>
+                <input type="text" class="form-control mb-2" id="userSearch" placeholder="Search users by name..." />
+                <select class="form-select" id="userSelect" asp-for="SelectedUserId">
+                    <option value="">-- Select a user --</option>
+                    @foreach (var user in Model.EligibleAssignees)
+                    {
+                        if (user.Id == Model.Ticket.AssignedTo)
+                        {
+                            <option value="@user.Id" selected="selected">@user.FullName</option>
+                        }
+                        else
+                        {
+                            <option value="@user.Id">@user.FullName</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="Ticket.AssignedTo" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Update Ticket</button>
+            </div>
+            <div class="col-auto">
+                <a asp-action="Index" asp-controller="Board" asp-route-projectId="@Model.Project.Id" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById('userSearch').addEventListener('input', function () {
+                var filter = this.value.toLowerCase();
+                var select = document.getElementById('userSelect');
+                var options = select.options;
+                for (var i = 0; i < options.length; i++) {
+                    var text = options[i].text.toLowerCase();
+                    options[i].style.display = text.includes(filter) || options[i].value === "" ? "" : "none";
+                }
+            });
+        });
+    </script>
+}
