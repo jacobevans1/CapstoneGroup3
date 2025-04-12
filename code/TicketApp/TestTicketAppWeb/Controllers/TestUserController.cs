@@ -14,14 +14,16 @@ namespace TestTicketAppWeb.Controllers;
 public class TestUserController
 {
     private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Mock<IGroupRepository> _mockGroupRepository;
     private readonly Mock<SingletonService> _mockSingletonService;
     private readonly UserController _controller;
 
     public TestUserController()
     {
         _mockUserRepository = new Mock<IUserRepository>();
+        _mockGroupRepository = new Mock<IGroupRepository>();
         _mockSingletonService = new Mock<SingletonService>();
-        _controller = new UserController(_mockSingletonService.Object, _mockUserRepository.Object);
+        _controller = new UserController(_mockSingletonService.Object, _mockUserRepository.Object, _mockGroupRepository.Object);
 
         _controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
     }
@@ -162,7 +164,7 @@ public class TestUserController
 
     // Test DeleteConfirmed
     [Fact]
-    public void DeleteConfirmed_ShouldRedirectToIndex_WhenUserDeleted()
+    public async Task DeleteConfirmed_ShouldRedirectToIndex_WhenUserDeleted()
     {
         // Arrange
         var userId = "123";
@@ -172,12 +174,12 @@ public class TestUserController
         _mockUserRepository.Setup(r => r.Save()).Verifiable();
 
         // Act
-        var result = _controller.DeleteConfirmed(userId);
+        var result = await _controller.DeleteConfirmed(userId) as RedirectToActionResult;
 
         // Assert
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectResult.ActionName);
-        Assert.Equal("User", redirectResult.ControllerName);
+        Assert.NotNull(result);
+        Assert.Equal("Index", result.ActionName);
+        Assert.Equal("User", result.ControllerName);
         _mockUserRepository.Verify(r => r.Save(), Times.Once);
     }
 
@@ -247,19 +249,19 @@ public class TestUserController
     }
 
     [Fact]
-    public void DeleteUser_ShouldReturnNotFound_WhenUserDoesNotExist()
+    public async Task DeleteUser_ShouldReturnNotFound_WhenUserDoesNotExist()
     {
         // Arrange
         var userId = "invalidUserId";
         _mockUserRepository.Setup(r => r.Get(It.IsAny<string>())).Returns((TicketAppUser?)null);
 
         // Act
-        var result = _controller.DeleteConfirmed(userId);
+        var result = await _controller.DeleteConfirmed(userId) as RedirectToActionResult;
 
         // Assert
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectResult.ActionName);
-        Assert.Equal("User", redirectResult.ControllerName);
+        Assert.NotNull(result);
+        Assert.Equal("Index", result.ActionName);
+        Assert.Equal("User", result.ControllerName);
         Assert.Equal("User not found.", _controller.TempData["ErrorMessage"]);
     }
 
@@ -276,7 +278,7 @@ public class TestUserController
 
 
     [Fact]
-    public void DeleteConfirmed_ShouldReturnError_WhenExceptionIsThrown()
+    public async Task DeleteConfirmed_ShouldReturnError_WhenExceptionIsThrown()
     {
         // Arrange
         var userId = "123";
@@ -285,13 +287,39 @@ public class TestUserController
         _mockUserRepository.Setup(r => r.Delete(It.IsAny<TicketAppUser>())).Throws(new Exception("Database error"));
 
         // Act
-        var result = _controller.DeleteConfirmed(userId);
+        var result = await _controller.DeleteConfirmed(userId) as RedirectToActionResult;
 
         // Assert
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectResult.ActionName);
-        Assert.Equal("User", redirectResult.ControllerName);
-        Assert.Equal("Sorry, deleting user failed.", _controller.TempData["ErrorMessage"]);
+        Assert.NotNull(result);
+        Assert.Equal("Index", result.ActionName);
+        Assert.Equal("User", result.ControllerName);
+        Assert.Equal("Sorry, deleting user failed for unkwon reasons", _controller.TempData["ErrorMessage"]);
+    }
+
+    [Fact]
+    public async Task DeleteConfirmed_ShouldReturnError_WhenUserManagesGroups()
+    {
+        // Arrange
+        var userId = "123";
+        var user = new TicketAppUser { FirstName = "Jane", LastName = "Smith" };
+        var groups = new List<Group>
+    {
+        new Group { GroupName = "Admin" },
+        new Group { GroupName = "HR" }
+    };
+
+        _mockUserRepository.Setup(r => r.Get(It.IsAny<string>())).Returns(user);
+        var controller = new TestableUserController(_mockSingletonService.Object, _mockUserRepository.Object, _mockGroupRepository.Object, groups);
+        controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+
+        // Act
+        var result = await controller.DeleteConfirmed(userId) as RedirectToActionResult;
+
+        // Assert
+        var expectedMessage = "Cannot delete user Jane Smith because they manages the following groups: Admin, HR. Please reassign Group Managers before you cant continue this action.";
+        var actualMessage = controller.TempData["ErrorMessage"]!.ToString()!.Trim();
+
+        Assert.Equal(expectedMessage, actualMessage);
     }
 
     [Fact]
@@ -371,10 +399,10 @@ public class TestUserController
     }
 
     [Fact]
-    public void DeleteConfirmed_ShouldRedirectToIndex_WhenUserIdIsNullOrEmpty()
+    public async Task DeleteConfirmed_ShouldRedirectToIndex_WhenUserIdIsNullOrEmpty()
     {
         // Act
-        var result = _controller.DeleteConfirmed(string.Empty) as RedirectToActionResult;
+        var result = await _controller.DeleteConfirmed(string.Empty) as RedirectToActionResult;
 
         // Assert
         Assert.NotNull(result);
@@ -382,4 +410,30 @@ public class TestUserController
         Assert.Equal("User", result.ControllerName);
         Assert.Equal("Invalid user ID.", _controller.TempData["ErrorMessage"]);
     }
+
+    /// <summary>
+    /// Inner class that facilitated testing helper in order to get a 100% branch coverage
+    /// </summary>
+    /// <seealso cref="TicketAppWeb.Controllers.UserController" />
+    public class TestableUserController : UserController
+    {
+        private readonly List<Group> _mockGroups;
+
+        public TestableUserController(
+            SingletonService singletonService,
+            IUserRepository userRepository,
+            IGroupRepository groupRepository,
+            List<Group> mockGroups
+        ) : base(singletonService, userRepository, groupRepository)
+        {
+            _mockGroups = mockGroups;
+        }
+
+        protected override async Task<List<Group>> GetConflictingGroupsForUser(TicketAppUser user)
+        {
+            // Return mock groups instead of calling the actual implementation
+            return await Task.FromResult(_mockGroups);
+        }
+    }
 }
+

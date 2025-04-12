@@ -16,4 +16,11 @@ public interface IGroupRepository : IRepository<Group>
 	Task SaveAsync();
 	Task<Group?> GetAsync(string id);
 	Task DeleteGroupAsync(Group group);
+
+    /// <summary>
+    /// Gets the group by manager identifier asynchronous.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns></returns>
+    Task<List<Group>> GetGroupByManagerIdAsync(string id);
 }

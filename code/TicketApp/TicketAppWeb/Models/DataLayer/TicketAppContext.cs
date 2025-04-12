@@ -45,14 +45,9 @@ namespace TicketAppWeb.Models.DataLayer
 		public DbSet<GroupApprovalRequest> GroupApprovalRequests { get; set; }
 
 		/// <summary>
-		/// Gets or sets the DbSet representing the Tickets table in the database.
+		/// Gets or sets the DbSet representing the AssignedTickets table in the database.
 		/// </summary>
 		public DbSet<Ticket> Tickets { get; set; }
-
-		/// <summary>
-		/// Gets or sets the DbSet representing the TicketAssignees table in the database.
-		/// </summary>
-		public DbSet<TicketAssignee> TicketAssignees { get; set; }
 
 		/// <summary>
 		/// Gets or sets the DbSet representing the Boards table in the database.
@@ -68,6 +63,11 @@ namespace TicketAppWeb.Models.DataLayer
 		/// Gets or sets the DbSet representing the Stages table in the database.
 		/// </summary>
 		public DbSet<Stage> Stages { get; set; }
+
+		/// <summary>
+		/// Gets or sets the DbSet representing the BoardStageGroup table in the database.
+		/// </summary>
+		public DbSet<BoardStageGroup> BoardStageGroups { get; set; }
 
 		/// <summary>
 		/// Configures the model for the context.
@@ -116,27 +116,21 @@ namespace TicketAppWeb.Models.DataLayer
 				.HasForeignKey(bs => bs.StageId)
 				.OnDelete(DeleteBehavior.Cascade);
 
-			modelBuilder.Entity<BoardStage>()
-				.HasOne(bs => bs.Group)
+
+			// BoardStageGroups Configuration
+			modelBuilder.Entity<BoardStageGroup>()
+				.HasKey(bsg => bsg.Id);
+
+			modelBuilder.Entity<BoardStageGroup>()
+				.HasOne(bsg => bsg.BoardStage)
 				.WithMany()
-				.HasForeignKey(bs => bs.GroupId)
-				.OnDelete(DeleteBehavior.SetNull);
-
-
-			// TicketAssignee Configuration
-			modelBuilder.Entity<TicketAssignee>()
-				.HasKey(ta => new { ta.TicketId, ta.UserId });
-
-			modelBuilder.Entity<TicketAssignee>()
-				.HasOne(ta => ta.Ticket)
-				.WithMany()
-				.HasForeignKey(ta => ta.TicketId)
+				.HasForeignKey(bsg => new { bsg.BoardId, bsg.StageId })
 				.OnDelete(DeleteBehavior.Cascade);
 
-			modelBuilder.Entity<TicketAssignee>()
-				.HasOne(u => u.User)
+			modelBuilder.Entity<BoardStageGroup>()
+				.HasOne(bsg => bsg.Group)
 				.WithMany()
-				.HasForeignKey(u => u.UserId)
+				.HasForeignKey(bsg => bsg.GroupId)
 				.OnDelete(DeleteBehavior.Cascade);
 		}
 

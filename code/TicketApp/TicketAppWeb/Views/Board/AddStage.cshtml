@@ -1,0 +1,186 @@
+﻿@model BoardViewModel
+@{
+    ViewData["Title"] = "Add Stage";
+}
+
+<!-- TempData variables -->
+@{
+	var successMessage = TempData["SuccessMessage"] as string;
+	var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+<!-- Display success messages if any -->
+@if (!string.IsNullOrEmpty(successMessage))
+{
+	<div class="alert alert-success">
+		@successMessage
+	</div>
+}
+
+<!-- Display error messages if any -->
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+	<div class="alert alert-danger">
+		@errorMessage
+	</div>
+}
+
+<!-- Google Font for Bubblegum Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+
+<!-- Link to CSS -->
+<link href="~/css/projectmanagement.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center">Add Stage</h2>
+            <div class="title-divider"></div>
+        </div>
+    </div>
+
+	<form asp-action="AddStage" method="post" class="styled-form" id="stageForm">
+		<input type="hidden" name="id" value="@ViewContext.RouteData.Values["id"]" />
+		<input type="hidden" name="Board.Id" value="@Model.Board.Id"/>
+		<input type="hidden" name="Project.Id" value="@Model.Project.Id"/>
+		<input type="hidden" name="SelectedStageId" value="@Model.SelectedStageId"/>
+		
+		<div class="form-group">
+			<label asp-for="NewStageName" class="form-label">Stage Name <span class="text-danger">*</span></label>
+			<input asp-for="NewStageName" class="form-control" />
+			<span asp-validation-for="NewStageName" class="text-danger"></span>
+		</div>
+		<br />
+		<div class="form-group">
+			<label asp-for="NewDescription" class="form-label">Description</label>
+			<textarea asp-for="NewDescription" class="form-control"></textarea>
+		</div>
+		<br />
+
+		<div class="row">
+			<div class="col-md-5">
+				<h6>Available Groups</h6>
+				<div class="scrollable-container">
+					<ul id="availableGroups" class="list-group">
+						@foreach (var group in Model.Project.Groups)
+						{
+							if (!Model.SelectedGroupIds.Contains(group.Id))
+							{
+								<li class="list-group-item">
+									<input type="checkbox" class="group-checkbox form-check-input mt-0" value="@group.Id" />
+									@group.GroupName
+								</li>
+							}
+						}
+					</ul>
+				</div>
+			</div>
+
+			<div class="col-md-2 text-center align-self-center">
+				<button type="button" class="btn btn-primary mb-2" id="addGroupsBtn">Add →</button>
+				<br/><br/>
+				<button type="button" class="btn btn-danger" id="removeGroupsBtn">← Remove</button>
+			</div>
+
+			<div class="col-md-5">
+				<h6>Assigned Groups <span class="text-danger">*</span></h6>
+				<div class="scrollable-container">
+					<ul id="assignedGroups" class="list-group">
+						@foreach (var group in Model.Project.Groups)
+						{
+							if (Model.SelectedGroupIds.Contains(group.Id))
+							{
+								<li class="list-group-item">
+									<input type="checkbox" class="assigned-group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="@group.Id" checked />
+									@group.GroupName
+								</li>
+							}
+						}
+					</ul>
+				</div>
+				<span id="groupError" class="text-danger"></span>
+			</div>
+		</div>
+		<span asp-validation-for="SelectedGroupIds" class="text-danger"></span>
+		<br/>
+
+		<div class="row justify-content-center">
+			<div class="col-auto">
+				<button type="submit" class="btn btn-primary">Add Stage</button>
+			</div>
+			<div class="col-auto">
+				<div style="width: 150px">
+					<a asp-action="Index" asp-controller="Board" asp-route-projectId="@Model.Project.Id" class="btn btn-secondary" style="width: 100%">Cancel</a>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const availableGroups = document.getElementById("availableGroups");
+            const assignedGroups = document.getElementById("assignedGroups");
+
+            document.getElementById("addGroupsBtn").addEventListener("click", function () {
+                moveSelectedGroups(availableGroups, assignedGroups, true);
+            });
+
+            document.getElementById("removeGroupsBtn").addEventListener("click", function () {
+                moveSelectedGroups(assignedGroups, availableGroups, false);
+            });
+
+            function moveSelectedGroups(sourceList, targetList, isAdding) {
+                const selectedItems = sourceList.querySelectorAll("input:checked");
+                selectedItems.forEach(item => {
+                    let listItem = item.closest("li");
+                    item.checked = false;
+
+                    if (isAdding) {
+                        item.classList.add("assigned-group-checkbox");
+                        item.name = "SelectedGroupIds";
+                        item.checked = true;
+                    } else {
+                        item.classList.remove("assigned-group-checkbox");
+                        item.removeAttribute("name");
+                    }
+
+                    targetList.appendChild(listItem);
+                });
+                updateProjectLeads();
+            }
+
+            document.getElementById("stageForm").addEventListener("submit", function () {
+                document.querySelectorAll("#assignedGroups li").forEach(li => {
+                    let checkbox = li.querySelector("input[type='checkbox']");
+                    if (!checkbox) return;
+
+                    if (!checkbox.checked) {
+                        let hiddenInput = document.createElement("input");
+                        hiddenInput.type = "hidden";
+                        hiddenInput.name = "SelectedGroupIds";
+                        hiddenInput.value = checkbox.value;
+                        this.appendChild(hiddenInput);
+                    }
+                });
+            });
+
+			document.getElementById("stageForm").addEventListener("submit", function (e) {
+				const assignedGroups = document.querySelectorAll("#assignedGroups .assigned-group-checkbox");
+				const errorMessage = document.getElementById("groupError");
+
+				if (assignedGroups.length === 0) {
+					e.preventDefault();
+					errorMessage.textContent = "Please assign at least one group before submitting.";
+					return false;
+				} else {
+					errorMessage.textContent = "";
+				}
+			});
+        });
+    </script>
+}
+

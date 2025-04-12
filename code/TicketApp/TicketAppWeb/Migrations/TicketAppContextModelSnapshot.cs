@@ -246,20 +246,40 @@ namespace TicketAppWeb.Migrations
                     b.Property<string>("StageId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("GroupId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("StageOrder")
                         .HasColumnType("int");
 
                     b.HasKey("BoardId", "StageId");
 
-                    b.HasIndex("GroupId");
-
                     b.HasIndex("StageId");
 
                     b.ToTable("BoardStages");
+                });
+
+            modelBuilder.Entity("TicketAppWeb.Models.DomainModels.MiddleTableModels.BoardStageGroup", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BoardId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("GroupId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("StageId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("BoardId", "StageId");
+
+                    b.ToTable("BoardStageGroups");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.MiddleTableModels.GroupApprovalRequest", b =>
@@ -283,21 +303,6 @@ namespace TicketAppWeb.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("GroupApprovalRequests");
-                });
-
-            modelBuilder.Entity("TicketAppWeb.Models.DomainModels.MiddleTableModels.TicketAssignee", b =>
-                {
-                    b.Property<string>("TicketId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("TicketId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TicketAssignees");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Project", b =>
@@ -350,15 +355,27 @@ namespace TicketAppWeb.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AssignedTo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("BoardId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsComplete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Stage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -557,12 +574,6 @@ namespace TicketAppWeb.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketAppWeb.Models.DomainModels.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
-
                     b.HasOne("TicketAppWeb.Models.DomainModels.Stage", "Stage")
                         .WithMany("BoardStages")
                         .HasForeignKey("StageId")
@@ -571,9 +582,26 @@ namespace TicketAppWeb.Migrations
 
                     b.Navigation("Board");
 
-                    b.Navigation("Group");
-
                     b.Navigation("Stage");
+                });
+
+            modelBuilder.Entity("TicketAppWeb.Models.DomainModels.MiddleTableModels.BoardStageGroup", b =>
+                {
+                    b.HasOne("TicketAppWeb.Models.DomainModels.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TicketAppWeb.Models.DomainModels.MiddleTableModels.BoardStage", "BoardStage")
+                        .WithMany()
+                        .HasForeignKey("BoardId", "StageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BoardStage");
+
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.MiddleTableModels.GroupApprovalRequest", b =>
@@ -589,25 +617,6 @@ namespace TicketAppWeb.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("TicketAppWeb.Models.DomainModels.MiddleTableModels.TicketAssignee", b =>
-                {
-                    b.HasOne("TicketAppWeb.Models.DomainModels.Ticket", "Ticket")
-                        .WithMany()
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TicketAppWeb.Models.DomainModels.TicketAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Ticket");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.Project", b =>

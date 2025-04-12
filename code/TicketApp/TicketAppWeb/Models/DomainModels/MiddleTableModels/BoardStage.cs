@@ -18,11 +18,6 @@ namespace TicketAppWeb.Models.DomainModels.MiddleTableModels
 		public string StageId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the group identifier.
-		/// </summary>
-		public string GroupId { get; set; }
-
-		/// <summary>
 		/// Gets or sets the order of the stage in the board.
 		/// </summary>
 		public int StageOrder { get; set; }
@@ -36,10 +31,5 @@ namespace TicketAppWeb.Models.DomainModels.MiddleTableModels
 		/// Gets or sets the stage associated with this board.
 		/// </summary>
 		public Stage Stage { get; set; }
-
-		/// <summary>
-		/// Gets or sets the group associated with this board stage.
-		/// </summary>
-		public Group Group { get; set; }
 	}
 }
