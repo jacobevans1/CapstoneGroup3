@@ -118,6 +118,7 @@
 														<a class="dropdown-item d-flex align-items-center"
 														   asp-action="EditTicket"
 														   asp-controller="Ticket"
+														   asp-route-ticketId="@ticket.Id"
 														   asp-route-projectId="@Model.Project.Id"
 														   asp-route-boardId="@Model.Board.Id"
 														   asp-route-stageId="@stage.Id">
