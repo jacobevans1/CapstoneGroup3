@@ -1,6 +1,6 @@
 ﻿@model TicketAppWeb.Models.ViewModels.BoardViewModel
 @{
-	ViewBag.Title = Model.Project.ProjectName;
+	ViewBag.Title = $"{Model.Project.ProjectName} Board";
 }
 
 <!-- TempData variables -->
@@ -25,240 +25,139 @@
 	</div>
 }
 
-<h3 class="d-flex justify-content-left">@Model.Project.ProjectName Board</h3>
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<h3 class="mb-0">@Model.Project.ProjectName Board</h3>
 
-<div class="container-fluid py-5" style="height: 90vh; padding-top: 0;">
-	<div class="row g-4 d-flex flex-nowrap" style="overflow-x: auto; max-width: 100%; height: 100%; margin-bottom: 0;">
-		@foreach (var stage in Model.Stages)
-		{
-			<div class="col-12 col-md-6 col-lg-4 column" style="flex-shrink: 0; min-width: 400px; max-width: 400px;">
-				<div class="card border-light rounded h-100">
-					<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-						<div>
-							<h5 class="mb-0">@stage.Name</h5>
-							@foreach (var group in Model.AssignedGroups?.GetValueOrDefault(stage.Id))
-							{
-								<div>
-									<small class="text-white-50">@group.GroupName</small>
-								</div>
-							}
+	@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
+	{
+		<a asp-action="EditBoard"
+		   asp-controller="Board"
+		   asp-route-projectId="@Model.Project.Id"
+		   class="btn btn-warning d-flex justify-content-center align-items-center"
+		   style="width: 200px; height: 45px;">
+			<i class="fas fa-pen me-2"></i> Edit Board
+		</a>
+	}
+</div>
+
+<div class="board-outer-container" style="width: 100%; height: 90vh; position: relative;">
+	<div class="board-scroll-wrapper" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-x: auto; overflow-y: hidden;">
+		<div class="board-inner-container d-flex flex-nowrap gap-4" style="height: 100%; padding: 0 20px 20px 20px;">
+			@foreach (var stage in Model.Stages)
+			{
+				<div class="stage-column" style="flex: 0 0 400px; height: 100%;">
+					<div class="card border-light rounded h-100">
+						<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+							<div>
+								<h5 class="mb-0">@stage.Name</h5>
+								@foreach (var group in Model.AssignedGroups?.GetValueOrDefault(stage.Id))
+								{
+									<div>
+										<small class="text-white-50">@group.GroupName</small>
+									</div>
+								}
+							</div>
 						</div>
 
-						@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
-						{
-							<div class="dropdown" style="margin-left: auto;">
-								<button class="btn btn-link p-0" type="button" id="ellipsisButton-@stage.Id" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; color: white; padding: 0 15px;">
-									<i class="fas fa-bars" style="font-size: 16px;"></i>
-								</button>
-								<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+						<div class="card-body" style="overflow-y: auto;">
+							<ul class="list-group list-group-flush">
+								@foreach (var ticket in Model.AssignedTickets?.GetValueOrDefault(stage.Id)!)
+								{
+									<div class="card mb-2 shadow-sm" style="background-color: #f8f9fa;">
+										<div class="card-body py-2 px-3">
+											<div class="d-flex justify-content-between align-items-center">
+												<h6 class="card-title mb-1 text-primary flex-grow-1 text-truncate me-2">
+													<a asp-action="Details" asp-controller="Ticket"
+													   asp-route-ticketId="@ticket.Id"
+													   asp-route-projectId="@Model.Project.Id"
+													   class="ticket-title-link">
+														@ticket.Title
+													</a>
+												</h6>
 
-									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
-									{
-										<li>
-											<a class="dropdown-item d-flex align-items-center" asp-action="AssignGroupToStage" asp-controller="Board" asp-route-projectId="@Model.Project.Id", asp-route-boardId="@Model.Board.Id" , asp-route-stageId="@stage.Id">
-												<i class="fas fa-users me-2"></i> Assign Group
-											</a>
-										</li>
-									}
-
-									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
-									{
-										<li>
-											<a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#renameStageModal" onclick="setRenameStageData('@stage.Id', '@stage.Name')">
-												<i class="fas fa-pen me-2"></i> Rename Stage
-											</a>
-										</li>
-									}
-
-									@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
-									{
-										<li>
-											<a class="dropdown-item d-flex align-items-center text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteStageModal" onclick="setDeleteStageData('@stage.Id')">
-												<i class="fas fa-trash-alt me-2"></i> Remove Stage
-											</a>
-										</li>
-									}
-
-								</ul>
-							</div>
-						}
-					</div>
-
-					<div class="card-body">
-						<ul class="list-group list-group-flush">
-							@foreach (var ticket in Model.AssignedTickets?.GetValueOrDefault(stage.Id))
-							{
-								<div class="card mb-2 shadow-sm" style="background-color: #f8f9fa;">
-
-									<div class="card-body py-2 px-3">
-										<div class="d-flex justify-content-between align-items-center">
-											<!-- Ticket Title - add text-truncate class and flex-grow-1 -->
-											<h6 class="card-title mb-1 text-primary flex-grow-1 text-truncate me-2">
-												<a asp-action="Details" asp-controller="Ticket"
-												   asp-route-ticketId="@ticket.Id"
-												   asp-route-projectId="@Model.Project.Id"
-												   class="ticket-title-link">
-													@ticket.Title
-												</a>
-											</h6>
-											<div class="dropdown">
-												<button class="btn btn-link p-0" type="button"
-														id="ellipsisButton-@ticket.Id"
-														data-bs-toggle="dropdown"
-														aria-expanded="false"
-														style="background: none; border: none; color: black;">
-													<i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
-												</button>
-												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-													@* <li> *@
-													@* 	<a class="dropdown-item d-flex align-items-center" *@
-													@* 	   asp-action="EditTicket" *@
-													@* 	   asp-controller="Ticket" *@
-													@* 	   asp-route-projectId="@Model.Project.Id" *@
-													@* 	   asp-route-boardId="@Model.Board.Id" *@
-													@* 	   asp-route-stageId="@stage.Id"> *@
-													@* 		<i class="fas fa-pen me-2"></i> Edit Ticket *@
-													@* 	</a> *@
-													@* </li> *@
-													<li>
-														<a class="dropdown-item d-flex align-items-center text-danger"
-														   href="#"
-														   data-bs-toggle="modal"
-														   data-bs-target="#deleteTicketModal"
-														   onclick="setDeleteTicketData('@ticket.Id')">
-															<i class="fas fa-trash-alt me-2"></i> Delete Ticket
-														</a>
-													</li>
-												</ul>
+												@if (Model.CurrentUserRole == "Admin"
+																				|| Model.IsCurrentUserAGroupManagerForStage(stage.Id)
+																				|| (ticket.AssignedTo != null && ticket.AssignedTo == Model.CurrentUser.Id))
+												{
+													<div class="dropdown">
+														<button class="btn btn-link p-0" type="button" id="ellipsisButton-@stage.Id" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; border: none; color: black; padding: 0 30px;">
+															<i class="fas fa-ellipsis-h" style="font-size: 16px;"></i>
+														</button>
+														<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+															<li class="dropdown-submenu" style="position: relative;">
+																<a class="dropdown-item" href="#" style="display: flex; align-items: center;">
+																	<i class="fas fa-arrows-alt me-2"></i> Move Ticket To
+																</a>
+																<ul class="dropdown-menu" style="width: 100%; top: 100%; left: 0; margin-top: 0;">
+																	@foreach (var ticketStage in Model.Stages)
+																	{
+																		<li>
+																			<a class="dropdown-item d-flex align-items-center"
+																			   href="@Url.Action("MoveTicket", "Ticket", new { ticketId = ticket.Id, newStageId = ticketStage.Id, boardId = Model.Board.Id, projectId = Model.Project.Id })">
+																				@ticketStage.Name
+																			</a>
+																		</li>
+																	}
+																</ul>
+															</li>
+															<li>
+																<a class="dropdown-item d-flex align-items-center"
+																   asp-action="EditTicket"
+																   asp-controller="Ticket"
+																   asp-route-ticketId="@ticket.Id"
+																   asp-route-projectId="@Model.Project.Id"
+																   asp-route-boardId="@Model.Board.Id"
+																   asp-route-stageId="@stage.Id">
+																	<i class="fas fa-pen me-2"></i> Edit Ticket
+																</a>
+															</li>
+															<li>
+																<a class="dropdown-item d-flex align-items-center text-danger"
+																   href="#"
+																   data-bs-toggle="modal"
+																   data-bs-target="#deleteTicketModal"
+																   onclick="setDeleteTicketData('@ticket.Id')">
+																	<i class="fas fa-trash-alt me-2"></i> Delete Ticket
+																</a>
+															</li>
+														</ul>
+													</div>
+												}
+											</div>
+											<div class="d-flex justify-content-between align-items-center">
+												<p class="card-text small text-muted mb-0">
+													Assignee: @(ticket.AssignedToUser != null ? ticket.AssignedToUser.FullName : "None")
+												</p>
 											</div>
 										</div>
-
-										<div class="d-flex justify-content-between align-items-center">
-											<p class="card-text small text-muted mb-0">
-												Assignee: @ticket.AssignedToUser.FullName
-											</p>
-
-										</div>
 									</div>
+								}
+							</ul>
+						</div>
+
+						<div class="card-footer">
+							<form id="stageForm_@stage.Id" method="post" asp-action="MoveStage" asp-controller="Board">
+								<input type="hidden" asp-for="Board.Id" />
+								<input type="hidden" asp-for="Project.Id" />
+
+								<div class="card-footer d-flex justify-content-center">
+									<a class="btn btn-sm btn-success d-flex align-items-center gap-1" style="width: 200px; height: 45px;"
+									   asp-action="AddTicket"
+									   asp-controller="Ticket"
+									   asp-route-projectId="@Model.Project.Id" asp-route-stageId="@stage.Id">
+										<i class="fas fa-plus" style="font-size: 1rem;"></i>
+										<span style="font-size: 1rem;">Add Item</span>
+									</a>
 								</div>
-							}
-						</ul>
-					</div>
-
-					<div class="card-footer">
-						<form id="stageForm_@stage.Id" method="post" asp-action="MoveStage" asp-controller="Board">
-							<input type="hidden" asp-for="Board.Id" />
-							<input type="hidden" asp-for="Project.Id" />
-							<input type="hidden" id="moveStageId_@stage.Id" name="SelectedStageId" value="" />
-							<input type="hidden" id="moveDirection_@stage.Id" name="SelectedDirection" value="" />
-
-							<div class="card-footer d-flex justify-content-between">
-
-								@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
-								{
-									<button type="submit" class="btn btn-sm"
-									        onclick="setMoveStageData('@stage.Id', 'left');">
-										<i class="fas fa-arrow-left"></i>
-									</button>
-								}
-
-								<a class="btn btn-sm btn-success d-flex align-items-center gap-1"
-								   asp-action="AddTicket"
-								   asp-controller="Ticket"
-								   asp-route-projectId="@Model.Project.Id" asp-route-stageId="@stage.Id">
-									<i class="fas fa-plus" style="font-size: 1rem;"></i> 
-									<span style="font-size: 1rem;">Add Item</span>
-								</a>
-
-								@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
-								{
-									<button type="submit" class="btn btn-sm"
-									        onclick="setMoveStageData('@stage.Id', 'right');">
-										<i class="fas fa-arrow-right"></i>
-									</button>
-								}
-
-							</div>
-						</form>
+							</form>
+						</div>
 					</div>
 				</div>
-			</div>
-		}
+			}
 
-		@if (Model.CurrentUserRole == "Admin" || Model.IsCurrentUserProjectLeadForProject() || Model.IsCurrentUserAGroupManagerInProject())
-		{
-			<div class="col-auto">
-				<div class="d-flex align-items-center justify-content-center h-100">
-					<a class="btn btn-primary d-flex align-items-center gap-1" style="width: 200px; height: 45px;"
-					   asp-action="AddStage"
-					   asp-controller="Board"
-					   asp-route-projectId="@Model.Project.Id" , asp-route-boardId="@Model.Board.Id">
-						<i class="fas fa-plus" style="font-size: 1rem;"></i>
-						<span style="font-size: 1rem;">Add Stage</span>
-					</a>
-				</div>
-			</div>
-		}
-
-	</div>
-</div>
-
-
-<!-- Rename Stage Modal -->
-<div class="modal fade" id="renameStageModal" tabindex="-1" aria-labelledby="renameStageModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="renameStageModalLabel">Rename Stage</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<form asp-action="RenameStage" asp-controller="Board" method="post">
-				<input type="hidden" asp-for="Board.Id"/>
-				<input type="hidden" asp-for="Project.Id"/>
-				<div class="modal-body">
-					<input type="hidden" id="renameStageId" asp-for="SelectedStageId">
-					<div class="mb-3">
-						<label for="renameStageName" class="form-label">
-							New Stage Name<span class="text-danger">*</span>
-						</label>
-						<input type="text" class="form-control" id="renameStageName" asp-for="NewStageName" required>
-						<span asp-validation-for="NewStageName" class="text-danger"></span>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="submit" class="btn btn-primary">Rename Stage</button>
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				</div>
-			</form>
 		</div>
 	</div>
 </div>
-
-
-<!-- Delete Stage Modal -->
-<div class="modal fade" id="deleteStageModal" tabindex="-1" aria-labelledby="deleteStageModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="deleteStageModalLabel">Delete Stage</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<form asp-action="DeleteStage" asp-controller="Board" method="post">
-				<input type="hidden" asp-for="Board.Id"/>
-				<input type="hidden" asp-for="Project.Id"/>
-				<input type="hidden" id="deleteStageId" asp-for="SelectedStageId">
-				<div class="modal-body">
-					<p>Are you sure you want to delete this stage? This action cannot be undone.</p>
-				</div>
-				<div class="modal-footer">
-					<button type="submit" class="btn btn-danger">Delete Stage</button>
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-				</div>
-			</form>
-		</div>
-	</div>
-</div>
-
 
 <!-- Delete Ticket Modal -->
 <div class="modal fade" id="deleteTicketModal" tabindex="-1" aria-labelledby="deleteTicketModalLabel" aria-hidden="true">
@@ -288,62 +187,72 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
-<script>
-	function setAssignGroupData(stageId) {
-		document.getElementById("assignGroupStageId").value = stageId;
-	}
-</script>
-
-<script>
-	function setRenameStageData(stageId, stageName) {
-		document.getElementById("renameStageId").value = stageId;
-		document.getElementById("renameStageName").value = stageName;
-	}
-</script>
-
-<script>
-	function setDeleteStageData(stageId) {
-		document.getElementById("deleteStageId").value = stageId;
-	}
-</script>
 
 <script>
 	function setDeleteTicketData(ticketId) {
 		document.getElementById("deleteTicketId").value = ticketId;
 	}
-</script>
 
-<script>
-	function setMoveStageData(stageId, direction) {
-		document.getElementById('moveStageId_' + stageId).value = stageId;
-		document.getElementById('moveDirection_' + stageId).value = direction;
-	}
-</script>
-
-<script>
-	function moveStageLeft(stageId) {
-		$.ajax({
-			url: '/Board/MoveStage',
-			type: 'POST',
-			data: { stageId: stageId, direction: 'left' },
-			success: function (response) {
-				if (response.success) {
-					location.reload();
+	document.addEventListener("DOMContentLoaded", function () {
+		var submenuLinks = document.querySelectorAll(".dropdown-submenu > a");
+		submenuLinks.forEach(function (link) {
+			link.addEventListener("click", function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				var submenu = link.nextElementSibling;
+				if (submenu && submenu.classList.contains("dropdown-menu")) {
+					submenu.classList.toggle("show");
 				}
-			}
+			});
 		});
+
+		var dropdownElements = document.querySelectorAll('.dropdown');
+		dropdownElements.forEach(function (dropdown) {
+			dropdown.addEventListener('hide.bs.dropdown', function () {
+				var openedSubmenus = dropdown.querySelectorAll('.dropdown-menu.show');
+				openedSubmenus.forEach(function (submenu) {
+					submenu.classList.remove('show');
+				});
+			});
+		});
+	});
+</script>
+
+<style>
+	/* Guaranteed scrolling styles */
+	.board-outer-container {
+		padding-top: 0;
 	}
 
-	function moveStageRight(stageId) {
-		$.ajax({
-			url: '/Board/MoveStage',
-			type: 'POST',
-			data: { stageId: stageId, direction: 'right' },
-			success: function (response) {
-				if (response.success) {
-					location.reload();
-				}
-			}
-		});
+	.board-scroll-wrapper {
+		-webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 	}
-</script>
+
+		.board-scroll-wrapper::-webkit-scrollbar {
+			height: 12px;
+		}
+
+		.board-scroll-wrapper::-webkit-scrollbar-track {
+			background: #f1f1f1;
+			border-radius: 6px;
+		}
+
+		.board-scroll-wrapper::-webkit-scrollbar-thumb {
+			background-color: #888;
+			border-radius: 6px;
+			border: 3px solid #f1f1f1;
+		}
+
+	.stage-column {
+		scroll-snap-align: start; /* Optional: better scrolling alignment */
+	}
+
+	/* Preserve original card styling */
+	.card {
+		box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+	}
+
+	.card-body {
+		padding: 1.25rem;
+	}
+</style>
