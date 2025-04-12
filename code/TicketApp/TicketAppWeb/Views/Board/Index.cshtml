@@ -94,8 +94,7 @@
 											<h6 class="card-title mb-1 text-primary">@ticket.Title</h6>
 
 											@if (Model.CurrentUserRole == "Admin"
-																			|| Model.IsCurrentUserProjectLeadForProject()
-																			|| Model.IsCurrentUserAGroupManagerInProject()
+																			|| Model.IsCurrentUserAGroupManagerForStage(stage.Id)
 																			|| (ticket.AssignedTo != null && ticket.AssignedTo == Model.CurrentUser.Id))
 											{
 												<div class="dropdown">
