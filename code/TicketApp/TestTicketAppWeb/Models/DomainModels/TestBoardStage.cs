@@ -1,47 +1,100 @@
-﻿//using TicketAppWeb.Models.DomainModels;
-//using TicketAppWeb.Models.DomainModels.MiddleTableModels;
+﻿using TicketAppWeb.Models.DomainModels;
+using TicketAppWeb.Models.DomainModels.MiddleTableModels;
 
-//namespace TestTicketAppWeb.Models.DomainModels
-//{
-//	public class TestBoardStage
-//	{
-//		[Fact]
-//		public void BoardStage_CanSetAndGetProperties()
-//		{
-//			// Arrange
-//			var board = new Board { Id = "B1" };
-//			var stage = new Stage { Id = "S1" };
-//			var group = new Group { Id = "G1" };
+namespace TestTicketAppWeb.Models.DomainModels
+{
+	public class TestBoardStage
+	{
+		[Fact]
+		public void CanInitializeBoardStage_WithProperties()
+		{
+			// Arrange
+			var boardId = Guid.NewGuid().ToString();
+			var stageId = Guid.NewGuid().ToString();
+			var stageOrder = 1;
 
-//			var boardStage = new BoardStage
-//			{
-//				BoardId = "B1",
-//				StageId = "S1",
-//				GroupId = "G1",
-//				StageOrder = 2,
-//				Board = board,
-//				Stage = stage,
-//				Group = group
-//			};
+			var board = new Board
+			{
+				Id = boardId,
+				BoardName = "Dev Board",
+				Description = "Development Tasks"
+			};
 
-//			// Assert
-//			Assert.Equal("B1", boardStage.BoardId);
-//			Assert.Equal("S1", boardStage.StageId);
-//			Assert.Equal("G1", boardStage.GroupId);
-//			Assert.Equal(2, boardStage.StageOrder);
-//			Assert.Equal(board, boardStage.Board);
-//			Assert.Equal(stage, boardStage.Stage);
-//			Assert.Equal(group, boardStage.Group);
-//		}
+			var stage = new Stage
+			{
+				Id = stageId,
+				Name = "To Do"
+			};
 
-//		[Fact]
-//		public void BoardStage_DefaultConstructor_CreatesInstance()
-//		{
-//			// Act
-//			var boardStage = new BoardStage();
+			// Act
+			var boardStage = new BoardStage
+			{
+				BoardId = boardId,
+				StageId = stageId,
+				StageOrder = stageOrder,
+				Board = board,
+				Stage = stage
+			};
 
-//			// Assert
-//			Assert.NotNull(boardStage);
-//		}
-//	}
-//}
+			// Assert
+			Assert.Equal(boardId, boardStage.BoardId);
+			Assert.Equal(stageId, boardStage.StageId);
+			Assert.Equal(stageOrder, boardStage.StageOrder);
+			Assert.Equal(board, boardStage.Board);
+			Assert.Equal(stage, boardStage.Stage);
+		}
+
+		[Fact]
+		public void CanSetBoardStage_NullableNavigationProperties()
+		{
+			// Arrange & Act
+			var boardStage = new BoardStage
+			{
+				BoardId = "board1",
+				StageId = "stage1",
+				StageOrder = 1,
+				Board = null,
+				Stage = null
+			};
+
+			// Assert
+			Assert.Null(boardStage.Board);
+			Assert.Null(boardStage.Stage);
+		}
+
+		[Fact]
+		public void CanChangeStageOrder()
+		{
+			// Arrange
+			var boardId = Guid.NewGuid().ToString();
+			var stageId = Guid.NewGuid().ToString();
+			var board = new Board
+			{
+				Id = boardId,
+				BoardName = "Dev Board",
+				Description = "Development Tasks"
+			};
+
+			var stage = new Stage
+			{
+				Id = stageId,
+				Name = "In Progress"
+			};
+
+			var boardStage = new BoardStage
+			{
+				BoardId = boardId,
+				StageId = stageId,
+				StageOrder = 1,
+				Board = board,
+				Stage = stage
+			};
+
+			// Act
+			boardStage.StageOrder = 2;
+
+			// Assert
+			Assert.Equal(2, boardStage.StageOrder);
+		}
+	}
+}
