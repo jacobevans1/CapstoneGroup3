@@ -15,12 +15,15 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 
 		void DeleteTicket(string ticketId);
 
-		//Ticket GetTicketById(string ticketId);
+        Ticket GetTicketWithHistory(string ticketId);
 
-		//List<Ticket> GetTicketsByBoardId(string boardId);
 
-		//List<Ticket> GetTicketsByStageId(string boardId, string stageId);
+        //Ticket GetTicketById(string ticketId);
 
-		//List<Ticket> GetTicketsByUserId(string userId);
-	}
+        //List<Ticket> GetTicketsByBoardId(string boardId);
+
+        //List<Ticket> GetTicketsByStageId(string boardId, string stageId);
+
+        //List<Ticket> GetTicketsByUserId(string userId);
+    }
 }

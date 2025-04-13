@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketAppWeb.Models.DataLayer;
 
@@ -11,9 +12,11 @@ using TicketAppWeb.Models.DataLayer;
 namespace TicketAppWeb.Migrations
 {
     [DbContext(typeof(TicketAppContext))]
-    partial class TicketAppContextModelSnapshot : ModelSnapshot
+    [Migration("20250412181035_AddTicketHistory")]
+    partial class AddTicketHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -359,9 +362,11 @@ namespace TicketAppWeb.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BoardId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CreatedBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedDate")
@@ -374,9 +379,11 @@ namespace TicketAppWeb.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Stage")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -476,9 +483,11 @@ namespace TicketAppWeb.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("NewValue")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OldValue")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PropertyChanged")
@@ -675,7 +684,9 @@ namespace TicketAppWeb.Migrations
                 {
                     b.HasOne("TicketAppWeb.Models.DomainModels.Board", null)
                         .WithMany("Tickets")
-                        .HasForeignKey("BoardId");
+                        .HasForeignKey("BoardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TicketAppWeb.Models.DomainModels.TicketHistory", b =>
