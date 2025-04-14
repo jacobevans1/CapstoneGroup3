@@ -1,26 +1,38 @@
 # CapstoneGroup3
-A ticketing system for users to manage projects and groups.
-Projects have boards with customizable stages to progress tickets thorugh.
 
---- Startup ---
+A ticketing system for users to manage projects and groups. Projects have boards with customizable stages to progress tickets through.
 
-Step 1: Check to see if the local DB, TicketAppDB exists in the SQL Server Object Explorer. If it does exist, delete the local DB.
-Step 2: Once the local DB has been deleted or if it wasn't found originally, run the update-database command in the Nuget Package Manager console.
-Step 3: Check to see if the TicketAppDB was created in the SQL Server Object Explorer.
-Step 4: If TicketAppDB was created sucessfully, copy the script from ...\CapstoneGroup3\code\SQL Scripts\SeedScript.txt
-Step 5: Run the copied script from "SeedScript.txt" on the local database created in step 2 by right clicking the 
-		TicketAppDB found in the SQL Server Object Explorer and selecting "New Query" option. 
-		Press the run query button at the top left of the query window. If sucessfull, the output should show that many rows were modified.
-Step 6: Login as your desired user.
+---
 
-There will be a seeded admin user with the credentials:
-Username: Admin
-Password: Admin123!
+## 🚀 Startup Instructions
 
-All user credentials in the application will follow this pattern during development:
-Username: FirstnameLastname (EX: JohnSmith, or JaneDoe)
-Password: FirstnameLastname123!
+1. **Reset Local Database (if it exists)**  
+   Open **SQL Server Object Explorer** and check if `TicketAppDB` exists. If it does, delete it.
 
-EX:
-Username: JohnSmith
-Password: JohnSmith123!
+2. **Update the Database**  
+   Open the **NuGet Package Manager Console** and run: update-database
+   
+3. **Verify Database Creation**  
+Confirm that `TicketAppDB` was created in SQL Server Object Explorer.
+
+4. **Seed the Database**  
+Copy the contents of: CapstoneGroup3/code/SQL Scripts/SeedScript.txt
+
+5. **Execute the Seed Script**  
+In SQL Server Object Explorer, right-click `TicketAppDB` → **New Query**, paste the script, and run it.  
+If successful, the output should show that many rows were modified.
+
+6. **Login as a Seeded User**
+
+---
+
+## 👤 Default Credentials
+
+- **Admin**
+- Username: `Admin`
+- Password: `Admin123!`
+
+- **Development Users**  
+All follow this pattern:
+- Username: `FirstnameLastname` (e.g., `JohnSmith`)
+- Password: `FirstnameLastname123!` (e.g., `JohnSmith123!`)
