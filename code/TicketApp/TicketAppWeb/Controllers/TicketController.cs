@@ -195,102 +195,146 @@ namespace TicketAppWeb.Controllers
 				return View(viewModel);
 			}
 
-			var ticket = _ticketRepository.Get(viewModel.Ticket.Id!);
-			if (ticket == null)
-			{
-				TempData["ErrorMessage"] = "Ticket not found.";
-				return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
-			}
+            var existingTicket = _ticketRepository.Get(viewModel.Ticket.Id!);
+            if (existingTicket == null)
+            {
+                TempData["ErrorMessage"] = "Ticket not found.";
+                return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+            }
 
-			ticket.Title = viewModel.Ticket.Title;
-			ticket.Description = viewModel.Ticket.Description;
-			ticket.AssignedTo = viewModel.SelectedUserId;
-			ticket.Stage = viewModel.SelectedStageId;
+            var updatedTicket = new Ticket
+            {
+                Id = existingTicket.Id,
+                BoardId = existingTicket.BoardId,
+                Title = viewModel.Ticket.Title,
+                Description = viewModel.Ticket.Description,
+                AssignedTo = viewModel.SelectedUserId,
+                Stage = viewModel.SelectedStageId,
+                CreatedBy = existingTicket.CreatedBy,
+                CreatedDate = existingTicket.CreatedDate
+            };
 
-			try
-			{
-				_ticketRepository.UpdateTicket(ticket);
-				TempData["SuccessMessage"] = "Ticket updated successfully.";
-			}
-			catch (Exception)
-			{
-				TempData["ErrorMessage"] = "Ticket update failed.";
-				viewModel.Project = _projectRepository.GetProjectByIdAsync(viewModel.Project.Id!).Result!;
-				viewModel.Board = _boardRepository.GetBoardByProjectIdAsync(viewModel.Project.Id!).Result!;
-				return View(viewModel);
-			}
+            try
+            {
+                var updater = _singletonService.CurrentUser!;
+                var updaterName = $"{updater.FirstName} {updater.LastName}";
 
-			return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
+                LogChangeIfNeeded("Title", existingTicket.Title, updatedTicket.Title, existingTicket, updater.Id, updaterName);
+                LogChangeIfNeeded("AssignedTo", existingTicket.AssignedTo, updatedTicket.AssignedTo, existingTicket, updater.Id, updaterName);
+                LogChangeIfNeeded("Description", existingTicket.Description, updatedTicket.Description, existingTicket, updater.Id, updaterName);
+                LogChangeIfNeeded("Stage", existingTicket.Stage, updatedTicket.Stage, existingTicket, updater.Id, updaterName);
+
+
+
+                _ticketRepository.UpdateTicket(existingTicket, updatedTicket); 
+                TempData["SuccessMessage"] = "Ticket updated successfully.";
+            }
+            catch (Exception)
+            {
+                TempData["ErrorMessage"] = "Ticket update failed.";
+                viewModel.Project = _projectRepository.GetProjectByIdAsync(viewModel.Project.Id!).Result!;
+                viewModel.Board = _boardRepository.GetBoardByProjectIdAsync(viewModel.Project.Id!).Result!;
+                return View(viewModel);
+            }
+
+
+            return RedirectToAction("Index", "Board", new { projectId = viewModel.Project.Id });
 		}
 
 
-		/// <summary>
-		/// Moves the ticket.
-		/// </summary>
-		/// <param name="ticketId">The ticket identifier.</param>
-		/// <param name="newStageId">The new stage identifier.</param>
-		/// <param name="boardId">The board identifier.</param>
-		/// <param name="projectId">The project identifier.</param>
-		/// <returns></returns>
-		[HttpGet]
-		public IActionResult MoveTicket(string ticketId, string newStageId, string boardId, string projectId)
-		{
-			var ticket = _ticketRepository.Get(ticketId);
-			if (ticket == null)
-			{
-				TempData["ErrorMessage"] = "Ticket not found.";
-				return RedirectToAction("Index", "Board", new { projectId });
-			}
 
-			ticket.Stage = newStageId;
+        /// <summary>
+        /// Moves the ticket.
+        /// </summary>
+        /// <param name="ticketId">The ticket identifier.</param>
+        /// <param name="newStageId">The new stage identifier.</param>
+        /// <param name="boardId">The board identifier.</param>
+        /// <param name="projectId">The project identifier.</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult MoveTicket(string ticketId, string newStageId, string boardId, string projectId)
+        {
+            var ticket = _ticketRepository.Get(ticketId);
+            if (ticket == null)
+            {
+                TempData["ErrorMessage"] = "Ticket not found.";
+                return RedirectToAction("Index", "Board", new { projectId });
+            }
 
-			if (!string.IsNullOrEmpty(ticket.AssignedTo))
-			{
-				var boardStageGroups = _boardRepository.GetBoardStageGroups(boardId);
-				if (boardStageGroups != null && boardStageGroups.ContainsKey(newStageId))
-				{
-					var targetGroups = boardStageGroups[newStageId];
-					bool userInGroup = false;
+            var originalStage = ticket.Stage;
+            var originalAssignedTo = ticket.AssignedTo;
 
-					var project = _projectRepository.GetProjectByIdAsync(projectId).Result;
-					if (project != null && project.Groups != null)
-					{
-						var relevantGroups = project.Groups.Where(g => targetGroups.Any(tg => tg.Id == g.Id));
+            ticket.Stage = newStageId;
 
-						foreach (var group in relevantGroups)
-						{
-							var members = group.Members;
-							if (members == null || !members.Any())
-							{
-								members = _userRepository.GetUsersByGroupId(group.Id).ToList();
-							}
+            var updater = _singletonService.CurrentUser!;
+            var updaterName = $"{updater.FirstName} {updater.LastName}";
 
-							if (members.Any(m => m.Id == ticket.AssignedTo))
-							{
-								userInGroup = true;
-								break;
-							}
-						}
-					}
+            if (!string.IsNullOrEmpty(ticket.AssignedTo))
+            {
+                var boardStageGroups = _boardRepository.GetBoardStageGroups(boardId);
+                if (boardStageGroups != null && boardStageGroups.ContainsKey(newStageId))
+                {
+                    var targetGroups = boardStageGroups[newStageId];
+                    bool userInGroup = false;
 
-					if (!userInGroup)
-					{
-						ticket.AssignedTo = null;
-					}
-				}
-			}
+                    var project = _projectRepository.GetProjectByIdAsync(projectId).Result;
+                    if (project != null && project.Groups != null)
+                    {
+                        var relevantGroups = project.Groups.Where(g => targetGroups.Any(tg => tg.Id == g.Id));
 
-			_ticketRepository.UpdateTicket(ticket);
-			TempData["SuccessMessage"] = "Ticket moved successfully.";
-			return RedirectToAction("Index", "Board", new { projectId });
-		}
+                        foreach (var group in relevantGroups)
+                        {
+                            var members = group.Members;
+                            if (members == null || !members.Any())
+                            {
+                                members = _userRepository.GetUsersByGroupId(group.Id).ToList();
+                            }
+
+                            if (members.Any(m => m.Id == ticket.AssignedTo))
+                            {
+                                userInGroup = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!userInGroup)
+                    {
+                        ticket.AssignedTo = null;
+
+                        LogChangeIfNeeded("AssignedTo", originalAssignedTo, null, ticket, updater.Id, updaterName);
+                    }
+                }
+            }
+
+            LogChangeIfNeeded("Stage", originalStage, newStageId, ticket, updater.Id, updaterName);
+
+            var updatedTicket = new Ticket
+            {
+                Id = ticket.Id,
+                BoardId = ticket.BoardId,
+                Title = ticket.Title,
+                Description = ticket.Description,
+                AssignedTo = ticket.AssignedTo,
+                Stage = ticket.Stage,
+                CreatedBy = ticket.CreatedBy,
+                CreatedDate = ticket.CreatedDate
+            };
+
+            _ticketRepository.UpdateTicket(ticket, updatedTicket);
+
+            TempData["SuccessMessage"] = "Ticket moved successfully.";
+            return RedirectToAction("Index", "Board", new { projectId });
+        }
 
 
-		/// <summary>
-		/// Deletes a ticket from the board.
-		/// </summary>
-		/// <param name="viewModel"></param>
-		public IActionResult DeleteTicket(BoardViewModel viewModel)
+
+
+        /// <summary>
+        /// Deletes a ticket from the board.
+        /// </summary>
+        /// <param name="viewModel"></param>
+        public IActionResult DeleteTicket(BoardViewModel viewModel)
 		{
 			try
 			{
@@ -340,8 +384,46 @@ namespace TicketAppWeb.Controllers
 			return View(viewModel);
 		}
 
+        private void LogChangeIfNeeded(string propertyName, string? oldVal, string? newVal, Ticket existingTicket, string updaterId, string updaterName)
+        {
+            if (oldVal?.Trim() != newVal?.Trim())
+            {
+                string timestamp = DateTime.Now.ToString("g");
+                string description = $"{updaterName} updated the {propertyName} to \"{newVal}\" at {timestamp}";
 
-		private Ticket CreateTicketObject(TicketViewModel viewModel)
+                if (propertyName == "AssignedTo")
+                {
+                    var assigneeName = _userRepository.Get(newVal!)?.FullName ?? "Unassigned";
+                    description = $"{updaterName} updated the Assignee to \"{assigneeName}\" at {timestamp}";
+                }
+
+                if (propertyName == "Stage")
+                {
+                    var oldStageName = _boardRepository.GetStages(existingTicket.BoardId)
+                        .FirstOrDefault(s => s.Id == oldVal)?.Name ?? "Unknown";
+
+                    var newStageName = _boardRepository.GetStages(existingTicket.BoardId)
+                        .FirstOrDefault(s => s.Id == newVal)?.Name ?? "Unknown";
+
+                    description = $"{updaterName} moved the ticket from {oldStageName} to {newStageName} at {timestamp}";
+                }
+
+                existingTicket.History.Add(new TicketHistory
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    TicketId = existingTicket.Id,
+                    PropertyChanged = propertyName,
+                    OldValue = oldVal,
+                    NewValue = newVal,
+                    ChangedByUserId = updaterId,
+                    ChangeDate = DateTime.Now,
+                    ChangeDescription = description
+                });
+            }
+        }
+
+
+        private Ticket CreateTicketObject(TicketViewModel viewModel)
 		{
 			var ticket = new Ticket
 			{

@@ -47,42 +47,29 @@
 
             <hr />
 
-            <h4>Ticket History</h4>
-            <div class="timeline">
-                @foreach (var history in Model.History)
-                {
-                    <div class="timeline-item">
-                        <div class="timeline-badge">
-                            <i class="fas @GetHistoryIcon(history.PropertyChanged)"></i>
-                        </div>
-                        <div class="timeline-panel">
-                            <div class="timeline-heading">
-                                <h5 class="timeline-title">@history.ChangeDescription</h5>
-                                <p>
-                                    <small class="text-muted">
-                                        @history.ChangeDate.ToString("g") by
-                                        @history.ChangedByUser?.FullName
-                                    </small>
-                                </p>
-                            </div>
-                            @if (!string.IsNullOrEmpty(history.OldValue) || !string.IsNullOrEmpty(history.NewValue))
-                            {
-                                <div class="timeline-body">
-                                    @if (!string.IsNullOrEmpty(history.OldValue))
-                                    {
-                                        <p><strong>From:</strong> @history.OldValue</p>
-                                    }
-                                    @if (!string.IsNullOrEmpty(history.NewValue))
-                                    {
-                                        <p><strong>To:</strong> @history.NewValue</p>
-                                    }
+                <h4>Ticket History</h4>
+                <div class="timeline">
+                    @if (Model.History != null && Model.History.Any())
+                    {
+                        foreach (var history in Model.History.OrderByDescending(h => h.ChangeDate))
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <i class="fas @GetHistoryIcon(history.PropertyChanged)"></i>
                                 </div>
-                            }
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
+                                <div class="timeline-panel">
+                                    <div class="timeline-heading">
+                                        <h5 class="timeline-title">@history.ChangeDescription</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">No history available for this ticket.</div>
+                    }
+                </div>
 
         <div class="card-footer">
             <a asp-action="Index" asp-controller="Board"

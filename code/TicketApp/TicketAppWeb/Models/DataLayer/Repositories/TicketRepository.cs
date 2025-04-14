@@ -12,18 +12,26 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 	/// <param name="ctx"></param>
 	public class TicketRepository(TicketAppContext ctx) : Repository<Ticket>(ctx), ITicketRepository
 	{
-		/// <summary>
-		/// Adds a ticket to the database.
-		/// </summary>
-		/// <param name="ticket"></param>
-		public void AddTicket(Ticket ticket)
-		{
+        /// <summary>
+        /// Adds a ticket to the database.
+        /// </summary>
+        /// <param name="ticket"></param>
+        public void AddTicket(Ticket ticket)
+        {
             if (ticket == null)
-            {
                 throw new ArgumentNullException(nameof(ticket));
-            }
 
-            // Add creation history record
+            var now = DateTime.Now;
+            var user = context.Users.FirstOrDefault(u => u.Id == ticket.CreatedBy);
+            var assignee = context.Users.FirstOrDefault(u => u.Id == ticket.AssignedTo);
+            var stageName = context.Stages.FirstOrDefault(s => s.Id == ticket.Stage)?.Name ?? "Unspecified";
+
+            string historyEntry = $"{user?.FullName ?? "Unknown User"} created \"{ticket.Title}\" at {now:g}.";
+            if (assignee != null)
+                historyEntry += $" Initial Assignee: {assignee.FullName}.";
+            if (!string.IsNullOrEmpty(stageName))
+                historyEntry += $" Initial Stage: {stageName}.";
+
             ticket.History.Add(new TicketHistory
             {
                 Id = Guid.NewGuid().ToString(),
@@ -31,111 +39,37 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
                 OldValue = null,
                 NewValue = ticket.Title,
                 ChangedByUserId = ticket.CreatedBy,
-                ChangeDate = DateTime.Now,
-                ChangeDescription = $"Ticket '{ticket.Title}' was created"
+                ChangeDate = now,
+                ChangeDescription = historyEntry
             });
 
             Insert(ticket);
             Save();
         }
 
+
         /// <summary>
         /// Updates a ticket in the database.
         /// </summary>
         /// <param name="ticket"></param>
-        public void UpdateTicket(Ticket ticket)
+        public void UpdateTicket(Ticket original, Ticket updated)
         {
-            if (ticket == null)
+            Console.WriteLine($"Comparing title: existing = '{original.Title}', incoming = '{updated.Title}'");
+
+            if (original.Title?.Trim() != updated.Title?.Trim())
             {
-                throw new ArgumentNullException(nameof(ticket));
+                Console.WriteLine($"📝 Title changed from '{original.Title}' to '{updated.Title}'");
             }
 
-            var existingTicket = Get(ticket.Id);
-            if (existingTicket == null)
-            {
-                throw new ArgumentException("Ticket not found", nameof(ticket));
-            }
+            // Apply changes
+            original.Title = updated.Title;
+            original.Description = updated.Description;
+            original.AssignedTo = updated.AssignedTo;
+            original.Stage = updated.Stage;
 
-            // Track title changes
-            if (existingTicket.Title != ticket.Title)
-            {
-                ticket.History.Add(new TicketHistory
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    PropertyChanged = "Title",
-                    OldValue = existingTicket.Title,
-                    NewValue = ticket.Title,
-                    ChangedByUserId = ticket.CreatedBy,
-                    ChangeDate = DateTime.Now,
-                    ChangeDescription = $"Title changed from '{existingTicket.Title}' to '{ticket.Title}'"
-                });
-            }
-
-            // Track description changes
-            if (existingTicket.Description != ticket.Description)
-            {
-                ticket.History.Add(new TicketHistory
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    PropertyChanged = "Description",
-                    OldValue = existingTicket.Description,
-                    NewValue = ticket.Description,
-                    ChangedByUserId = ticket.CreatedBy,
-                    ChangeDate = DateTime.Now,
-                    ChangeDescription = "Description was updated"
-                });
-            }
-
-            // Track assignment changes
-            if (existingTicket.AssignedTo != ticket.AssignedTo)
-            {
-                ticket.History.Add(new TicketHistory
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    PropertyChanged = "AssignedTo",
-                    OldValue = existingTicket.AssignedTo,
-                    NewValue = ticket.AssignedTo,
-                    ChangedByUserId = ticket.CreatedBy,
-                    ChangeDate = DateTime.Now,
-                    ChangeDescription = $"Assignment changed from user {existingTicket.AssignedTo} to {ticket.AssignedTo}"
-                });
-            }
-
-            // Track stage changes
-            if (existingTicket.Stage != ticket.Stage)
-            {
-                ticket.History.Add(new TicketHistory
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    PropertyChanged = "Stage",
-                    OldValue = existingTicket.Stage,
-                    NewValue = ticket.Stage,
-                    ChangedByUserId = ticket.CreatedBy,
-                    ChangeDate = DateTime.Now,
-                    ChangeDescription = $"Status changed from {existingTicket.Stage} to {ticket.Stage}"
-                });
-            }
-
-            // Track completion changes
-            if (existingTicket.IsComplete != ticket.IsComplete)
-            {
-                ticket.History.Add(new TicketHistory
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    PropertyChanged = "IsComplete",
-                    OldValue = existingTicket.IsComplete.ToString(),
-                    NewValue = ticket.IsComplete.ToString(),
-                    ChangedByUserId = ticket.CreatedBy,
-                    ChangeDate = DateTime.Now,
-                    ChangeDescription = ticket.IsComplete
-                        ? "Ticket marked as complete"
-                        : "Ticket reopened"
-                });
-            }
-
-            Update(ticket);
-            Save();
+            context.SaveChanges();
         }
+
 
         /// <summary>
         /// Deletes a ticket from the database.
@@ -167,6 +101,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
 
             return ticket;
         }
+
 
     }
 
