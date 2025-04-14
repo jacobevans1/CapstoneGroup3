@@ -11,9 +11,9 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 	{
 		void AddTicket(Ticket ticket);
 
-		void UpdateTicket(Ticket ticket);
+        void UpdateTicket(Ticket original, Ticket updated);
 
-		void DeleteTicket(string ticketId);
+        void DeleteTicket(string ticketId);
 
 		Ticket GetTicketWithHistory(string ticketId);
 	}
