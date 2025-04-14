@@ -28,11 +28,11 @@ If successful, the output should show that many rows were modified.
 
 ## 👤 Default Credentials
 
-- **Admin**
+**Admin**
 - Username: `Admin`
 - Password: `Admin123!`
 
-- **Development Users**  
+**Development Users**  
 All follow this pattern:
 - Username: `FirstnameLastname` (e.g., `JohnSmith`)
 - Password: `FirstnameLastname123!` (e.g., `JohnSmith123!`)
