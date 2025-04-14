@@ -15,15 +15,6 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 
 		void DeleteTicket(string ticketId);
 
-        Ticket GetTicketWithHistory(string ticketId);
-
-
-        //Ticket GetTicketById(string ticketId);
-
-        //List<Ticket> GetTicketsByBoardId(string boardId);
-
-        //List<Ticket> GetTicketsByStageId(string boardId, string stageId);
-
-        //List<Ticket> GetTicketsByUserId(string userId);
-    }
+		Ticket GetTicketWithHistory(string ticketId);
+	}
 }

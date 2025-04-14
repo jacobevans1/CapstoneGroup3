@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.EntityFrameworkCore;
 using TicketAppWeb.Models.Configuration;
 using TicketAppWeb.Models.DataLayer;
 using TicketAppWeb.Models.DataLayer.Reposetories;
@@ -23,8 +22,8 @@ builder.Services.AddControllersWithViews(options =>
 builder.Services.AddRazorPages();
 
 // Configure the database context
-builder.Services.AddDbContext<TicketAppContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
+//builder.Services.AddDbContext<TicketAppContext>(options =>
+//	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 
 builder.Services.AddIdentity<TicketAppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
 	.AddEntityFrameworkStores<TicketAppContext>()
