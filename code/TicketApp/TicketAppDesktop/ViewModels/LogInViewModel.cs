@@ -72,8 +72,9 @@ public class LoginViewModel
                     ShowErrorMessage("Invalid username or password. Please try again.");
                     return false;
                 }
-
-                LoggedInUser = $"{userDetails.UserName} ({userDetails.FirstName} {userDetails.LastName})";
+				User.Id = userDetails.Id;                      
+				UserSession.CurrentUserId = userDetails.Id;
+				LoggedInUser = $"{userDetails.UserName} ({userDetails.FirstName} {userDetails.LastName})";
                 UserRole = userDetails.Role;
 
                 IsProjectLeader = CheckIfProjectLeader(connection, userDetails.Id);

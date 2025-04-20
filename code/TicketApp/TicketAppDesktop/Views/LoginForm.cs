@@ -6,7 +6,10 @@ public partial class LoginForm : Form
 {
     private readonly LoginViewModel loginViewModel;
 
-    public LoginForm()
+	/// <summary>
+	/// Initializes a new instance of the <see cref="LoginForm"/> class.
+	/// </summary>
+	public LoginForm()
     {
         InitializeComponent();
         loginViewModel = new LoginViewModel();
@@ -19,7 +22,7 @@ public partial class LoginForm : Form
 
         if (loginViewModel.Login())
         {
-            var ticketAppHome = new TicketAppHome(loginViewModel.LoggedInUser);
+            var ticketAppHome = new TicketAppHome();
             ticketAppHome.Show();
             this.Hide();
         }
@@ -37,7 +40,7 @@ public partial class LoginForm : Form
 
             if (loginViewModel.Login())
             {                
-                var ticketAppHome = new TicketAppHome(loginViewModel.LoggedInUser);
+                var ticketAppHome = new TicketAppHome();
                 ticketAppHome.Show();
                 this.Hide();               
             }
