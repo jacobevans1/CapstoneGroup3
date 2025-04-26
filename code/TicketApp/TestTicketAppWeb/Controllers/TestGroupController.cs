@@ -473,7 +473,6 @@ namespace TestTicketAppWeb.Controllers
 				Manager = new TicketAppUser { FirstName = "Emma", LastName = "Boss" }
 			};
 
-			// Project exists, but this group is not in it
 			var unrelatedProject = new Project
 			{
 				ProjectName = "Unrelated",
