@@ -1,198 +1,373 @@
-﻿//using Microsoft.EntityFrameworkCore;
-//using Moq;
-//using TicketAppWeb.Models.DataLayer;
-//using TicketAppWeb.Models.DataLayer.Repositories;
-//using TicketAppWeb.Models.DomainModels;
-//using TicketAppWeb.Models.DomainModels.MiddleTableModels;
+﻿using Microsoft.EntityFrameworkCore;
+using TicketAppWeb.Models.DataLayer;
+using TicketAppWeb.Models.DataLayer.Repositories;
+using TicketAppWeb.Models.DomainModels;
+using TicketAppWeb.Models.DomainModels.MiddleTableModels;
 
-//namespace TestTicketAppWeb.Models.DataLayer
-//{
-//	public class TestBoardRepository
-//	{
-//		private Mock<DbSet<T>> CreateMockDbSet<T>(List<T> elements) where T : class
-//		{
-//			var queryable = elements.AsQueryable();
-//			var mockSet = new Mock<DbSet<T>>();
-//			mockSet.As<IQueryable<T>>().Setup(m => m.Provider).Returns(queryable.Provider);
-//			mockSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(queryable.Expression);
-//			mockSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(queryable.ElementType);
-//			mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(queryable.GetEnumerator());
-//			return mockSet;
-//		}
+namespace TestTicketAppWeb.Models.DataLayer;
 
-//		private TicketAppContext CreateMockContext<T>(List<T> data, string dbName) where T : class
-//		{
-//			var options = new DbContextOptionsBuilder<TicketAppContext>()
-//				.UseInMemoryDatabase(databaseName: dbName)
-//				.Options;
-//			var context = new TicketAppContext(options);
-//			context.Set<T>().AddRange(data);
-//			context.SaveChanges();
-//			return context;
-//		}
+public class TestBoardRepository : IDisposable
+{
+	private TicketAppContext CreateMockContext<T>(List<T> seedData, string dbName) where T : class
+	{
+		var options = new DbContextOptionsBuilder<TicketAppContext>()
+			.UseInMemoryDatabase(databaseName: dbName)
+			.Options;
+		var ctx = new TicketAppContext(options);
+		ctx.Set<T>().AddRange(seedData);
+		ctx.SaveChanges();
+		return ctx;
+	}
 
-//		[Fact]
-//		public async Task GetBoardByProjectIdAsync_ReturnsBoard()
-//		{
-//			var project = new Project { Id = "project1", ProjectName = "Test Project", LeadId = "Test" };
-//			var board = new Board { Id = "board1", BoardName = "Test Board", ProjectId = "project1", Description = "Test Board Description" };
+	private readonly TicketAppContext _context;
+	private readonly BoardRepository _repo;
 
-//			var context = CreateMockContext(new List<Project> { project }, "GetBoardTest");
-//			context.Boards.Add(board);
-//			context.SaveChanges();
+	public TestBoardRepository()
+	{
+		_context = CreateMockContext(new List<Group>(), "TestBoardRepo");
+		_repo = new BoardRepository(_context);
+	}
 
-//			var repository = new BoardRepository(context);
-//			var result = await repository.GetBoardByProjectIdAsync("project1");
+	public void Dispose() => _context.Dispose();
 
-//			Assert.NotNull(result);
-//			Assert.Equal("Test Board", result.BoardName);
-//		}
+	[Fact]
+	public void AddBoard_CreatesBoardDefaultStagesAndGroups()
+	{
+		var mgr = new Group { Id = "mgr", ManagerId = "mgr" };
+		var project = new Project
+		{
+			Id = "p2",
+			ProjectName = "P2",
+			LeadId = "mgr",
+			Groups = new List<Group> { mgr }
+		};
 
-//		[Fact]
-//		public void AddBoard_CreatesNewBoard()
-//		{
-//			var project = new Project
-//			{
-//				Id = "project2",
-//				ProjectName = "New Project",
-//				LeadId = "lead1",
-//				Groups = new List<Group> { new Group { Id = "group1", ManagerId = "lead1" } }
-//			};
-//			var context = CreateMockContext(new List<Project> { project }, "AddBoardTest");
-//			var repository = new BoardRepository(context);
+		var ctx = CreateMockContext(new List<Group> { mgr }, "TBR_AddBoard");
+		var repo = new BoardRepository(ctx);
 
-//			repository.AddBoard(project);
+		// Act
+		repo.AddBoard(project);
 
-//			var addedBoard = context.Boards.FirstOrDefault(b => b.ProjectId == "project2");
-//			Assert.NotNull(addedBoard);
-//			Assert.Equal("New Project Board", addedBoard.BoardName);
-//			Assert.False(string.IsNullOrEmpty(addedBoard.Description));
-//		}
+		// Assert board exists
+		var board = ctx.Boards.Single(b => b.ProjectId == "p2");
+		Assert.Equal("P2 Board", board.BoardName);
+		Assert.Equal("Default Description", board.Description);
 
-//		[Fact]
-//		public void AddStage_AddsNewStage()
-//		{
-//			var board = new Board { Id = "board1", BoardName = "Test Board", Description = "Test", ProjectId = "project1" };
-//			var context = CreateMockContext(new List<Board> { board }, "AddStageTest");
-//			var repository = new BoardRepository(context);
+		// Assert exactly 3 default stages created
+		var stages = ctx.BoardStages.Where(bs => bs.BoardId == board.Id).ToList();
+		Assert.Equal(3, stages.Count);
 
-//			repository.AddStage("board1", "Review", "group1");
+		// Assert each default stage has one stage-group for the manager
+		var bsg = ctx.BoardStageGroups.Where(x => x.GroupId == "mgr").ToList();
+		Assert.Equal(3, bsg.Count);
+	}
 
-//			var addedStage = context.Stages.FirstOrDefault(s => s.Name == "Review");
-//			Assert.NotNull(addedStage);
-//		}
+	[Fact]
+	public void AddStage_NoGroups_AddsOnlyStageAndBoardStage()
+	{
+		// Arrange seed a Board so we can add a stage on it
+		var board = new Board
+		{
+			Id = "b1",
+			ProjectId = "p1",
+			BoardName = "B1",
+			Description = "desc"
+		};
+		_context.Boards.Add(board);
+		_context.SaveChanges();
 
-//		[Fact]
-//		public void DeleteStage_RemovesStage()
-//		{
-//			var stage = new Stage { Id = "stage1", Name = "Review" };
-//			var boardStage = new BoardStage { BoardId = "board1", StageId = "stage1", GroupId = "group1", StageOrder = 1 };
-//			var context = CreateMockContext(new List<Stage> { stage }, "DeleteStageTest");
-//			context.BoardStages.Add(boardStage);
-//			context.SaveChanges();
-//			var repository = new BoardRepository(context);
+		// Act
+		_repo.AddStage("b1", "NewStage", new List<string>());
 
-//			repository.DeleteStage("board1", "stage1");
+		// Assert
+		var stage = _context.Stages.Single(s => s.Name == "NewStage");
+		var boardStage = _context.BoardStages.Single(bs => bs.StageId == stage.Id && bs.BoardId == "b1");
+		var groupsInBs = _context.BoardStageGroups.Where(bsg => bsg.StageId == stage.Id);
+		Assert.NotNull(stage);
+		Assert.NotNull(boardStage);
+		Assert.Empty(groupsInBs);
+	}
 
-//			Assert.Null(context.Stages.FirstOrDefault(s => s.Id == "stage1"));
-//			Assert.Null(context.BoardStages.FirstOrDefault(bs => bs.StageId == "stage1"));
-//		}
+	[Fact]
+	public void AddStage_WithGroups_AddsStageAndGroups()
+	{
+		// Arrange
+		var board = new Board { Id = "b2", ProjectId = "p2", BoardName = "B2", Description = "d" };
+		var grp = new Group { Id = "g2", ManagerId = "m2" };
+		_context.Boards.Add(board);
+		_context.Groups.Add(grp);
+		_context.SaveChanges();
 
-//		[Fact]
-//		public void RenameStage_ChangesStageName()
-//		{
-//			var stage = new Stage { Id = "stage1", Name = "Old Name" };
-//			var context = CreateMockContext(new List<Stage> { stage }, "RenameStageTest");
-//			var repository = new BoardRepository(context);
+		// Act
+		_repo.AddStage("b2", "StageX", new List<string> { "g2" });
 
-//			repository.RenameStage("stage1", "New Name");
+		// Assert
+		var stage = _context.Stages.Single(s => s.Name == "StageX");
+		var assignment = _context.BoardStageGroups
+								 .Single(bsg => bsg.StageId == stage.Id && bsg.GroupId == "g2");
+		Assert.NotNull(stage);
+		Assert.NotNull(assignment);
+	}
 
-//			var updatedStage = context.Stages.FirstOrDefault(s => s.Id == "stage1");
-//			Assert.NotNull(updatedStage);
-//			Assert.Equal("New Name", updatedStage.Name);
-//		}
+	[Fact]
+	public void DeleteStage_Existing_RemovesStageAndBoardStage()
+	{
+		// Arrange
+		var board = new Board { Id = "b3", ProjectId = "p3", BoardName = "B3", Description = "d" };
+		var stage = new Stage { Id = "s3", Name = "toDelete" };
+		_context.Boards.Add(board);
+		_context.Stages.Add(stage);
+		_context.BoardStages.Add(new BoardStage { BoardId = "b3", StageId = "s3", StageOrder = 0 });
+		_context.SaveChanges();
 
-//		[Fact]
-//		public void AssignGroupToStage_AssignsGroup()
-//		{
-//			var boardStage = new BoardStage { BoardId = "board1", StageId = "stage1", GroupId = "oldGroup", StageOrder = 1 };
-//			var context = CreateMockContext(new List<BoardStage> { boardStage }, "AssignGroupTest");
-//			var repository = new BoardRepository(context);
+		// Act
+		_repo.DeleteStage("b3", "s3");
 
-//			repository.AssignGroupToStage("board1", "stage1", "newGroup");
+		// Assert
+		Assert.Null(_context.Stages.Find("s3"));
+		Assert.Empty(_context.BoardStages.Where(bs => bs.StageId == "s3"));
+	}
 
-//			var updatedBoardStage = context.BoardStages.FirstOrDefault(bs => bs.StageId == "stage1");
-//			Assert.NotNull(updatedBoardStage);
-//			Assert.Equal("newGroup", updatedBoardStage.GroupId);
-//		}
+	[Fact]
+	public void DeleteBoardStageGroups_RemovesAllMatching()
+	{
+		// Arrange
+		_context.BoardStageGroups.AddRange(
+			new BoardStageGroup { Id = Guid.NewGuid().ToString(), BoardId = "b7", StageId = "x", GroupId = "g1" },
+			new BoardStageGroup { Id = Guid.NewGuid().ToString(), BoardId = "b7", StageId = "x", GroupId = "g2" }
+		);
+		_context.SaveChanges();
 
-//		[Fact]
-//		public void SaveBoardStages_UpdatesStages()
-//		{
-//			var boardStage = new BoardStage { BoardId = "board1", StageId = "stage1", GroupId = "group1", StageOrder = 1 };
-//			var context = CreateMockContext(new List<BoardStage> { boardStage }, "SaveBoardStagesTest");
-//			var repository = new BoardRepository(context);
+		// Act
+		_repo.DeleteBoardStageGroups("b7", "x");
 
-//			boardStage.StageOrder = 2;
-//			repository.SaveBoardStages(new List<BoardStage> { boardStage });
+		// Assert
+		Assert.Empty(_context.BoardStageGroups.Where(bsg => bsg.BoardId == "b7" && bsg.StageId == "x"));
+	}
 
-//			var updatedStage = context.BoardStages.FirstOrDefault(bs => bs.StageId == "stage1");
-//			Assert.NotNull(updatedStage);
-//			Assert.Equal(2, updatedStage.StageOrder);
-//		}
+	[Fact]
+	public void DeleteStage_NotExist_DoesNothing()
+	{
+		// should not throw
+		_repo.DeleteStage("noBoard", "noStage");
+	}
 
-//		[Fact]
-//		public void GetStages_ReturnsStages()
-//		{
-//			var board = new Board { Id = "board1", BoardName = "Test Board", Description = "Test", ProjectId = "project1" };
-//			var stage = new Stage { Id = "stage1", Name = "Development" };
-//			var boardStage = new BoardStage { BoardId = "board1", StageId = "stage1", GroupId = "oldGroup", StageOrder = 1 };
+	[Fact]
+	public void RenameStage_Existing_UpdatesName()
+	{
+		// Arrange
+		var stage = new Stage { Id = "s4", Name = "old" };
+		_context.Stages.Add(stage);
+		_context.SaveChanges();
 
-//			var context = CreateMockContext(new List<Board> { board }, "GetStagesTest");
-//			context.Stages.Add(stage);
-//			context.BoardStages.Add(boardStage);
-//			context.SaveChanges();
+		// Act
+		_repo.RenameStage("s4", "new");
 
-//			var repository = new BoardRepository(context);
-//			var stages = context.Stages
-//				.Where(s => context.BoardStages.Any(bs => bs.BoardId == "board1" && bs.StageId == s.Id))
-//				.OrderBy(s => context.BoardStages.First(bs => bs.StageId == s.Id).StageOrder)
-//				.ToList();
+		// Assert
+		Assert.Equal("new", _context.Stages.Find("s4")!.Name);
+	}
 
-//			Assert.Single(stages);
-//			Assert.Equal("Development", stages.First().Name);
-//		}
+	[Fact]
+	public void RenameStage_NotExist_DoesNothing()
+	{
+		// should not throw
+		_repo.RenameStage("noStage", "whatever");
+	}
 
-//		[Fact]
-//		public void GetBoardStages_ReturnsBoardStages()
-//		{
-//			var boardStage = new BoardStage { BoardId = "board1", StageId = "stage1", GroupId = "oldGroup", StageOrder = 1 };
-//			var context = CreateMockContext(new List<BoardStage> { boardStage }, "GetBoardStagesTest");
+	
 
-//			var repository = new BoardRepository(context);
-//			var result = context.BoardStages.Where(bs => bs.BoardId == "board1").OrderBy(bs => bs.StageOrder).ToList();
+	[Fact]
+	public void SaveBoardStages_UpdatesOrder()
+	{
+		// Arrange
+		_context.BoardStages.Add(new BoardStage { BoardId = "b6", StageId = "s6", StageOrder = 1 });
+		_context.SaveChanges();
 
-//			Assert.Single(result);
-//			Assert.Equal("stage1", result.First().StageId);
-//		}
+		// Act
+		_repo.SaveBoardStages(new List<BoardStage> { new BoardStage { StageId = "s6", StageOrder = 42 } });
 
-//		[Fact]
-//		public void GetAllAssignedGroupsForStages_ReturnsAssignedGroups()
-//		{
-//			var group = new Group { Id = "group1", GroupName = "Developers", ManagerId = "manager1" };
-//			var boardStage = new BoardStage { BoardId = "board1", StageId = "stage1", GroupId = "group1" };
+		// Assert
+		Assert.Equal(42, _context.BoardStages.Single(bs => bs.StageId == "s6").StageOrder);
+	}
 
-//			var context = CreateMockContext(new List<Group> { group }, "GetAssignedGroupsTest");
-//			context.BoardStages.Add(boardStage);
-//			context.SaveChanges();
+	[Fact]
+	public void AssignGroupToStage_RemovesOldAddsNew()
+	{
+		// Arrange
+		var board = new Board
+		{
+			Id = "b5",
+			ProjectId = "p5",
+			BoardName = "B5",
+			Description = "desc"
+		};
+		var stage = new Stage { Id = "s5", Name = "st5" };
 
-//			var repository = new BoardRepository(context);
-//			var assignedGroups = context.BoardStages.Where(bs => bs.BoardId == "board1")
-//				.Join(context.Groups, bs => bs.GroupId, g => g.Id, (bs, g) => new { bs.StageId, g.GroupName })
-//				.ToDictionary(bg => bg.StageId, bg => bg.GroupName);
+		_context.Boards.Add(board);
+		_context.Stages.Add(stage);
+		_context.BoardStages.Add(new BoardStage
+		{
+			BoardId = "b5",
+			StageId = "s5",
+			StageOrder = 0
+		});
 
-//			Assert.Single(assignedGroups);
-//			Assert.Equal("Developers", assignedGroups["stage1"]);
-//		}
-//	}
-//}
+		// Two groups exist, but only gA is initially assigned:
+		_context.Groups.AddRange(
+			new Group { Id = "gA", ManagerId = "m" },
+			new Group { Id = "gB", ManagerId = "m" }
+		);
+		_context.BoardStageGroups.Add(new BoardStageGroup
+		{
+			Id = Guid.NewGuid().ToString(),
+			BoardId = "b5",
+			StageId = "s5",
+			GroupId = "gA"
+		});
+
+		_context.SaveChanges();
+
+		// Act switch assignment to only gB
+		_repo.AssignGroupToStage("b5", "s5", new List<string> { "gB" });
+
+		// Assert direct in-memory inspection
+		var assigned = _context.BoardStageGroups
+			.Where(bsg => bsg.BoardId == "b5" && bsg.StageId == "s5")
+			.Select(bsg => bsg.GroupId)
+			.ToList();
+
+		Assert.Single(assigned);
+		Assert.Contains("gB", assigned);
+	}
+
+	[Fact]
+	public async Task GetBoardByProjectIdAsync_NoBoard_ReturnsNull()
+	{
+		var ctx = CreateMockContext(new List<Group>(), "TBR_NoBoard");
+		var repo = new BoardRepository(ctx);
+
+		var result = await repo.GetBoardByProjectIdAsync("doesNotExist");
+		Assert.Null(result);
+	}
+
+	[Fact]
+	public async Task GetBoardByProjectIdAsync_WithBoard_ReturnsBoardAndGroups()
+	{
+		var group = new Group { Id = "g1", GroupName = "G1", ManagerId = "lead1" };
+		var project = new Project
+		{
+			Id = "p1",
+			ProjectName = "Proj1",
+			LeadId = "lead1",
+			Groups = new List<Group> { group }
+		};
+		var board = new Board
+		{
+			Id = "b1",
+			ProjectId = "p1",
+			BoardName = "Proj1 Board",
+			Description = "desc"
+		};
+
+		var ctx = CreateMockContext(new List<Group> { group }, "TBR_WithBoard");
+		ctx.Projects.Add(project);
+		ctx.Boards.Add(board);
+		ctx.SaveChanges();
+
+		var repo = new BoardRepository(ctx);
+		var result = await repo.GetBoardByProjectIdAsync("p1");
+
+		Assert.NotNull(result);
+		Assert.Equal("b1", result!.Id);
+		Assert.Equal("Proj1", result.Project.ProjectName);
+		Assert.Single(result.Project.Groups);
+		Assert.Equal("g1", result.Project.Groups.First().Id);
+	}
+
+	[Fact]
+	public void GetBoardStages_InMemory_ReturnsOrderedBoardStages()
+	{
+		var seed = new List<BoardStage>
+	{
+		new BoardStage { BoardId = "B", StageId = "s2", StageOrder = 1 },
+		new BoardStage { BoardId = "B", StageId = "s1", StageOrder = 0 }
+	};
+		var ctx = CreateMockContext(seed, "TBR_GetBoardStages");
+		var repo = new BoardRepository(ctx);
+
+		var list = repo.GetBoardStages("B").ToList();
+		Assert.Equal(2, list.Count);
+		Assert.Equal("s1", list[0].StageId);
+		Assert.Equal("s2", list[1].StageId);
+	}
+
+	[Fact]
+	public void GetStages_InMemory_ReturnsOrderedStages()
+	{
+		var stages = new List<Stage>
+		{
+			new Stage { Id = "s1", Name = "First" },
+			new Stage { Id = "s2", Name = "Second" }
+		};
+
+		var boardStages = new List<BoardStage>
+		{
+			new BoardStage { BoardId = "B", StageId = "s2", StageOrder = 1 },
+			new BoardStage { BoardId = "B", StageId = "s1", StageOrder = 0 }
+		};
+
+		var ctx = CreateMockContext(stages, "TBR_Stages");
+		ctx.Set<BoardStage>().AddRange(boardStages);
+		ctx.SaveChanges();
+
+		var repo = new BoardRepository(ctx);
+		var result = repo.GetStages("B").ToList();
+
+		Assert.Equal(2, result.Count);
+		Assert.Equal("First", result[0].Name);
+		Assert.Equal("Second", result[1].Name);
+	}
+
+	[Fact]
+	public void GetBoardStageTickets_InMemory_ReturnsTicketsGroupedByStage()
+	{
+		var boardStages = new List<BoardStage>
+		{
+			new BoardStage { BoardId = "b1", StageId = "s1", StageOrder = 0 },
+			new BoardStage { BoardId = "b1", StageId = "s2", StageOrder = 1 }
+		};
+
+		var tickets = new List<Ticket>
+		{
+			new Ticket { Id = "t1", BoardId = "b1", Stage = "s1", Title = "T1" },
+			new Ticket { Id = "t2", BoardId = "b1", Stage = null!, Title = "T2" },
+			new Ticket { Id = "t3", BoardId = "b1", Stage = "s1", Title = "T3" },
+			new Ticket { Id = "t4", BoardId = "b1", Stage = "s2", Title = "T4" }
+		};
+
+		var ctx = CreateMockContext(boardStages, "TBR_StageTickets_Stages");
+		ctx.Set<Ticket>().AddRange(tickets);
+		ctx.SaveChanges();
+
+		var repo = new BoardRepository(ctx);
+
+		// Act
+		var dict = repo.GetBoardStageTickets("b1");
+
+		// Assert should have exactly the two stage keys
+		Assert.Equal(2, dict.Keys.Count);
+		Assert.Contains("s1", dict.Keys);
+		Assert.Contains("s2", dict.Keys);
+
+		// s1 got t1 and t3
+		var s1List = dict["s1"];
+		Assert.Equal(2, s1List.Count);
+		Assert.Contains(s1List, t => t.Id == "t1");
+		Assert.Contains(s1List, t => t.Id == "t3");
+
+		// s2 got only t4
+		var s2List = dict["s2"];
+		Assert.Single(s2List);
+		Assert.Equal("t4", s2List[0].Id);
+	}
+}
