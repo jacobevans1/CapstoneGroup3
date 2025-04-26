@@ -141,7 +141,7 @@ public class GroupController : Controller
 			GroupId = group.Id,
 			GroupName = group.GroupName,
 			Description = group.Description,
-			GroupLeadId = group.ManagerId,
+			GroupLeadId = group.ManagerId!,
 			AllUsers = users.ToList(),
 			SelectedUserIds = group.Members.Select(m => m.Id).ToList()
 		};
@@ -220,14 +220,14 @@ public class GroupController : Controller
 			return NotFound();
 		}
 
-		var managerName = group.Manager?.FullName ?? "Unknown";
+		var managerName = group.Manager!.FullName;
 		var affectedProjects = await GetConflictingProjectsForGroup(group);
 
 		var model = new DeleteGroupViewModel
 		{
 			GroupId = group.Id,
 			GroupName = group.GroupName,
-			ManagerId = group.ManagerId,
+			ManagerId = group.ManagerId!,
 			ManagerName = managerName,
 			AffectedProjects = affectedProjects
 		};
@@ -260,7 +260,7 @@ public class GroupController : Controller
 			return NotFound();
 		}
 
-		var managerName = group.Manager?.FullName ?? "Unknown";
+		var managerName = group.Manager!.FullName;
 		var affectedProjects = await GetConflictingProjectsForGroup(group);
 
 		if (affectedProjects.Any())
@@ -289,13 +289,11 @@ public class GroupController : Controller
 	/// <param name="group">The group being evaluated.</param>
 	private async Task<List<Project>> GetConflictingProjectsForGroup(Group group)
 	{
-		var projectsLedByManager = await _projectRepository.GetProjectsByLeadAsync(group.ManagerId)
-								   ?? new List<Project>();
+		var projectsLedByManager = (await _projectRepository.GetProjectsByLeadAsync(group.ManagerId!))
+								   .Where(p => p.Groups.Any(g => g.Id == group.Id) == true)
+								   .ToList();
 
-		return projectsLedByManager
-			.Where(p => p.Groups?.Any(g => g.Id == group.Id) ?? false)
-			.ToList();
+		return projectsLedByManager;
 	}
-
 
 }
