@@ -35,6 +35,55 @@ public class TestsTicketDetailViewModel
 	}
 
 	[Fact]
+	public void Ctor_NullTicketDAL_ThrowsArgumentNullException()
+	{
+		var ex = Assert.Throws<ArgumentNullException>(
+			() => new TicketDetailViewModel(
+				null!,
+				Mock.Of<IStageDAL>(),
+				Mock.Of<ITicketHistoryDAL>(),
+				Mock.Of<IUsersDAL>()));
+		Assert.Equal("ticketDAL", ex.ParamName);
+	}
+
+	[Fact]
+	public void Ctor_NullStageDAL_ThrowsArgumentNullException()
+	{
+		var ex = Assert.Throws<ArgumentNullException>(
+			() => new TicketDetailViewModel(
+				Mock.Of<ITicketDAL>(),
+				null!,
+				Mock.Of<ITicketHistoryDAL>(),
+				Mock.Of<IUsersDAL>()));
+		Assert.Equal("stageDAL", ex.ParamName);
+	}
+
+	[Fact]
+	public void Ctor_NullHistoryDAL_ThrowsArgumentNullException()
+	{
+		var ex = Assert.Throws<ArgumentNullException>(
+			() => new TicketDetailViewModel(
+				Mock.Of<ITicketDAL>(),
+				Mock.Of<IStageDAL>(),
+				null!,
+				Mock.Of<IUsersDAL>()));
+		Assert.Equal("historyDAL", ex.ParamName);
+	}
+
+	[Fact]
+	public void Ctor_NullUsersDAL_ThrowsArgumentNullException()
+	{
+		var ex = Assert.Throws<ArgumentNullException>(
+			() => new TicketDetailViewModel(
+				Mock.Of<ITicketDAL>(),
+				Mock.Of<IStageDAL>(),
+				Mock.Of<ITicketHistoryDAL>(),
+				null!));
+		Assert.Equal("usersDAL", ex.ParamName);
+	}
+
+
+	[Fact]
 	public void Load_TicketNotFound_ThrowsInvalidOperation()
 	{
 		_ticketDal.Setup(d => d.GetTicketById("missing"))
@@ -133,6 +182,27 @@ public class TestsTicketDetailViewModel
 	}
 
 	[Fact]
+	public void AssignedSetter_UnassignsClearsAssignedToAndRaisesPropertyChanged()
+	{
+		// Arrange
+		// make sure UserSession has some ID, and that the ticket is initially assigned
+		UserSession.CurrentUserId = "userX";
+		var ticket = new Ticket { AssignedTo = "userX" };
+		_vm.Ticket = ticket;
+		_changedProps.Clear();
+
+		// Act
+		_vm.Assigned = false;
+
+		// Assert
+		// - the Assigned property‐changed event was fired
+		Assert.Contains("Assigned", _changedProps);
+		// - the ticket's AssignedTo was cleared
+		Assert.Null(ticket.AssignedTo);
+	}
+
+
+	[Fact]
 	public void SaveChanges_TicketNotFound_ThrowsInvalidOperation()
 	{
 		_vm.Ticket = new Ticket { Id = "x" };
@@ -164,7 +234,7 @@ public class TestsTicketDetailViewModel
 
 		_vm.Ticket = orig;
 
-		// **ensure** History & Stages collections are non‐null
+		// Ensure History & Stages collections are non‐null
 		_vm.History = new ObservableCollection<TicketHistory>();
 		_vm.Stages = new ObservableCollection<Stage>();
 
@@ -489,7 +559,6 @@ public class TestsTicketDetailViewModel
 			_historyDal.Object,
 			_usersDal.Object);
 
-		// Ticket null → null
 		Assert.Null(vm2.SelectedStageId);
 
 		// Ticket with Stage
@@ -530,7 +599,6 @@ public class TestsTicketDetailViewModel
 		var seen = new List<string>();
 		vm3.PropertyChanged += (s, e) => seen.Add(e.PropertyName!);
 
-		// setting Ticket triggers OnPropertyChanged("Ticket"),("Title"),("Description"),("SelectedStageId"),("Assigned")
 		vm3.Ticket = new Ticket();
 		Assert.Contains("Ticket", seen);
 		Assert.Contains("Title", seen);
