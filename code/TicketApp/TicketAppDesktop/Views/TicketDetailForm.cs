@@ -1,12 +1,12 @@
-﻿using TicketAppDesktop.ViewModels;
+﻿using TicketAppDesktop.DataLayer;
 using TicketAppDesktop.Models;
+using TicketAppDesktop.ViewModels;
 
 namespace TicketAppDesktop.Views;
 
 /// <summary>
 /// Ticket details view
 /// </summary>
-/// <seealso cref="System.Windows.Forms.Form" />
 public partial class TicketDetailForm : Form
 {
 	private readonly TicketDetailViewModel _viewModel;
@@ -19,7 +19,13 @@ public partial class TicketDetailForm : Form
 	{
 		InitializeComponent();
 
-		_viewModel = new TicketDetailViewModel();
+		_viewModel = new TicketDetailViewModel(
+			new TicketDalAdapter(),
+			new StageDalAdapter(),
+			new TicketHistoryDalAdapter(),
+			new UsersDalAdapter()
+		);
+
 		_viewModel.Load(ticketId);
 
 		txtDetailTitle.DataBindings.Add(
@@ -87,5 +93,35 @@ public partial class TicketDetailForm : Form
 				MessageBoxButtons.OK,
 				MessageBoxIcon.Error);
 		}
+	}
+
+	private class TicketDalAdapter : ITicketDAL
+	{
+		public Ticket GetTicketById(string ticketId)
+			=> TicketDAL.GetTicketById(ticketId);
+
+		public void UpdateTicket(Ticket ticket)
+			=> TicketDAL.UpdateTicket(ticket);
+	}
+
+	private class StageDalAdapter : IStageDAL
+	{
+		public List<Stage> GetStagesForBoard(string boardId)
+			=> StageDAL.GetStagesForBoard(boardId);
+	}
+
+	private class TicketHistoryDalAdapter : ITicketHistoryDAL
+	{
+		public List<TicketHistory> GetHistoryByTicketId(string ticketId)
+			=> TicketHistoryDAL.GetHistoryByTicketId(ticketId);
+
+		public void SaveHistoryEntry(TicketHistory entry)
+			=> TicketHistoryDAL.SaveHistoryEntry(entry);
+	}
+
+	private class UsersDalAdapter : IUsersDAL
+	{
+		public string GetFullName(string userId)
+			=> UsersDAL.GetFullName(userId);
 	}
 }

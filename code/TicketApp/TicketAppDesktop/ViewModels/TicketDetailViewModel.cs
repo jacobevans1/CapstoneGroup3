@@ -1,32 +1,52 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using TicketAppDesktop.DataLayer;
 using TicketAppDesktop.Models;
 
 namespace TicketAppDesktop.ViewModels;
 
-/// <summary>
-/// Ticket details view model
-/// </summary>
-/// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
+public interface ITicketDAL
+{
+	Ticket GetTicketById(string ticketId);
+	void UpdateTicket(Ticket ticket);
+}
+
+public interface IStageDAL
+{
+	List<Stage> GetStagesForBoard(string boardId);
+}
+
+public interface ITicketHistoryDAL
+{
+	List<TicketHistory> GetHistoryByTicketId(string ticketId);
+	void SaveHistoryEntry(TicketHistory entry);
+}
+
+public interface IUsersDAL
+{
+	string GetFullName(string userId);
+}
+
 public class TicketDetailViewModel : INotifyPropertyChanged
 {
+	private readonly ITicketDAL _ticketDAL;
+	private readonly IStageDAL _stageDAL;
+	private readonly ITicketHistoryDAL _historyDAL;
+	private readonly IUsersDAL _usersDAL;
+
+	public TicketDetailViewModel(
+		ITicketDAL ticketDAL,
+		IStageDAL stageDAL,
+		ITicketHistoryDAL historyDAL,
+		IUsersDAL usersDAL)
+	{
+		_ticketDAL = ticketDAL;
+		_stageDAL = stageDAL;
+		_historyDAL = historyDAL;
+		_usersDAL = usersDAL;
+	}
+
 	private Ticket? _ticket;
-	private ObservableCollection<Stage>? _stages;
-	private ObservableCollection<TicketHistory>? _history;
-
-	/// <summary>
-	/// Occurs when a property value changes.
-	/// </summary>
-	public event PropertyChangedEventHandler? PropertyChanged;
-
-	/// <summary>
-	/// Gets or sets the ticket.
-	/// </summary>
-	/// <value>
-	/// The ticket.
-	/// </value>
 	public Ticket? Ticket
 	{
 		get => _ticket;
@@ -41,36 +61,20 @@ public class TicketDetailViewModel : INotifyPropertyChanged
 		}
 	}
 
-	/// <summary>
-	/// Gets or sets the stages.
-	/// </summary>
-	/// <value>
-	/// The stages.
-	/// </value>
+	private ObservableCollection<Stage>? _stages;
 	public ObservableCollection<Stage>? Stages
 	{
 		get => _stages;
 		set { _stages = value; OnPropertyChanged(); }
 	}
 
-	/// <summary>
-	/// Gets or sets the history.
-	/// </summary>
-	/// <value>
-	/// The history.
-	/// </value>
+	private ObservableCollection<TicketHistory>? _history;
 	public ObservableCollection<TicketHistory>? History
 	{
 		get => _history;
 		set { _history = value; OnPropertyChanged(); }
 	}
 
-	/// <summary>
-	/// Gets or sets the title.
-	/// </summary>
-	/// <value>
-	/// The title.
-	/// </value>
 	public string Title
 	{
 		get => Ticket?.Title ?? "";
@@ -84,12 +88,6 @@ public class TicketDetailViewModel : INotifyPropertyChanged
 		}
 	}
 
-	/// <summary>
-	/// Gets or sets the description.
-	/// </summary>
-	/// <value>
-	/// The description.
-	/// </value>
 	public string? Description
 	{
 		get => Ticket?.Description;
@@ -103,12 +101,6 @@ public class TicketDetailViewModel : INotifyPropertyChanged
 		}
 	}
 
-	/// <summary>
-	/// Gets or sets the selected stage identifier.
-	/// </summary>
-	/// <value>
-	/// The selected stage identifier.
-	/// </value>
 	public string? SelectedStageId
 	{
 		get => Ticket?.Stage;
@@ -122,12 +114,6 @@ public class TicketDetailViewModel : INotifyPropertyChanged
 		}
 	}
 
-	/// <summary>
-	/// Gets or sets a value indicating whether this <see cref="TicketDetailViewModel"/> is assigned.
-	/// </summary>
-	/// <value>
-	///   <c>true</c> if assigned; otherwise, <c>false</c>.
-	/// </value>
 	public bool Assigned
 	{
 		get => !string.IsNullOrEmpty(Ticket?.AssignedTo);
@@ -143,78 +129,72 @@ public class TicketDetailViewModel : INotifyPropertyChanged
 		}
 	}
 
-	/// <summary>
-	/// Loads the specified ticket identifier.
-	/// </summary>
-	/// <param name="ticketId">The ticket identifier.</param>
-	/// <exception cref="System.InvalidOperationException">Ticket not found</exception>
+	public event PropertyChangedEventHandler? PropertyChanged;
+
+	protected void OnPropertyChanged([CallerMemberName] string name = "")
+		=> PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
 	public void Load(string ticketId)
 	{
-		Ticket = TicketDAL.GetTicketById(ticketId)
-			?? throw new InvalidOperationException("Ticket not found");
+		var t = _ticketDAL.GetTicketById(ticketId)
+				?? throw new InvalidOperationException("Ticket not found");
+		Ticket = t;
 		Stages = new ObservableCollection<Stage>(
-			StageDAL.GetStagesForBoard(Ticket.BoardId!));
+			_stageDAL.GetStagesForBoard(t.BoardId!));
 		History = new ObservableCollection<TicketHistory>(
-			TicketHistoryDAL.GetHistoryByTicketId(ticketId));
+			_historyDAL.GetHistoryByTicketId(ticketId));
 	}
 
-	/// <summary>
-	/// Saves the changes.
-	/// </summary>
-	/// <exception cref="System.InvalidOperationException">Ticket not found</exception>
 	public void SaveChanges()
 	{
-		var original = TicketDAL.GetTicketById(Ticket!.Id!)
+		var original = _ticketDAL.GetTicketById(Ticket!.Id!)
 			?? throw new InvalidOperationException("Ticket not found");
+		_ticketDAL.UpdateTicket(Ticket!);
 
-		TicketDAL.UpdateTicket(Ticket!);
-
-		var updaterId = UserSession.CurrentUserId;
-		var updaterName = UsersDAL.GetFullName(updaterId);
-
-		void LogIfChanged(string prop, string? oldId, string? newId)
+		void LogIfChanged(string prop, string? oldVal, string? newVal)
 		{
-			string oldVal = oldId ?? "", newVal = newId ?? "";
+			string oldValue = oldVal ?? "";
+			string newValue = newVal ?? "";
 
 			switch (prop)
 			{
 				case "Stage":
-					oldVal = StageDAL.GetStageById(oldId!)?.Name ?? oldVal;
-					newVal = StageDAL.GetStageById(newId!)?.Name ?? newVal;
+					oldValue = _stageDAL.GetStagesForBoard("").Find(s => s.Id == oldVal!)?.Name ?? oldValue;
+					newValue = _stageDAL.GetStagesForBoard("").Find(s => s.Id == newVal!)?.Name ?? newValue;
 					break;
 				case "AssignedTo":
-					oldVal = string.IsNullOrEmpty(oldId)
+					oldValue = string.IsNullOrEmpty(oldVal)
 						? "Unassigned"
-						: UsersDAL.GetFullName(oldId);
-					newVal = string.IsNullOrEmpty(newId)
+						: _usersDAL.GetFullName(oldVal);
+					newValue = string.IsNullOrEmpty(newVal)
 						? "Unassigned"
-						: UsersDAL.GetFullName(newId);
+						: _usersDAL.GetFullName(newVal);
 					break;
 			}
 
-			if ((oldVal ?? "").Trim() == (newVal ?? "").Trim())
+			if (oldValue.Trim() == newValue.Trim())
 				return;
 
 			string desc = prop switch
 			{
-				"Stage" => $"{updaterName} moved stage from {oldVal} to {newVal}",
-				"AssignedTo" => $"{updaterName} changed assignee from “{oldVal}” to “{newVal}”",
-				_ => $"{updaterName} updated {prop} from “{oldVal}” to “{newVal}”"
+				"Stage" => $"{_usersDAL.GetFullName(UserSession.CurrentUserId)} moved stage from {oldValue} to {newValue}",
+				"AssignedTo" => $"{_usersDAL.GetFullName(UserSession.CurrentUserId)} changed assignee from “{oldValue}” to “{newValue}”",
+				_ => $"{_usersDAL.GetFullName(UserSession.CurrentUserId)} updated {prop} from “{oldValue}” to “{newValue}”"
 			};
 
 			var entry = new TicketHistory
 			{
 				Id = Guid.NewGuid().ToString(),
-				TicketId = Ticket!.Id!,
+				TicketId = Ticket!.Id,
 				PropertyChanged = prop,
-				OldValue = oldVal,
-				NewValue = newVal,
-				ChangedByUserId = updaterId,
+				OldValue = oldValue,
+				NewValue = newValue,
+				ChangedByUserId = UserSession.CurrentUserId,
 				ChangeDate = DateTime.Now,
 				ChangeDescription = desc
 			};
 
-			TicketHistoryDAL.SaveHistoryEntry(entry);
+			_historyDAL.SaveHistoryEntry(entry);
 			History?.Insert(0, entry);
 		}
 
@@ -223,7 +203,4 @@ public class TicketDetailViewModel : INotifyPropertyChanged
 		LogIfChanged("AssignedTo", original.AssignedTo, Ticket!.AssignedTo);
 		LogIfChanged("Stage", original.Stage, Ticket!.Stage);
 	}
-
-	protected void OnPropertyChanged([CallerMemberName] string name = "")
-		=> PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }
