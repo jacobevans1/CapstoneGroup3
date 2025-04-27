@@ -19,7 +19,7 @@ public interface ITaskDAL
 /// </summary>
 public class TaskHomeViewModel : INotifyPropertyChanged
 {
-	private readonly ITaskDAL _taskDAL;
+	private readonly ITaskDAL? _taskDAL;
 
 	/// <summary>
 	/// The two filter options.
@@ -33,22 +33,23 @@ public class TaskHomeViewModel : INotifyPropertyChanged
 	/// Which filter is active—reading this for the first time will fire
 	/// both SelectedFilter and Tasks change events.
 	/// </summary>
-	public string? SelectedFilter
+	public string SelectedFilter
 	{
 		get
 		{
-			OnPropertyChanged();           
-			RefreshTasks();   
-			return _selectedFilter;
+			OnPropertyChanged(nameof(SelectedFilter));
+			RefreshTasks();
+			return _selectedFilter!;
 		}
 		set
 		{
 			if (_selectedFilter == value) return;
 			_selectedFilter = value;
-			OnPropertyChanged();
+			OnPropertyChanged(nameof(SelectedFilter));
 			RefreshTasks();
 		}
 	}
+
 
 	private ObservableCollection<Ticket> _tasks
 		= new ObservableCollection<Ticket>();
@@ -71,13 +72,13 @@ public class TaskHomeViewModel : INotifyPropertyChanged
 
 	public event PropertyChangedEventHandler? PropertyChanged;
 
+
 	public TaskHomeViewModel(ITaskDAL taskDAL)
 	{
 		_taskDAL = taskDAL
 			?? throw new ArgumentNullException(nameof(taskDAL));
 
-		// set up the default without firing DAL calls here
-		_selectedFilter = Filters[1]; 
+		SelectedFilter = Filters[1]; 
 	}
 
 	/// <summary>
@@ -87,13 +88,13 @@ public class TaskHomeViewModel : INotifyPropertyChanged
 	{
 		var userId = UserSession.CurrentUserId;
 		List<Ticket>? list = _selectedFilter == "Available"
-			? _taskDAL.GetAvailableTasksForUserGroups(userId)
-			: _taskDAL.GetTasksByAssignee(userId);
+			? _taskDAL!.GetAvailableTasksForUserGroups(userId)
+			: _taskDAL!.GetTasksByAssignee(userId);
 
 		if (list == null) list = new List<Ticket>();
 		Tasks = new ObservableCollection<Ticket>(list);
 	}
 
-	protected void OnPropertyChanged([CallerMemberName] string name = "")
-		=> PropertyChanged!.Invoke(this, new PropertyChangedEventArgs(name));
+	protected void OnPropertyChanged([CallerMemberName] string? name = null)
+		=> PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }
