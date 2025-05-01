@@ -53,28 +53,28 @@ public class TicketViewModel
 	/// </summary>
 	public string SelectedStageId { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets or sets the assigned groups.
-    /// </summary>
-    /// <value>
-    /// The assigned groups.
-    /// </value>
-    [ValidateNever]
-    public Dictionary<string, List<Group>> AssignedGroups { get; set; } = new();
+	/// <summary>
+	/// Gets or sets the assigned groups.
+	/// </summary>
+	/// <value>
+	/// The assigned groups.
+	/// </value>
+	[ValidateNever]
+	public Dictionary<string, List<Group>> AssignedGroups { get; set; } = new();
 
-    /// <summary>
-    /// Gets or sets the eligible assignees.
-    /// </summary>
-    /// <value>
-    /// The eligible assignees.
-    /// </value>
-    [ValidateNever]
-    public List<TicketAppUser> EligibleAssignees { get; set; } = new();
+	/// <summary>
+	/// Gets or sets the eligible assignees.
+	/// </summary>
+	/// <value>
+	/// The eligible assignees.
+	/// </value>
+	[ValidateNever]
+	public List<TicketAppUser> EligibleAssignees { get; set; } = new();
 
-    /// <summary>
-    /// Initializes a new instance of the TicketViewModel class.
-    /// </summary>
-    public TicketViewModel()
+	/// <summary>
+	/// Initializes a new instance of the TicketViewModel class.
+	/// </summary>
+	public TicketViewModel()
 	{
 		Ticket = new Ticket();
 		NewTicket = new Ticket();

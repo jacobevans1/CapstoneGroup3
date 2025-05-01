@@ -72,7 +72,7 @@ public class UserController : Controller
 			}
 			catch (Exception)
 			{
-				TempData["ErrorMessage"] = $"Sorry, user update failed.";
+				TempData["ErrorMessage"] = $"Sorry, user creation failed. Please confirm the given email address is not taken.";
 				return RedirectToAction("Index", "User");
 			}
 
@@ -80,7 +80,7 @@ public class UserController : Controller
 		}
 		else
 		{
-			TempData["ErrorMessage"] = $"Sorry, user creation failed.";
+			TempData["ErrorMessage"] = $"Sorry, user creation failed. Please confirm the given email address is not taken.";
 		}
 
 		return RedirectToAction("Index", "User");
@@ -210,7 +210,7 @@ public class UserController : Controller
 			}
 			catch (Exception)
 			{
-				TempData["ErrorMessage"] = $"Sorry, deleting user failed for unkwon reasons";
+				TempData["ErrorMessage"] = $"Sorry, deleting user failed.";
 			}
 		}
 
@@ -228,10 +228,10 @@ public class UserController : Controller
 		vm.UserRoles = _usersRepository.GetUserRolesAsync().Result;
 	}
 
-    protected virtual async Task<List<Group>> GetConflictingGroupsForUser(TicketAppUser user)
-    {
-        var projectsLedByManager = await _groupsRepository.GetGroupByManagerIdAsync(user.Id)
-                                   ?? new List<Group>();
-        return projectsLedByManager.Where(g => g.Members != null).ToList();
-    }
+	protected virtual async Task<List<Group>> GetConflictingGroupsForUser(TicketAppUser user)
+	{
+		var projectsLedByManager = await _groupsRepository.GetGroupByManagerIdAsync(user.Id)
+								   ?? new List<Group>();
+		return projectsLedByManager.Where(g => g.Members != null).ToList();
+	}
 }

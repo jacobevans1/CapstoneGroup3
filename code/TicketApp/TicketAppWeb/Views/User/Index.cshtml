@@ -159,6 +159,7 @@
 							Phone Number
 						</label>
 						<input type="tel" class="form-control" id="createPhone" asp-for="@Model.User.PhoneNumber">
+						<span asp-validation-for="@Model.User.PhoneNumber" class="text-danger"></span>
 					</div>
 
 					<!-- Role -->
@@ -229,6 +230,7 @@
 							Phone Number
 						</label>
 						<input type="tel" class="form-control" id="editPhone" asp-for="@Model.User.PhoneNumber">
+						<span asp-validation-for="@Model.User.PhoneNumber" class="text-danger"></span>
 					</div>
 
 					<!-- Role -->

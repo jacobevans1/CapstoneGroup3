@@ -31,6 +31,20 @@ namespace TicketAppWeb.Models.DomainModels
 		public string LastName { get; set; } = string.Empty;
 
 		/// <summary>
+		/// Gets or sets the email of the user.
+		/// </summary>
+		[Required]
+		[EmailAddress(ErrorMessage = "Please enter a valid email (e.g., name@example.com)")]
+		public override string Email { get; set; }
+
+		/// <summary>
+		/// Gets or sets the phone number of the user.
+		/// </summary>
+		[RegularExpression(@"^(\+1\s?)?(\d{3})[-.\s]?(\d{3})[-.\s]?(\d{4})$",
+			ErrorMessage = "Please enter a valid phone number (e.g., +1 123-456-7890)")]
+		public override string? PhoneNumber { get; set; }
+
+		/// <summary>
 		/// Gets the full name of the user by combining the first and last names.
 		/// </summary>
 		public string FullName => $"{FirstName} {LastName}";

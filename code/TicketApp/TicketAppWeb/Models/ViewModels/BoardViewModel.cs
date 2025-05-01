@@ -149,5 +149,24 @@ namespace TicketAppWeb.Models.ViewModels
 
 			return false;
 		}
+
+		/// <summary>
+		/// Checks if the current user is in a group assigned to the stage.
+		/// </summary>
+		public bool IsCurrentUserAMemberOfGroupOnStage(string stageId)
+		{
+			foreach (var group in AssignedGroups[stageId])
+			{
+				foreach (var member in group.Members)
+				{
+					if (member.Id == CurrentUser.Id)
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
 	}
 }
