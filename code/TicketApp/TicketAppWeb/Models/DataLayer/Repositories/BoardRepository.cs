@@ -62,13 +62,10 @@ public class BoardRepository : Repository<Board>, IBoardRepository
 	public void AddBoard(Project project, bool isAdmin)
 	{
 		var board = CreateBoard(project);
-		var managerGroup = new Group();
-
-		managerGroup = isAdmin ? project.Groups.FirstOrDefault() : project.Groups.FirstOrDefault(g => g.ManagerId == project.CreatedById);
 
 		Insert(board);
 		var boardStages = AddDefaultBoardStages(board);
-		AddDefaultBoardStageGroups(boardStages, managerGroup!.Id);
+		AddDefaultBoardStageGroups(boardStages);
 		Save();
 	}
 
@@ -142,7 +139,7 @@ public class BoardRepository : Repository<Board>, IBoardRepository
 	/// </summary>
 	/// <param name="boardId"></param>
 	/// <param name="stageId"></param>
-	/// <param name="groupIds"></param>
+	/// <param name="newGroupIds"></param>
 	public void AssignGroupToStage(string boardId, string stageId, List<string> newGroupIds)
 	{
 		var boardStage = context.BoardStages.FirstOrDefault(bs => bs.BoardId == boardId && bs.StageId == stageId);
@@ -153,9 +150,10 @@ public class BoardRepository : Repository<Board>, IBoardRepository
 
 		var existingBoardStageGroups = GetBoardStageGroups(boardId)[stageId];
 
+
 		foreach (var group in existingBoardStageGroups)
 		{
-			if (!newGroupIds.Contains(group.Id))
+			if (group != null && !newGroupIds.Contains(group.Id))
 			{
 				var boardStageGroup = context.BoardStageGroups
 					.FirstOrDefault(bsg => bsg.BoardId == boardId && bsg.StageId == stageId && bsg.GroupId == group.Id);
@@ -163,6 +161,7 @@ public class BoardRepository : Repository<Board>, IBoardRepository
 			}
 		}
 		Save();
+
 
 		foreach (var newGroupId in newGroupIds)
 		{
@@ -336,10 +335,10 @@ public class BoardRepository : Repository<Board>, IBoardRepository
 			context.BoardStages.Add(boardStage);
 		}
 		Save();
-		return context.BoardStages.ToList();
+		return context.BoardStages.Where(bs => bs.BoardId == board.Id).ToList();
 	}
 
-	private void AddDefaultBoardStageGroups(List<BoardStage> boardStages, string groupId)
+	private void AddDefaultBoardStageGroups(List<BoardStage> boardStages)
 	{
 		foreach (var boardStage in boardStages)
 		{
@@ -348,7 +347,7 @@ public class BoardRepository : Repository<Board>, IBoardRepository
 				Id = Guid.NewGuid().ToString(),
 				BoardId = boardStage.BoardId,
 				StageId = boardStage.StageId,
-				GroupId = groupId
+				GroupId = null
 			};
 			context.BoardStageGroups.Add(boardStageGroup);
 		}

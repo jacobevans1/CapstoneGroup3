@@ -136,7 +136,10 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
 
 				foreach (var group in existingProject.Groups)
 				{
-					groupsToAddDirectly.Add(group);
+					if (!groupsToAddDirectly.Contains(group))
+					{
+						groupsToAddDirectly.Add(group);
+					}
 				}
 
 				groupsNeedingApproval = selectedGroupIds
