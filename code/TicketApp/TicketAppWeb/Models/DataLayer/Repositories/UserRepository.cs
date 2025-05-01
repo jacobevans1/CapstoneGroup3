@@ -39,7 +39,11 @@ public class UserRepository : Repository<TicketAppUser>, IUserRepository
 
 		user.UserName = user.FirstName + user.LastName;
 		var password = user.UserName + "123!";
+
 		user.EmailConfirmed = true;
+
+		var normalizedPhone = normalizePhone(user.PhoneNumber);
+		user.PhoneNumber = normalizedPhone;
 
 		var result = await _userManager.CreateAsync(user, password);
 
@@ -71,7 +75,7 @@ public class UserRepository : Repository<TicketAppUser>, IUserRepository
 			existingUser!.FirstName = user.FirstName;
 			existingUser.LastName = user.LastName;
 			existingUser.Email = user.Email;
-			existingUser.PhoneNumber = user.Email;
+			existingUser.PhoneNumber = normalizePhone(user.PhoneNumber);
 
 			await _userManager.UpdateAsync(existingUser);
 
@@ -148,5 +152,16 @@ public class UserRepository : Repository<TicketAppUser>, IUserRepository
 	private bool checkIfUserExists(TicketAppUser user)
 	{
 		return context.Users.Any(u => u.UserName == user.UserName);
+	}
+
+	private string normalizePhone(string input)
+	{
+		var digits = new string(input.Where(char.IsDigit).ToArray());
+		if (digits.Length == 10)
+			return $"+1{digits}";
+		else if (digits.Length == 11 && digits.StartsWith("1"))
+			return $"+{digits}";
+		else
+			return input;
 	}
 }

@@ -289,6 +289,15 @@ public class BoardController : Controller
 		var assignedTickets = LoadTickets(board.Id);
 		var project = _projectRepository.GetProjectByNameAndLeadAsync(board.Project.ProjectName!, board.Project.LeadId!).Result;
 
+		foreach (var stage in assignedGroups)
+		{
+			foreach (var group in stage.Value)
+			{
+				var users = _userRepository.GetUsersByGroupId(group.Id);
+				group.Members = users.ToList();
+			}
+		}
+
 		vm.Board = board;
 		vm.Project = project!;
 		vm.Stages = stages;
