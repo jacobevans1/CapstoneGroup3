@@ -42,8 +42,11 @@ public class UserRepository : Repository<TicketAppUser>, IUserRepository
 
 		user.EmailConfirmed = true;
 
-		var normalizedPhone = normalizePhone(user.PhoneNumber);
-		user.PhoneNumber = normalizedPhone;
+		if (user.PhoneNumber != null)
+		{
+			var normalizedPhone = normalizePhone(user.PhoneNumber);
+			user.PhoneNumber = normalizedPhone;
+		}
 
 		var result = await _userManager.CreateAsync(user, password);
 
@@ -75,7 +78,12 @@ public class UserRepository : Repository<TicketAppUser>, IUserRepository
 			existingUser!.FirstName = user.FirstName;
 			existingUser.LastName = user.LastName;
 			existingUser.Email = user.Email;
-			existingUser.PhoneNumber = normalizePhone(user.PhoneNumber);
+
+			if (user.PhoneNumber != null)
+			{
+				var normalizedPhone = normalizePhone(user.PhoneNumber);
+				existingUser.PhoneNumber = normalizedPhone;
+			}
 
 			await _userManager.UpdateAsync(existingUser);
 

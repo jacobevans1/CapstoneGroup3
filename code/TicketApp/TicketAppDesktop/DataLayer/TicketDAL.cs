@@ -20,7 +20,7 @@ public static class TicketDAL
 		var tickets = new List<Ticket>();
 		using (var conn = new SqlConnection(connectionString))
 		{
-			const string query = 
+			const string query =
 				@"SELECT DISTINCT t.Id, t.Title, t.Description, t.CreatedDate, t.CreatedBy,
 							t.AssignedTo, t.Stage, t.IsComplete, t.BoardId
 					FROM Tickets t
@@ -28,7 +28,7 @@ public static class TicketDAL
 					JOIN BoardStageGroups bsg   ON bs.BoardId = bsg.BoardId AND bs.StageId = bsg.StageId
 					JOIN GroupUser gu           ON bsg.GroupId = gu.GroupId
 					WHERE gu.MemberId = @UserId
-						AND t.AssignedTo IS NULL";
+						AND (t.AssignedTo IS NULL OR t.AssignedTo = 'Unassigned')";
 
 			using var cmd = new SqlCommand(query, conn);
 			cmd.Parameters.AddWithValue("@UserId", userId);
@@ -54,7 +54,7 @@ public static class TicketDAL
 		var tickets = new List<Ticket>();
 		using (var conn = new SqlConnection(connectionString))
 		{
-			const string query = 
+			const string query =
 				@"SELECT Id, Title, Description, CreatedDate, CreatedBy,
 					   AssignedTo, Stage, IsComplete, BoardId
 					  FROM Tickets
@@ -83,7 +83,7 @@ public static class TicketDAL
 	{
 		using (var conn = new SqlConnection(connectionString))
 		{
-			const string query = 
+			const string query =
 				@"SELECT Id, Title, Description, CreatedDate, CreatedBy,
 							   AssignedTo, Stage, IsComplete, BoardId
 					  FROM Tickets
@@ -113,7 +113,7 @@ public static class TicketDAL
 	{
 		using (var conn = new SqlConnection(connectionString))
 		{
-			const string query = 
+			const string query =
 				@"UPDATE Tickets
 					  SET Title = @Title,
 						  Description = @Description,
@@ -126,7 +126,7 @@ public static class TicketDAL
 				cmd.Parameters.AddWithValue("@Title", ticket.Title ?? (object)DBNull.Value);
 				cmd.Parameters.AddWithValue("@Description", ticket.Description ?? (object)DBNull.Value);
 				cmd.Parameters.AddWithValue("@Stage", ticket.Stage);
-				cmd.Parameters.AddWithValue("@AssignedTo", ticket.AssignedTo ?? (object)DBNull.Value);
+				cmd.Parameters.AddWithValue("@AssignedTo", ticket.AssignedTo ?? "Unassigned");
 				cmd.Parameters.AddWithValue("@TicketId", ticket.Id);
 
 				conn.Open();
