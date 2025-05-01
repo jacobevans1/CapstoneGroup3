@@ -12,5 +12,13 @@ public static class UserSession
 	/// <value>
 	/// The current user identifier.
 	/// </value>
-	public static string CurrentUserId { get; set; } = string.Empty;
+	public static string? CurrentUserId { get; set; } = string.Empty;
+
+	/// <summary>
+	/// Resets the session state to simulate logout.
+	/// </summary>
+	public static void Reset()
+	{
+		CurrentUserId = null;
+	}
 }
