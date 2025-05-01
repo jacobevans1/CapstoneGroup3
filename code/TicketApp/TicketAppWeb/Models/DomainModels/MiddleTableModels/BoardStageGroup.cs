@@ -25,7 +25,7 @@ namespace TicketAppWeb.Models.DomainModels.MiddleTableModels
 		/// <summary>
 		/// Gets or sets the group identifier.
 		/// </summary>
-		public string GroupId { get; set; }
+		public string? GroupId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the board stage associated with this group.

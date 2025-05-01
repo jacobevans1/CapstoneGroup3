@@ -177,7 +177,14 @@ public class BoardController : Controller
 
 		foreach (var group in viewModel.AssignedGroups[stageId])
 		{
-			viewModel.SelectedGroupIds.Add(group.Id);
+			if (group != null)
+			{
+				viewModel.SelectedGroupIds.Add(group.Id);
+			}
+			else
+			{
+				viewModel.SelectedGroupIds.Add(string.Empty);
+			}
 		}
 
 		return View(viewModel);
@@ -293,8 +300,11 @@ public class BoardController : Controller
 		{
 			foreach (var group in stage.Value)
 			{
-				var users = _userRepository.GetUsersByGroupId(group.Id);
-				group.Members = users.ToList();
+				if (group != null)
+				{
+					var users = _userRepository.GetUsersByGroupId(group.Id);
+					group.Members = users.ToList();
+				}
 			}
 		}
 

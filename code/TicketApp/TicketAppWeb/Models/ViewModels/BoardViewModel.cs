@@ -157,11 +157,14 @@ namespace TicketAppWeb.Models.ViewModels
 		{
 			foreach (var group in AssignedGroups[stageId])
 			{
-				foreach (var member in group.Members)
+				if (group != null)
 				{
-					if (member.Id == CurrentUser.Id)
+					foreach (var member in group.Members)
 					{
-						return true;
+						if (member.Id == CurrentUser.Id)
+						{
+							return true;
+						}
 					}
 				}
 			}

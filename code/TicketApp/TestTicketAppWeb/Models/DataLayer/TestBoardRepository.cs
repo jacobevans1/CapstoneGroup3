@@ -46,7 +46,7 @@ public class TestBoardRepository : IDisposable
 		var repo = new BoardRepository(ctx);
 
 		// Act
-		repo.AddBoard(project);
+		repo.AddBoard(project, true);
 
 		// Assert board exists
 		var board = ctx.Boards.Single(b => b.ProjectId == "p2");
@@ -174,7 +174,7 @@ public class TestBoardRepository : IDisposable
 		_repo.RenameStage("noStage", "whatever");
 	}
 
-	
+
 
 	[Fact]
 	public void SaveBoardStages_UpdatesOrder()

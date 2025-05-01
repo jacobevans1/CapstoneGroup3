@@ -88,7 +88,7 @@ public class ProjectController : Controller
 		{
 			var assignedGroups = model.SelectedGroupIds;
 			await _projectRepository.AddProjectAsync(project, assignedGroups, isAdmin);
-			_boardRepository.AddBoard(project);
+			_boardRepository.AddBoard(project, isAdmin);
 			TempData["SuccessMessage"] = $"Project {project.ProjectName} saved successfully";
 			return RedirectToAction("Index");
 		}

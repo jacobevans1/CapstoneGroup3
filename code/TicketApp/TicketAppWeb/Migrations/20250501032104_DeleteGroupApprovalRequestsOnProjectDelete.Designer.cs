@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketAppWeb.Models.DataLayer;
 
@@ -11,9 +12,11 @@ using TicketAppWeb.Models.DataLayer;
 namespace TicketAppWeb.Migrations
 {
     [DbContext(typeof(TicketAppContext))]
-    partial class TicketAppContextModelSnapshot : ModelSnapshot
+    [Migration("20250501032104_DeleteGroupApprovalRequestsOnProjectDelete")]
+    partial class DeleteGroupApprovalRequestsOnProjectDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -266,6 +269,7 @@ namespace TicketAppWeb.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("GroupId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("StageId")
@@ -625,7 +629,8 @@ namespace TicketAppWeb.Migrations
                     b.HasOne("TicketAppWeb.Models.DomainModels.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("TicketAppWeb.Models.DomainModels.MiddleTableModels.BoardStage", "BoardStage")
                         .WithMany()
