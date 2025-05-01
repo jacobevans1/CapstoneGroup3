@@ -1,7 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using Microsoft.Data.SqlClient;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using TicketAppDesktop.Models;
+using TicketAppDesktop.DataLayer;
+
 
 namespace TicketAppDesktop.ViewModels;
 
@@ -340,6 +343,12 @@ public class TicketDetailViewModel : INotifyPropertyChanged
 
 			?? throw new InvalidOperationException("Ticket not found");
 
+		if (!string.IsNullOrEmpty(Ticket.AssignedTo) &&
+		!IsUserValidForStage(Ticket.AssignedTo, Ticket.BoardId!, Ticket.Stage!))
+		{
+			Ticket.AssignedTo = null;
+		}
+
 		_ticketDAL.UpdateTicket(Ticket!);
 
 		void LogIfChanged(string prop, string? oldVal, string? newVal)
@@ -442,6 +451,28 @@ public class TicketDetailViewModel : INotifyPropertyChanged
 		LogIfChanged("Stage", original.Stage, Ticket!.Stage);
 
 	}
+
+	private bool IsUserValidForStage(string userId, string boardId, string stageId)
+	{
+		using var conn = new SqlConnection(Connection.ConnectionString);
+		conn.Open();
+
+		const string query = @"
+		SELECT COUNT(*) 
+		FROM BoardStageGroups bsg
+		JOIN GroupUser gu ON bsg.GroupId = gu.GroupId
+		WHERE bsg.BoardId = @BoardId AND bsg.StageId = @StageId AND gu.MemberId = @UserId";
+
+		using var cmd = new SqlCommand(query, conn);
+		cmd.Parameters.AddWithValue("@BoardId", boardId);
+		cmd.Parameters.AddWithValue("@StageId", stageId);
+		cmd.Parameters.AddWithValue("@UserId", userId);
+
+		int count = Convert.ToInt32(cmd.ExecuteScalar());
+		return count > 0;
+	}
+
+
 
 }
 
