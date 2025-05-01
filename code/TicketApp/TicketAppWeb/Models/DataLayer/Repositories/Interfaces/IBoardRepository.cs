@@ -20,7 +20,8 @@ namespace TicketAppWeb.Models.DataLayer.Repositories.Interfaces
 		///	Adds a new board for the specified project.
 		/// </summary>
 		/// <param name="project"></param>
-		void AddBoard(Project project);
+		/// <param name="isAdmin"></param>
+		void AddBoard(Project project, bool isAdmin);
 
 		/// <summary>
 		/// Adds a new stage to the board.

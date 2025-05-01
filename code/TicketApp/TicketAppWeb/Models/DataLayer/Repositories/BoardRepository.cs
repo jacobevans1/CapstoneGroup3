@@ -54,15 +54,17 @@ public class BoardRepository : Repository<Board>, IBoardRepository
 		return newBoard;
 	}
 
-
 	/// <summary>
 	/// Adds a new board for the specified project.
 	/// </summary>
 	/// <param name="project"></param>
-	public void AddBoard(Project project)
+	/// <param name="isAdmin"></param>
+	public void AddBoard(Project project, bool isAdmin)
 	{
 		var board = CreateBoard(project);
-		var managerGroup = project.Groups.FirstOrDefault(g => g.ManagerId == project.LeadId);
+		var managerGroup = new Group();
+
+		managerGroup = isAdmin ? project.Groups.FirstOrDefault() : project.Groups.FirstOrDefault(g => g.ManagerId == project.CreatedById);
 
 		Insert(board);
 		var boardStages = AddDefaultBoardStages(board);
