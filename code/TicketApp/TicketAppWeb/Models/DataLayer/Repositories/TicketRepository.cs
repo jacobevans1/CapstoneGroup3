@@ -38,7 +38,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
                 PropertyChanged = "Created",
                 OldValue = null,
                 NewValue = ticket.Title,
-                ChangedByUserId = ticket.CreatedBy,
+                ChangedByUserId = ticket.CreatedBy!,
                 ChangeDate = now,
                 ChangeDescription = historyEntry
             });
@@ -56,9 +56,9 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
         {
             Console.WriteLine($"Comparing title: existing = '{original.Title}', incoming = '{updated.Title}'");
 
-            if (original.Title?.Trim() != updated.Title?.Trim())
+            if (original.Title!.Trim() != updated.Title!.Trim())
             {
-                Console.WriteLine($"📝 Title changed from '{original.Title}' to '{updated.Title}'");
+                Console.WriteLine($"Title changed from '{original.Title}' to '{updated.Title}'");
             }
 
             // Apply changes
@@ -99,7 +99,7 @@ namespace TicketAppWeb.Models.DataLayer.Repositories
                     .FirstOrDefault(u => u.Id == ticket.AssignedTo);
             }
 
-            return ticket;
+            return ticket!;
         }
 
 

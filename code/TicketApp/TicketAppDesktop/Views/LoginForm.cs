@@ -1,50 +1,52 @@
-﻿using TicketAppDesktop.ViewModels;
+﻿using TicketAppDesktop.Services;
+using TicketAppDesktop.ViewModels;
 
-namespace TicketAppDesktop.Views;
-
-public partial class LoginForm : Form
+namespace TicketAppDesktop.Views
 {
-    private readonly LoginViewModel loginViewModel;
+	public partial class LoginForm : Form
+	{
+		private readonly LoginViewModel _loginViewModel;
 
-	/// <summary>
-	/// Initializes a new instance of the <see cref="LoginForm"/> class.
-	/// </summary>
-	public LoginForm()
-    {
-        InitializeComponent();
-        loginViewModel = new LoginViewModel();
-    }
+		public LoginForm()
+		{
+			InitializeComponent();
 
-    private void loginBTN_Click(object sender, EventArgs e)
-    {
-        loginViewModel.User.UserName = usernameTB.Text;
-        loginViewModel.InputPassword = passwordTB.Text;
+			// inject real ADO-NET auth + real MsgBox
+			var auth = new LoginDAL();
+			var msgBox = new MessageBoxService();
+			_loginViewModel = new LoginViewModel(auth, msgBox);
+		}
 
-        if (loginViewModel.Login())
-        {
-            var ticketAppHome = new TicketAppHome();
-            ticketAppHome.Show();
-            this.Hide();
-        }
-    }
+		private void loginBTN_Click(object sender, EventArgs e)
+		{
+			_loginViewModel.User.UserName = usernameTB.Text;
+			_loginViewModel.InputPassword = passwordTB.Text;
 
-    private void passwordTB_KeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.KeyCode == Keys.Enter)
-        {
-            e.Handled = true;
-            e.SuppressKeyPress = true;
+			if (_loginViewModel.Login())
+			{
+				var home = new TicketAppHome();
+				home.Show();
+				Hide();
+			}
+		}
 
-            loginViewModel.User.UserName = usernameTB.Text;
-            loginViewModel.InputPassword = passwordTB.Text;
+		private void passwordTB_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter)
+			{
+				e.Handled = true;
+				e.SuppressKeyPress = true;
 
-            if (loginViewModel.Login())
-            {                
-                var ticketAppHome = new TicketAppHome();
-                ticketAppHome.Show();
-                this.Hide();               
-            }
+				_loginViewModel.User.UserName = usernameTB.Text;
+				_loginViewModel.InputPassword = passwordTB.Text;
 
-        }
-    }
+				if (_loginViewModel.Login())
+				{
+					var home = new TicketAppHome();
+					home.Show();
+					Hide();
+				}
+			}
+		}
+	}
 }

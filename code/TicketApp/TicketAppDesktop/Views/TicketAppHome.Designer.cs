@@ -66,7 +66,7 @@
 			cmbFilter.Name = "cmbFilter";
 			cmbFilter.Size = new Size(161, 33);
 			cmbFilter.TabIndex = 2;
-			cmbFilter.SelectedIndexChanged += cmbFilter_SelectedIndexChanged;
+			cmbFilter.SelectedIndexChanged += CmbFilter_SelectedIndexChanged;
 			// 
 			// flpTasks
 			// 

@@ -56,7 +56,7 @@ $coverageFilesArg = $coverageFilePaths -join ";"
 Write-Host "Generating coverage report..." -ForegroundColor Green
 reportgenerator -reports:$coverageFilesArg -targetdir:$reportDir -reporttypes:Html `
     -assemblyfilters:"-System.Windows.Forms.*;-Microsoft.*" `
-    -classfilters:"-AspNetCoreGeneratedDocument.*;-*.GeneratedCode.*;-*.Designer.*;-TicketAppWeb.Migrations.*;-Program"
+      -classfilters:"-AspNetCoreGeneratedDocument.*;-*.GeneratedCode.*;-*.Designer.*;-TicketAppWeb.Migrations.*;-Program;-TicketAppDesktop.Views.LoginForm*;-TicketAppDesktop.Views.TicketAppHome*;-TicketAppDesktop.Views.TicketDetailForm*;-TicketAppDesktop.Properties.Resources*;-TicketAppDesktop.ApplicationConfiguration*"
 
 
 if ($LASTEXITCODE -eq 0) {

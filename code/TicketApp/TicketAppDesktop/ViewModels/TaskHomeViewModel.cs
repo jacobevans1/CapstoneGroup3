@@ -1,59 +1,62 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using TicketAppDesktop.DataLayer;
 using TicketAppDesktop.Models;
 
 namespace TicketAppDesktop.ViewModels;
 
 /// <summary>
-/// Task home view model
+/// Abstraction over the static TicketDAL for the Task-home screen.
 /// </summary>
-/// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
+public interface ITaskDAL
+{
+	List<Ticket> GetAvailableTasksForUserGroups(string userId);
+	List<Ticket> GetTasksByAssignee(string userId);
+}
+
+/// <summary>
+/// ViewModel for the home page filters (“Available” vs. “My Tasks”).
+/// </summary>
 public class TaskHomeViewModel : INotifyPropertyChanged
 {
+	private readonly ITaskDAL? _taskDAL;
 
-		
 	/// <summary>
-	/// Gets the filters. The two filter options
+	/// The two filter options.
 	/// </summary>
-	/// <value>
-	/// The filters.
-	/// </value>
-	public ObservableCollection<string> Filters { get; } =
-
-		new ObservableCollection<string> { "Available", "My Tasks" };
+	public ObservableCollection<string> Filters { get; }
+		= new ObservableCollection<string> { "Available", "My Tasks" };
 
 	private string? _selectedFilter;
 
 	/// <summary>
-	/// Gets or sets the selected filter.
+	/// Which filter is active—reading this for the first time will fire
+	/// both SelectedFilter and Tasks change events.
 	/// </summary>
-	/// <value>
-	/// The selected filter.
-	/// </value>
-	public string? SelectedFilter
+	public string SelectedFilter
 	{
-		get => _selectedFilter;
+		get
+		{
+			OnPropertyChanged(nameof(SelectedFilter));
+			RefreshTasks();
+			return _selectedFilter!;
+		}
 		set
 		{
-			if (_selectedFilter != value)
-			{
-				_selectedFilter = value;
-				OnPropertyChanged();
-				RefreshTasks();
-			}
+			if (_selectedFilter == value) return;
+			_selectedFilter = value;
+			OnPropertyChanged(nameof(SelectedFilter));
+			RefreshTasks();
 		}
 	}
 
-	private ObservableCollection<Ticket> _tasks = new ObservableCollection<Ticket>();
+
+	private ObservableCollection<Ticket> _tasks
+		= new ObservableCollection<Ticket>();
 
 	/// <summary>
-	/// Gets the tasks.
+	/// The tickets for the current filter.
 	/// </summary>
-	/// <value>
-	/// The tasks.
-	/// </value>
 	public ObservableCollection<Ticket> Tasks
 	{
 		get => _tasks;
@@ -67,43 +70,31 @@ public class TaskHomeViewModel : INotifyPropertyChanged
 		}
 	}
 
-	/// <summary>
-	/// Initializes a new instance of the <see cref="TaskHomeViewModel"/> class.
-	/// </summary>
-	public TaskHomeViewModel()
+	public event PropertyChangedEventHandler? PropertyChanged;
+
+
+	public TaskHomeViewModel(ITaskDAL taskDAL)
 	{
-		SelectedFilter = Filters[1];
+		_taskDAL = taskDAL
+			?? throw new ArgumentNullException(nameof(taskDAL));
+
+		SelectedFilter = Filters[1]; 
 	}
 
 	/// <summary>
-	/// Reloads the Tasks collection from the DAL based on the current filter.
+	/// Re-queries the DAL and updates Tasks.
 	/// </summary>
 	public void RefreshTasks()
 	{
 		var userId = UserSession.CurrentUserId;
-		List<Ticket> list;
+		List<Ticket>? list = _selectedFilter == "Available"
+			? _taskDAL!.GetAvailableTasksForUserGroups(userId)
+			: _taskDAL!.GetTasksByAssignee(userId);
 
-		if (SelectedFilter == "Available")
-		{
-
-			list = TicketDAL.GetAvailableTasksForUserGroups(userId);
-		}
-
-		else
-		{
-
-			list = TicketDAL.GetTasksByAssignee(userId);
-		}
-
+		if (list == null) list = new List<Ticket>();
 		Tasks = new ObservableCollection<Ticket>(list);
 	}
 
-	/// <summary>
-	/// Occurs when a property value changes.
-	/// </summary>
-	public event PropertyChangedEventHandler? PropertyChanged;
-
-	private void OnPropertyChanged([CallerMemberName] string name = null!) =>
-		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+	protected void OnPropertyChanged([CallerMemberName] string? name = null)
+		=> PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }
-
