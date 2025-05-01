@@ -26,6 +26,7 @@
 		private void InitializeComponent()
 		{
 			panelMain = new Panel();
+			logoutButton = new Button();
 			lblFilter = new Label();
 			cmbFilter = new ComboBox();
 			flpTasks = new FlowLayoutPanel();
@@ -36,23 +37,38 @@
 			// 
 			panelMain.BackColor = Color.White;
 			panelMain.BorderStyle = BorderStyle.Fixed3D;
+			panelMain.Controls.Add(logoutButton);
 			panelMain.Controls.Add(lblFilter);
 			panelMain.Controls.Add(cmbFilter);
 			panelMain.Controls.Add(flpTasks);
-			panelMain.Location = new Point(10, 10);
-			panelMain.Margin = new Padding(2, 2, 2, 2);
+			panelMain.Location = new Point(9, 8);
+			panelMain.Margin = new Padding(2);
 			panelMain.Name = "panelMain";
-			panelMain.Size = new Size(507, 681);
+			panelMain.Size = new Size(444, 512);
 			panelMain.TabIndex = 0;
+			// 
+			// logoutButton
+			// 
+			logoutButton.BackColor = Color.IndianRed;
+			logoutButton.FlatStyle = FlatStyle.Flat;
+			logoutButton.Font = new Font("Showcard Gothic", 9F);
+			logoutButton.ForeColor = Color.White;
+			logoutButton.Location = new Point(355, 11);
+			logoutButton.Name = "logoutButton";
+			logoutButton.Size = new Size(75, 31);
+			logoutButton.TabIndex = 4;
+			logoutButton.Text = "Logout";
+			logoutButton.UseVisualStyleBackColor = false;
+			logoutButton.Click += logoutButton_Click;
 			// 
 			// lblFilter
 			// 
 			lblFilter.AutoSize = true;
 			lblFilter.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			lblFilter.Location = new Point(111, 18);
+			lblFilter.Location = new Point(97, 14);
 			lblFilter.Margin = new Padding(2, 0, 2, 0);
 			lblFilter.Name = "lblFilter";
-			lblFilter.Size = new Size(58, 25);
+			lblFilter.Size = new Size(47, 20);
 			lblFilter.TabIndex = 1;
 			lblFilter.Text = "View:";
 			// 
@@ -61,10 +77,10 @@
 			cmbFilter.DropDownStyle = ComboBoxStyle.DropDownList;
 			cmbFilter.Font = new Font("Segoe UI", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
 			cmbFilter.Items.AddRange(new object[] { "Available", "My Tasks" });
-			cmbFilter.Location = new Point(173, 15);
-			cmbFilter.Margin = new Padding(2, 2, 2, 2);
+			cmbFilter.Location = new Point(151, 11);
+			cmbFilter.Margin = new Padding(2);
 			cmbFilter.Name = "cmbFilter";
-			cmbFilter.Size = new Size(161, 33);
+			cmbFilter.Size = new Size(141, 27);
 			cmbFilter.TabIndex = 2;
 			cmbFilter.SelectedIndexChanged += CmbFilter_SelectedIndexChanged;
 			// 
@@ -72,20 +88,20 @@
 			// 
 			flpTasks.AutoScroll = true;
 			flpTasks.FlowDirection = FlowDirection.TopDown;
-			flpTasks.Location = new Point(16, 63);
-			flpTasks.Margin = new Padding(2, 2, 2, 2);
+			flpTasks.Location = new Point(14, 47);
+			flpTasks.Margin = new Padding(2);
 			flpTasks.Name = "flpTasks";
-			flpTasks.Size = new Size(476, 601);
+			flpTasks.Size = new Size(416, 451);
 			flpTasks.TabIndex = 3;
 			flpTasks.WrapContents = false;
 			// 
 			// TicketAppHome
 			// 
-			AutoScaleDimensions = new SizeF(8F, 20F);
+			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(531, 696);
+			ClientSize = new Size(465, 522);
 			Controls.Add(panelMain);
-			Margin = new Padding(2, 2, 2, 2);
+			Margin = new Padding(2);
 			Name = "TicketAppHome";
 			StartPosition = FormStartPosition.CenterScreen;
 			Text = "TicketApp - Tasks Overview";
@@ -95,5 +111,7 @@
 		}
 
 		#endregion
+
+		private Button logoutButton;
 	}
 }

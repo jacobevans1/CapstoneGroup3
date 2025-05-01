@@ -81,4 +81,18 @@ public partial class TicketAppHome : Form
 		public List<Ticket> GetTasksByAssignee(string userId)
 			=> TicketDAL.GetTasksByAssignee(userId);
 	}
+
+	private void logoutButton_Click(object sender, EventArgs e)
+	{
+		// Reset session state
+		UserSession.Reset();
+
+		// Show login form
+		var loginForm = new LoginForm();
+		loginForm.Show();
+
+		// Close the current form
+		this.Close();
+	}
+
 }
