@@ -454,6 +454,9 @@ public class TicketDetailViewModel : INotifyPropertyChanged
 
 	private bool IsUserValidForStage(string userId, string boardId, string stageId)
 	{
+		if (string.IsNullOrWhiteSpace(userId) || userId.ToLower() == "Unassigned")
+			return false;
+
 		using var conn = new SqlConnection(Connection.ConnectionString);
 		conn.Open();
 
