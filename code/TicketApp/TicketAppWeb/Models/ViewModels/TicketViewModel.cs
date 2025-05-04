@@ -56,20 +56,22 @@ public class TicketViewModel
 	/// <summary>
 	/// Gets or sets the assigned groups.
 	/// </summary>
-	/// <value>
-	/// The assigned groups.
-	/// </value>
 	[ValidateNever]
 	public Dictionary<string, List<Group>> AssignedGroups { get; set; } = new();
 
 	/// <summary>
 	/// Gets or sets the eligible assignees.
 	/// </summary>
-	/// <value>
-	/// The eligible assignees.
-	/// </value>
 	[ValidateNever]
 	public List<TicketAppUser> EligibleAssignees { get; set; } = new();
+
+	/// <summary>
+	/// Gets or sets the selected group ID.
+	/// </summary>
+	[ValidateNever]
+	public bool CanAssignUser => IsCurrentUserRoleAdmin() || IsCurrentUserProjectLeadForProject() || IsCurrentUserAGroupManagerForStage(SelectedStageId) ||
+								 IsCurrentUserAssignedToTicket() || IsTicketUnassigned();
+
 
 	/// <summary>
 	/// Initializes a new instance of the TicketViewModel class.
@@ -80,5 +82,58 @@ public class TicketViewModel
 		NewTicket = new Ticket();
 		Project = new Project();
 		Board = new Board();
+	}
+
+	/// <summary>
+	/// Checks if the current user is the project lead for the project.
+	/// </summary>
+	public bool IsCurrentUserProjectLeadForProject()
+	{
+		return Project.LeadId == CurrentUser.Id;
+	}
+
+	/// <summary>
+	/// Checks if the current user is a group manager in the stage.
+	/// </summary>
+	public bool IsCurrentUserAGroupManagerForStage(string stageId)
+	{
+		foreach (var group in AssignedGroups[stageId])
+		{
+			if (group.ManagerId == CurrentUser.Id)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/// <summary>
+	/// Checks if the current user is in a group is assigned to the ticket.
+	/// </summary>
+	public bool IsCurrentUserAssignedToTicket()
+	{
+		if (Ticket.AssignedTo == CurrentUser.Id)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/// <summary>
+	/// Checks if the current ticket is unassigned.
+	/// </summary>
+	public bool IsTicketUnassigned()
+	{
+		return Ticket.AssignedTo == "Unassigned";
+	}
+
+	/// <summary>
+	/// Checks if the current user is an admin.
+	/// </summary>
+	public bool IsCurrentUserRoleAdmin()
+	{
+		return CurrentUserRole == "Admin";
 	}
 }

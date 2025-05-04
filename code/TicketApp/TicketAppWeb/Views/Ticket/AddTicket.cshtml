@@ -34,12 +34,16 @@
 			<textarea asp-for="Ticket.Description" class="form-control"></textarea>
 		</div>
 		<br/>
-
 		<div class="row">
 			<div class="col-md-12">
-				<h6>Select User <span class="text-danger">*</span></h6>
+				<h6>Select User</h6>
 
-				<input type="text" class="form-control mb-2" id="userSearch" placeholder="Search users by name..."/>
+				<input type="text" class="form-control mb-2" id="userSearch" placeholder="Search users by name..." />
+
+				<div class="mb-3">
+					<label for="" class="form-label">Assigned To:</label>
+					<input type="text" class="form-control" id="userFullName" readonly>
+				</div>
 
 				<select class="form-select" id="userSelect" asp-for="SelectedUserId">
 					<option value="Unassigned">Unassigned</option>
@@ -59,7 +63,6 @@
 			</div>
 		</div>
 		<br/>
-
 		<div class="row justify-content-center">
 			<div class="col-auto">
 				<button type="submit" class="btn btn-primary">Add Ticket</button>
@@ -76,16 +79,29 @@
 @section scripts {
 	<script>
         document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById('userSearch').addEventListener('input', function () {
+            var userSearchInput = document.getElementById('userSearch');
+            var userSelect = document.getElementById('userSelect');
+            var userFullNameInput = document.getElementById('userFullName');
+
+            userSelect.addEventListener('change', function () {
+                var selectedOption = userSelect.options[userSelect.selectedIndex];
+				userFullNameInput.value = selectedOption.text;
+            });
+
+            userSearchInput.addEventListener('input', function () {
                 var filter = this.value.toLowerCase();
-                var select = document.getElementById('userSelect');
-                var options = select.options;
+                var options = userSelect.options;
 
                 for (var i = 0; i < options.length; i++) {
                     var text = options[i].text.toLowerCase();
                     options[i].style.display = text.includes(filter) || options[i].value === "" ? "" : "none";
                 }
             });
+
+            var initialSelectedOption = userSelect.options[userSelect.selectedIndex];
+            if (initialSelectedOption) {
+                userFullNameInput.value = initialSelectedOption.text;
+            }
         });
     </script>
 }

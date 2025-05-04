@@ -42,11 +42,13 @@ public class TicketController : Controller
 	{
 		var project = _projectRepository.GetProjectByIdAsync(projectId).Result;
 		var board = _boardRepository.GetBoardByProjectIdAsync(projectId).Result;
+		var assignedGroups = _boardRepository.GetBoardStageGroups(board!.Id);
 
 		var viewModel = new TicketViewModel
 		{
 			Project = project!,
-			Board = board!
+			Board = board!,
+			AssignedGroups = assignedGroups
 		};
 
 		viewModel.Project!.Id = projectId;
