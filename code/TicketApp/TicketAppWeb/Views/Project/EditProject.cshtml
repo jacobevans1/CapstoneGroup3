@@ -47,48 +47,69 @@
         <br />
 
         <div class="row">
-            <div class="col-md-5">
-                <h6>Available Groups</h6>
-                <div class="scrollable-container">
-                    <ul id="availableGroups" class="list-group">
-                        @foreach (var group in Model.AvailableGroups)
-                        {
-                            if (!Model.SelectedGroupIds.Contains(group.Id))
-                            {
-                                <li class="list-group-item">
-                                    <input type="checkbox" class="group-checkbox form-check-input mt-0" value="@group.Id" />
-                                    @group.GroupName
-                                </li>
-                            }
-                        }
-                    </ul>
-                </div>
-            </div>
+	        <div class="col-md-5">
+		        <h6>Available Groups</h6>
+		        <div class="scrollable-container">
+			        <ul id="availableGroups" class="list-group">
+				        @foreach (var group in Model.AvailableGroups)
+				        {
+					        if (!Model.SelectedGroupIds.Contains(group.Id))
+					        {
+						        <li class="list-group-item">
+							        <input type="checkbox" class="group-checkbox form-check-input mt-0" value="@group.Id" />
+							        @group.GroupName
+						        </li>
+					        }
+				        }
+			        </ul>
+		        </div>
+	        </div>
 
-            <div class="col-md-2 text-center align-self-center">
-                <button type="button" class="btn btn-primary mb-2" id="addGroupsBtn">Add →</button>
-                <br /><br />
-                <button type="button" class="btn btn-danger" id="removeGroupsBtn">← Remove</button>
-            </div>
+	        <div class="col-md-2 text-center align-self-center">
+		        <button type="button" class="btn btn-primary mb-2" id="addGroupsBtn">Add →</button>
+		        <br /><br />
+		        <button type="button" class="btn btn-danger" id="removeGroupsBtn">← Remove</button>
+	        </div>
 
-            <div class="col-md-5">
-                <h6>Assigned Groups <span class="text-danger">*</span></h6>
-                <div class="scrollable-container">
-                    <ul id="assignedGroups" class="list-group">
-                        @foreach (var group in Model.AvailableGroups)
-                        {
-                            if (Model.SelectedGroupIds.Contains(group.Id))
-                            {
-                                <li class="list-group-item">
-                                    <input type="checkbox" class="assigned-group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="@group.Id" checked />
-                                    @group.GroupName
-                                </li>
-                            }
-                        }
-                    </ul>
-                </div>
-            </div>
+	        <div class="col-md-5">
+		        <h6>Assigned Groups <span class="text-danger">*</span></h6>
+		        <div class="scrollable-container">
+			        <ul id="assignedGroups" class="list-group">
+				        @foreach (var group in Model.AvailableGroups)
+				        {
+					        if (Model.SelectedGroupIds.Contains(group.Id))
+					        {
+						        <li class="list-group-item">
+							        <input type="checkbox" class="assigned-group-checkbox form-check-input mt-0" name="SelectedGroupIds" value="@group.Id" checked />
+							        @group.GroupName
+						        </li>
+					        }
+				        }
+			        </ul>
+		        </div>
+	        </div>
         </div>
+        
+        <br />
+        <div class="form-group">
+	        <label class="form-label">Pending Groups</label>
+	        <div class="scrollable-container bg-light border rounded p-2" style="min-height: 100px; max-height: 200px; overflow-y: auto;">
+		        <ul class="list-group list-group-flush">
+			        @if (Model.PendingGroups != null && Model.PendingGroups.Any())
+			        {
+				        foreach (var pendingGroup in Model.PendingGroups)
+				        {
+					        <li class="list-group-item disabled">@pendingGroup.GroupName</li>
+				        }
+			        }
+			        else
+			        {
+				        <li class="list-group-item text-muted">No pending groups.</li>
+			        }
+		        </ul>
+	        </div>
+        </div>
+
         <span asp-validation-for="SelectedGroupIds" class="text-danger"></span>
         <br />
 

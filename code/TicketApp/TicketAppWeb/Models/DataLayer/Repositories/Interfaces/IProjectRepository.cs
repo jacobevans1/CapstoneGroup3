@@ -83,6 +83,11 @@ public interface IProjectRepository : IRepository<Project>
 	Task<List<GroupApprovalRequest>> GetPendingGroupApprovalRequestsAsync(string projectId);
 
 	/// <summary>
+	/// Gets all groups with pending approval requests for a specific project.
+	/// </summary>
+	Task<List<Group>> GetPendingGroupsForProject(string projectId);
+
+	/// <summary>
 	/// Gets the projects by lead asynchronous.
 	/// </summary>
 	/// <param name="leadId"></param>

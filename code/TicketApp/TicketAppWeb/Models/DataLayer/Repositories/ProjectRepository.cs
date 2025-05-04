@@ -413,6 +413,18 @@ public class ProjectRepository(TicketAppContext ctx) : Repository<Project>(ctx),
 	}
 
 	/// <summary>
+	/// Gets all groups with pending approval requests for a specific project.
+	/// </summary>
+	public async Task<List<Group>> GetPendingGroupsForProject(string projectId)
+	{
+		return await context.GroupApprovalRequests
+			.Where(r => r.ProjectId == projectId && r.Status == "Pending")
+			.Select(r => r.Group!)
+			.Distinct()
+			.ToListAsync();
+	}
+
+	/// <summary>
 	/// Gets the projects by lead asynchronous.
 	/// </summary>
 	/// <param name="leadId">The lead identifier.</param>

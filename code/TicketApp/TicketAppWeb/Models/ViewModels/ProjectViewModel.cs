@@ -59,6 +59,11 @@ public class ProjectViewModel
 	public List<Group> AvailableGroups { get; set; } = new List<Group>();
 
 	/// <summary>
+	/// Gets or sets the pending groups.
+	/// </summary>
+	public List<Group> PendingGroups { get; set; } = new List<Group>();
+
+	/// <summary>
 	/// Gets or sets the available group leads.
 	/// </summary>
 	public List<TicketAppUser> AvailableGroupLeads { get; set; } = new List<TicketAppUser>();
@@ -92,13 +97,13 @@ public class ProjectViewModel
 	/// </summary>
 	public Dictionary<Project, List<Group>> ProjectGroups { get; set; } = new Dictionary<Project, List<Group>>();
 
-    /// <summary>
-    /// Gets or sets a value indicating whether [lead change required].
-    /// </summary>
-    /// <value>
-    ///   <c>true</c> if [lead change required]; otherwise, <c>false</c>.
-    /// </value>
-    public bool LeadChangeRequired { get; set; }
+	/// <summary>
+	/// Gets or sets a value indicating whether [lead change required].
+	/// </summary>
+	/// <value>
+	///   <c>true</c> if [lead change required]; otherwise, <c>false</c>.
+	/// </value>
+	public bool LeadChangeRequired { get; set; }
 
 	/// <summary>
 	/// Checks if the current user is the project lead for the project.

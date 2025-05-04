@@ -122,6 +122,7 @@ public class ProjectController : Controller
 			SelectedGroupIds = project.Groups.Select(g => g.Id).ToList(),
 			AvailableGroups = await _projectRepository.GetAvailableGroupsAsync(),
 			AssignedGroups = project.Groups.ToList(),
+			PendingGroups = await _projectRepository.GetPendingGroupsForProject(id),
 			LeadChangeRequired = leadChangeRequired ?? false
 
 		};
