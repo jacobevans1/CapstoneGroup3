@@ -70,6 +70,20 @@ public partial class TicketDetailForm : Form
 	{
 		try
 		{
+			if (!_viewModel.IsUserValidForSelectedStage())
+			{
+				var result = MessageBox.Show(
+					"You are not part of a group assigned to the selected stage. Once moved, you may not be able to recover this ticket. Do you want to proceed?",
+					"Warning",
+					MessageBoxButtons.YesNo,
+					MessageBoxIcon.Warning);
+
+				if (result == DialogResult.No)
+				{
+					return;
+				}
+			}
+
 			_viewModel.SaveChanges();
 
 			MessageBox.Show(

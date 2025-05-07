@@ -2,8 +2,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using TicketAppDesktop.Models;
 using TicketAppDesktop.DataLayer;
+using TicketAppDesktop.Models;
 
 
 namespace TicketAppDesktop.ViewModels;
@@ -475,7 +475,12 @@ public class TicketDetailViewModel : INotifyPropertyChanged
 		return count > 0;
 	}
 
+	public bool IsUserValidForSelectedStage()
+	{
+		if (Ticket == null || string.IsNullOrEmpty(Ticket.Stage))
+			return false;
 
-
+		return IsUserValidForStage(UserSession.CurrentUserId, Ticket.BoardId!, Ticket.Stage);
+	}
 }
 
